@@ -1,0 +1,203 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "MATLAB 2018a on AWS Reference Architecture",
+    "Metadata": {
+      "AWS::CloudFormation::Interface": {
+        "ParameterGroups": [
+          {
+            "Label": {
+              "default": "EC2 Instance"
+            },
+            "Parameters": ["InstanceType"]
+          },
+          {
+            "Label": {
+              "default": "MATLAB Image"
+            },
+            "Parameters": ["NodeAMI"]
+          },
+          {
+            "Label": {
+              "default": "Networking"
+            },
+            "Parameters": ["VPC", "SubnetA"]
+          },
+          {
+            "Label": {
+              "default": "Remote Access"
+            },
+            "Parameters": ["ClientIPAddress", "SSHKeyName", "Username", "Password", "ConfirmPassword"]
+          }
+        ],
+        "ParameterLabels": {
+          "ClientIPAddress": {
+            "default": "Allow RDP connections from"
+          },
+          "InstanceType": {
+            "default": "AWS EC2 Instance type"
+          },
+          "NodeAMI": {
+            "default": "MATLAB AMI"
+          },
+          "user": {
+            "default": "Username"
+          },
+          "password": {
+            "default": "password"
+          }
+        }
+      }
+    },
+    "Parameters": {
+      "NodeAMI": {
+        "Description": "MATLAB 2018a Desktop AMI",
+        "Default": "ami-0a0c94fdfff5371f8",
+        "Type": "String"
+      },
+      "InstanceType": {
+        "Description": "Amazon instance type",
+        "Default": "m4.xlarge",
+        "Type": "String"
+      },
+      "VPC": {
+        "Description": "Existing VPC ID",
+        "Type": "AWS::EC2::VPC::Id",
+        "ConstraintDescription": "must be the name of an existing EC2 KeyPair.",
+        "Default": ""
+      },
+      "SubnetA": {
+        "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+        "Type": "AWS::EC2::Subnet::Id",
+        "ConstraintDescription": "must be the name of an existing EC2 KeyPair.",
+        "Default": ""
+      },
+      "SSHKeyName": {
+        "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+        "Type": "AWS::EC2::KeyPair::KeyName",
+        "ConstraintDescription": "must be the name of an existing EC2 KeyPair.",
+        "Default": ""
+      },
+      "ClientIPAddress": {
+        "Description": "IP address range allowed external RDP connections.",
+        "Type": "String",
+        "MinLength": "9",
+        "MaxLength": "18",
+        "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+        "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x."
+      },
+      "Username": {
+        "Description": "Username to access instance",
+        "Type": "String",
+        "ConstraintDescription": "must be a valid user name",
+        "Default": ""
+      },
+      "Password": {
+        "NoEcho": "true",
+        "Description": "password",
+        "Type": "String",
+        "ConstraintDescription": "",
+        "Default": ""
+      },
+      "ConfirmPassword": {
+        "NoEcho": "true",
+        "Description": "Confirm Password",
+        "Type": "String",
+        "ConstraintDescription": "",
+        "Default": ""
+      }
+    },
+    "Rules" : {
+      "matchPasswords" : {
+          "Assertions" : [
+          {
+              "Assert" : {"Fn::Equals":[{"Ref":"Password"},{"Ref":"ConfirmPassword"}]},
+              "AssertDescription" : "Passwords do not match"
+          }
+          ]
+      }},
+    "Conditions": {},
+    "Resources": {
+  
+      "SSHSecurityGroup": {
+        "Type": "AWS::EC2::SecurityGroup",
+        "Properties": {
+          "VpcId": {
+            "Ref": "VPC"
+          },
+          "GroupDescription": "Enable SSH access via port 22",
+          "SecurityGroupIngress": [
+            {
+              "IpProtocol": "tcp",
+              "FromPort": "22",
+              "ToPort": "22",
+              "CidrIp": {
+                  "Ref": "ClientIPAddress"
+                }
+            },
+            {
+              "IpProtocol": "tcp",
+              "FromPort": "3389",
+              "ToPort": "3389",
+              "CidrIp":{
+                  "Ref": "ClientIPAddress"
+                }
+            }
+          ],
+          "SecurityGroupEgress": [
+              {
+                  "IpProtocol": -1,
+                  "CidrIp": "0.0.0.0/0"
+              }
+          ]
+        }
+      },
+  
+      "EC2Instance": {
+        "Type": "AWS::EC2::Instance",
+        "Properties": {
+          "ImageId": { "Ref": "NodeAMI"  },
+          "KeyName": {
+            "Ref": "SSHKeyName"
+          },
+          "SecurityGroupIds": [
+            {
+              "Ref": "SSHSecurityGroup"
+            }
+          ],
+          "SubnetId": {
+            "Ref": "SubnetA"
+          },
+          "InstanceType": {
+            "Ref": "InstanceType"
+          },
+          "EbsOptimized" : "true",
+          "UserData": {
+            "Fn::Base64": {
+              "Fn::Join": [
+                "",
+                [
+                  "#!/bin/bash\n",
+                  "# Copyright 2011-2017 The MathWorks, Inc.\n",
+                  "cd /usr/local/matlab\n",
+                  "nohup /usr/local/matlab/bin/glnxa64/MATLABStartupAccelerator &>/dev/null &\n",
+                  "sudo useradd -m -p `echo ",
+                  { "Ref" : "Password" },
+                  " | mkpasswd --method=sha-512 -s` ",
+                  { "Ref" : "Username" }
+                ]
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Outputs": {
+      "RDPConnection": {
+          "Description": "Public DNSName of the newly created EC2 instance",
+          "Value": {
+              "Fn::GetAtt": ["EC2Instance", "PublicDnsName"]
+          }
+      }
+    }
+  }
+  
