@@ -2,7 +2,7 @@
 
 ## Requirements
 -   A MATLAB® license that is current on Software
-    Maintenance Service (SMS). For more information, see [Configure MATLAB License in the Cloud](http://inside.mathworks.com/tl?oM7ZtgRFtk).
+    Maintenance Service (SMS). For more information, see [Configure MATLAB License in the Cloud](http://www.mathworks.com/support/cloud/configure-matlab-licensing-on-the-cloud.html).
 -   An Amazon Web Services™ (AWS) account.
 -   An SSH Key Pair for your AWS account in the US East (N. Virginia) region. For more information, see [Amazon EC2 Key Pairs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
 
@@ -11,8 +11,7 @@ You are responsible for the cost of the AWS services used when you create a clus
 
 ## Introduction
 
-The following guide will help you automate the process of running the MATLAB desktop on Amazon Web Services and connect to it using the Remote Desktop Protocol (RDP). The automation is accomplished using an AWS CloudFormation template. The template is a JSON
-file that defines the resources needed to run MATLAB on AWS. For information about the architecture of this solution, see [Architecture and Resources](#architecture-and-resources). For information about templates, see [AWS CloudFormation Templates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-guide.html).
+The following guide will help you automate the process of running the MATLAB desktop on Amazon Web Services and connect to it using the Remote Desktop Protocol (RDP). The automation is accomplished using an AWS CloudFormation template. The template is a JSON file that defines the resources needed to run MATLAB on AWS. For information about the architecture of this solution, see [Architecture and Resources](#architecture-and-resources). For information about templates, see [AWS CloudFormation Templates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-guide.html).
 
 
 ## Prepare your AWS Account
@@ -30,7 +29,7 @@ file that defines the resources needed to run MATLAB on AWS. For information abo
 Click the **Launch Stack** button to deploy a standalone MATLAB desktop client on AWS. This will open the CloudFormation Create Stack screen in your web browser.
 
 
-[![alt text](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png "Start a MATLAB Desktop using the template")](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?templateURL=http://mw-mdcs-cf.s3.amazonaws.com/aws-matlab-2018a-vpc-template.json)
+[![alt text](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png "Start a MATLAB Desktop using the template")](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?templateURL=https://s3.amazonaws.com/matlab-on-aws/aws-matlab-2018a-vpc-template.json)
 
 > VM Platform: Ubuntu 16.04
 
@@ -67,7 +66,7 @@ Click the **Launch Stack** button to deploy a standalone MATLAB desktop client o
 1. In the login screen that's displayed, use the username and password you specified while setting up the stack in [Step 2](#step-2-configure-the-stack).
 
 ## Step 4. Launch MATLAB
-Double-click the MATLAB icon on the virtual machine desktop to launch MATLAB. The first time you start MATLAB you will need to activate it. By default you will be asked to use your MathWorks Account to activate MATLAB. For other ways to activate MATLAB, see [Configure MATLAB License in the Cloud](http://inside.mathworks.com/tl?oM7ZtgRFtk).
+Double-click the MATLAB icon on the virtual machine desktop to launch MATLAB. The first time you start MATLAB you will need to activate it. By default you will be asked to use your MathWorks Account to activate MATLAB. For other ways to activate MATLAB, see [Configure MATLAB License in the Cloud](http://www.mathworks.com/support/cloud/configure-matlab-licensing-on-the-cloud.html).
 
 >**Note**:It may take a few minutes for activation to complete and MATLAB to start. You will experience this delay only the first time you start MATLAB. 
 
@@ -120,7 +119,7 @@ To save a VM image, locate the EC2 Instance in the AWS web console and from the 
 ### How do I customize the VM image?
 You can customize a VM image by launching the reference architecture, applying any changes you want to the EC2 Instance such as installing additional software, drivers and files and then saving an image of that instance using the AWS Console. For more information, see [How Do I save a VM image?](#how-do-i-save-an-image). When creating a stack, replace the AMI ID in the CloudFormation template with the AMI ID of your custom image.
 ### How do I use a different license manager? 
-The VM image uses MathWorks Hosted License Manager by default.  For information on using other license managers, see [Configure MATLAB License in the Cloud](http://inside.mathworks.com/tl?oM7ZtgRFtk). 
+The VM image uses MathWorks Hosted License Manager by default.  For information on using other license managers, see [Configure MATLAB License in the Cloud](http://www.mathworks.com/support/cloud/configure-matlab-licensing-on-the-cloud.html). 
 ### How do I deploy this reference architecture to an existing VPC?
 In the `templates` folder of this repository you will find an example template for launching the reference architecture within an existing VPC and subnet. Edit the template to deploy this reference architecure to an existing VPC. 
 
