@@ -123,5 +123,8 @@ The VM image uses MathWorks Hosted License Manager by default.  For information 
 ### How do I deploy this reference architecture to an existing VPC?
 In the `templates` folder of this repository you will find an example template for launching the reference architecture within an existing VPC and subnet. Edit the template to deploy this reference architecure to an existing VPC. 
 
+# Enhancement Request
+Provide suggestions for additional features or capabilities using the following link: https://www.mathworks.com/cloud/enhancement-request.html
+
 # Technical Support
 Email: `cloud-support@mathworks.com`
