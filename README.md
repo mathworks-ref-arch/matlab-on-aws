@@ -2,7 +2,7 @@
 
 ## Requirements
 -   A MATLAB® license that is current on Software
-    Maintenance Service (SMS). For more information, see [Configure MATLAB License in the Cloud](http://www.mathworks.com/support/cloud/configure-matlab-licensing-on-the-cloud.html).
+    Maintenance Service (SMS). For more information, see [Configure MATLAB Licensing on the Cloud](http://www.mathworks.com/support/cloud/configure-matlab-licensing-on-the-cloud.html).
 -   An Amazon Web Services™ (AWS) account.
 -   An SSH Key Pair for your AWS account in the US East (N. Virginia) region. For more information, see [Amazon EC2 Key Pairs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
 
@@ -66,7 +66,7 @@ Click the **Launch Stack** button to deploy a standalone MATLAB desktop client o
 1. In the login screen that's displayed, use the username and password you specified while setting up the stack in [Step 2](#step-2-configure-the-stack).
 
 ## Step 4. Launch MATLAB
-Double-click the MATLAB icon on the virtual machine desktop to launch MATLAB. The first time you start MATLAB you will need to activate it. By default you will be asked to use your MathWorks Account to activate MATLAB. For other ways to activate MATLAB, see [Configure MATLAB License in the Cloud](http://www.mathworks.com/support/cloud/configure-matlab-licensing-on-the-cloud.html).
+Double-click the MATLAB icon on the virtual machine desktop to launch MATLAB. The first time you start MATLAB you will need to activate it. By default you will be asked to use your MathWorks Account to activate MATLAB. For other ways to activate MATLAB, see [Configure MATLAB Licensing on the Cloud](http://www.mathworks.com/support/cloud/configure-matlab-licensing-on-the-cloud.html).
 
 >**Note**:It may take a few minutes for activation to complete and MATLAB to start. You will experience this delay only the first time you start MATLAB. 
 
@@ -119,7 +119,7 @@ To save a VM image, locate the EC2 Instance in the AWS web console and from the 
 ### How do I customize the VM image?
 You can customize a VM image by launching the reference architecture, applying any changes you want to the EC2 Instance such as installing additional software, drivers and files and then saving an image of that instance using the AWS Console. For more information, see [How Do I save a VM image?](#how-do-i-save-an-image). When creating a stack, replace the AMI ID in the CloudFormation template with the AMI ID of your custom image.
 ### How do I use a different license manager? 
-The VM image uses MathWorks Hosted License Manager by default.  For information on using other license managers, see [Configure MATLAB License in the Cloud](http://www.mathworks.com/support/cloud/configure-matlab-licensing-on-the-cloud.html). 
+The VM image uses MathWorks Hosted License Manager by default.  For information on using other license managers, see [Configure MATLAB Licensing on the Cloud](http://www.mathworks.com/support/cloud/configure-matlab-licensing-on-the-cloud.html). 
 ### How do I deploy this reference architecture to an existing VPC?
 In the `templates` folder of this repository you will find an example template for launching the reference architecture within an existing VPC and subnet. Edit the template to deploy this reference architecure to an existing VPC. 
 
