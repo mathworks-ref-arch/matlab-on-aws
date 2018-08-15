@@ -48,7 +48,7 @@
     "Parameters": {
       "NodeAMI": {
         "Description": "MATLAB 2018a Desktop AMI",
-        "Default": "ami-0a0c94fdfff5371f8",
+        "Default": "ami-00ae68c7df9e0cecf",
         "Type": "String"
       },
       "InstanceType": {

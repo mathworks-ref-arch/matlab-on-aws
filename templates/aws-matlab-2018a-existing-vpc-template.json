@@ -51,7 +51,7 @@
     "Parameters": {
       "NodeAMI": {
         "Description": "MATLAB 2018a Desktop AMI",
-        "Default": "ami-0a0c94fdfff5371f8",
+        "Default": "ami-00ae68c7df9e0cecf",
         "Type": "String"
       },
       "InstanceType": {
@@ -62,13 +62,13 @@
       "VPC": {
         "Description": "Existing VPC ID",
         "Type": "AWS::EC2::VPC::Id",
-        "ConstraintDescription": "must be the name of an existing EC2 KeyPair.",
+        "ConstraintDescription": "must be the Id of an existing VPC.",
         "Default": ""
       },
       "SubnetA": {
         "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
         "Type": "AWS::EC2::Subnet::Id",
-        "ConstraintDescription": "must be the name of an existing EC2 KeyPair.",
+        "ConstraintDescription": "must be the Id of an existing Subnet.",
         "Default": ""
       },
       "SSHKeyName": {
