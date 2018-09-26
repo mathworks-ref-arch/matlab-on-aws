@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "MATLAB 2018a on AWS Reference Architecture",
+    "Description": "MATLAB 2018b on AWS Reference Architecture",
     "Metadata": {
       "AWS::CloudFormation::Interface": {
         "ParameterGroups": [
@@ -47,8 +47,8 @@
     },
     "Parameters": {
       "NodeAMI": {
-        "Description": "MATLAB 2018a Desktop AMI",
-        "Default": "ami-00ae68c7df9e0cecf",
+        "Description": "MATLAB 2018b Desktop AMI",
+        "Default": "ami-04adfc90a4d01decc",
         "Type": "String"
       },
       "InstanceType": {

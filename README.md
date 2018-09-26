@@ -28,16 +28,12 @@ The following guide will help you automate the process of running the MATLAB des
 
 Click the **Launch Stack** button to deploy a standalone MATLAB desktop client on AWS. This will open the CloudFormation Create Stack screen in your web browser.
 
+| Release | Ubuntu 16.04 VM |
+|---------------|------------------------|-----------------|
+| MATLAB R2018b | <a href="https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?templateURL=https://s3.amazonaws.com/matlab-on-aws/aws-matlab-2018b-vpc-template.json" target="_blank">     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/> </a>  |
+For other releases, see [How do I launch a template that uses a previous MATLAB release?](#how-do-i-launch-a-template-that-uses-a-previous-matlab-release)
 
-[![alt text](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png "Start a MATLAB Desktop using the template")](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?templateURL=https://s3.amazonaws.com/matlab-on-aws/aws-matlab-2018a-vpc-template.json)
-
-> VM Platform: Ubuntu 16.04
-
-> MATLAB Release: R2018a
-
-
-
-**Note**: Creating a stack on AWS can take at least 20 minutes.
+**Note**: Creating a stack on AWS can take a few minutes.
 
 ## Step 2. Configure the Stack
 1. Provide values for parameters in the Create Stack page:
@@ -104,6 +100,11 @@ The following resources will be created as part of the CloudFormation Stack.
 
 
 ## FAQ
+### How do I launch a template that uses a previous MATLAB release?
+| Release | Ubuntu 16.04 VM |
+|---------------|------------------------|-----------------|
+| MATLAB R2018a | <a href="https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?templateURL=https://s3.amazonaws.com/matlab-on-aws/aws-matlab-2018a-vpc-template.json" target="_blank">     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/> </a> |
+
 
 ### How do I save my changes in the VM?
 All your files and changes are stored locally on the virtual machine.  They will persist until you either terminate the virtual machine instance or delete the stack.  Stopping the instance does not destroy the data on the instance.  If you want your changes to persist  outside the stack or before you terminate an instance you’ll need to:
