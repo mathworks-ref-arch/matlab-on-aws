@@ -132,12 +132,6 @@
           ]
       }},
     "Conditions": {},
-    "Mappings" : {
-      "RegionMap" : {
-        "us-east-1"        : {"matlabami" : "ami-08c9c05e0b32b33da"},
-        "eu-west-1"        : {"matlabami" : "ami-08c9c05e0b32b33da"}
-      }
-    },
     "Resources": {
   
       "SSHSecurityGroup": {
@@ -178,7 +172,7 @@
         "Type": "AWS::EC2::Instance",
         "Properties": {
           
-        "ImageId" : { "Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "matlabami"]},
+          "ImageId": { "Ref": "NodeAMI"  },
           "KeyName": {
             "Ref": "SSHKeyName"
           },
