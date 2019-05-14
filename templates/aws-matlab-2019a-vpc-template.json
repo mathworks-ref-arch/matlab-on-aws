@@ -127,7 +127,6 @@
       "SubnetA": {
           "Type": "AWS::EC2::Subnet",
           "Properties": {
-              "AvailabilityZone": "us-east-1a",
               "VpcId": {"Ref": "VPC"},
               "CidrBlock": "10.0.0.0/16",
               "MapPublicIpOnLaunch": "true"

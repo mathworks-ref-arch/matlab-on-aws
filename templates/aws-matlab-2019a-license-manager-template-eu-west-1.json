@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "MATLAB 2018b on AWS Reference Architecture",
+    "Description": "MATLAB 2019a on AWS Reference Architecture with License Manager",
     "Metadata": {
       "AWS::CloudFormation::Interface": {
         "ParameterGroups": [
@@ -15,6 +15,17 @@
               "default": "MATLAB Image"
             },
             "Parameters": ["NodeAMI"]
+          },
+          {
+            "Label": {
+              "default": "Networking"
+            },
+            "Parameters": ["VPC", "SubnetA"]
+          },          {
+          "Label": {
+              "default": "License Manager"
+            },
+            "Parameters": ["LicenseManagerHostname", "LicenseManagerPort"]
           },
           {
             "Label": {
@@ -37,24 +48,33 @@
             "default": "Username"
           },
           "password": {
-            "default": "Password"
-          },
-          "ConfirmPassword": {
-            "default": "Confirm Password"
+            "default": "password"
           }
         }
       }
     },
     "Parameters": {
       "NodeAMI": {
-        "Description": "MATLAB 2018b Desktop AMI",
-        "Default": "ami-083df088a6ba37341",
+        "Description": "MATLAB 2019a Desktop AMI",
+        "Default": "ami-0ce820a20ef19bf23",
         "Type": "String"
       },
       "InstanceType": {
         "Description": "Amazon instance type",
         "Default": "m5.xlarge",
         "Type": "String"
+      },
+      "VPC": {
+        "Description": "Existing VPC ID",
+        "Type": "AWS::EC2::VPC::Id",
+        "ConstraintDescription": "must be the Id of an existing VPC.",
+        "Default": ""
+      },
+      "SubnetA": {
+        "Description": "Existing Subnet ID",
+        "Type": "AWS::EC2::Subnet::Id",
+        "ConstraintDescription": "must be the Id of an existing Subnet.",
+        "Default": ""
       },
       "SSHKeyName": {
         "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instance",
@@ -78,7 +98,7 @@
       },
       "Password": {
         "NoEcho": "true",
-        "Description": "Password",
+        "Description": "password",
         "Type": "String",
         "ConstraintDescription": "",
         "Default": ""
@@ -89,6 +109,17 @@
         "Type": "String",
         "ConstraintDescription": "",
         "Default": ""
+      },
+      "LicenseManagerHostname": {
+        "Description": "The hostname of the network license manager for MATLAB to use with this cluster.",
+        "Type": "String"
+      },
+      "LicenseManagerPort": {
+        "Description": "The port of the network license manager for MATLAB to use with this cluster.",
+        "Type": "Number",
+        "Default": "27000",
+        "MinValue": "0",
+        "MaxValue": "65535"
       }
     },
     "Rules" : {
@@ -99,64 +130,9 @@
               "AssertDescription" : "Passwords do not match"
           }
           ]
-      }
-    },
+      }},
     "Conditions": {},
     "Resources": {
-      "VPC" : {
-          "Type" : "AWS::EC2::VPC",
-          "Properties" : {
-              "CidrBlock" : "10.0.0.0/16",
-              "EnableDnsSupport" : "true",
-              "EnableDnsHostnames" : "true"
-          }
-      },
-  
-      "InternetGateway": {
-          "Type": "AWS::EC2::InternetGateway"
-      },
-  
-      "VCPGatewayAttachment": {
-          "Type": "AWS::EC2::VPCGatewayAttachment",
-          "Properties" : {
-              "VpcId" : { "Ref": "VPC" },
-              "InternetGatewayId" : {"Ref": "InternetGateway"}
-          }
-      },
-  
-      "SubnetA": {
-          "Type": "AWS::EC2::Subnet",
-          "Properties": {
-              "VpcId": {"Ref": "VPC"},
-              "CidrBlock": "10.0.0.0/16",
-              "MapPublicIpOnLaunch": "true"
-          }
-      },
-  
-      "RouteTable": {
-          "Type": "AWS::EC2::RouteTable",
-          "Properties" : {
-              "VpcId" : { "Ref": "VPC" }
-          }
-      },
-  
-      "InternetRoute": {
-          "Type": "AWS::EC2::Route",
-          "DependsOn": "InternetGateway",
-          "Properties" : {
-              "DestinationCidrBlock": "0.0.0.0/0",
-              "GatewayId": {"Ref": "InternetGateway"},
-              "RouteTableId": {"Ref": "RouteTable"}
-          }
-      },
-  
-      "SubnetARouteTableAssociation": {
-          "Type": "AWS::EC2::SubnetRouteTableAssociation",
-          "Properties" : {
-              "RouteTableId": {"Ref": "RouteTable"},
-              "SubnetId": {"Ref": "SubnetA"}
-          }
-      },
   
       "SSHSecurityGroup": {
         "Type": "AWS::EC2::SecurityGroup",
@@ -195,6 +171,7 @@
       "EC2Instance": {
         "Type": "AWS::EC2::Instance",
         "Properties": {
+          
           "ImageId": { "Ref": "NodeAMI"  },
           "KeyName": {
             "Ref": "SSHKeyName"
@@ -223,7 +200,19 @@
                   "sudo useradd -m -p `echo ",
                   { "Ref" : "Password" },
                   " | mkpasswd --method=sha-512 -s` ",
-                  { "Ref" : "Username" }
+                  { "Ref" : "Username" },
+                  "\n",
+                  "#disable online licensing and enable a license server\n",
+                  "sudo rm /usr/local/matlab/licenses/license_info.xml\n",
+                  "echo 'export MLM_LICENSE_FILE=",
+                  {"Ref": "LicenseManagerPort"},
+                  "@",
+                  {"Ref": "LicenseManagerHostname"},
+                  "' | sudo tee -a /etc/profile.d/mlmlicensefile.sh\n",
+                  "\n",
+                  "sudo usermod -aG sudo ",
+                  { "Ref" : "Username" },
+                  "\n"
                 ]
               ]
             }

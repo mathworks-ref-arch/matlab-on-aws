@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "MATLAB 2018b on AWS Reference Architecture",
+    "Description": "MATLAB 2019a on AWS Reference Architecture",
     "Metadata": {
       "AWS::CloudFormation::Interface": {
         "ParameterGroups": [
@@ -47,8 +47,8 @@
     },
     "Parameters": {
       "NodeAMI": {
-        "Description": "MATLAB 2018b Desktop AMI",
-        "Default": "ami-083df088a6ba37341",
+        "Description": "MATLAB 2019a Desktop AMI",
+        "Default": "ami-0ce820a20ef19bf23",
         "Type": "String"
       },
       "InstanceType": {
@@ -223,7 +223,11 @@
                   "sudo useradd -m -p `echo ",
                   { "Ref" : "Password" },
                   " | mkpasswd --method=sha-512 -s` ",
-                  { "Ref" : "Username" }
+                  { "Ref" : "Username" },
+                  "\n",
+                  "sudo usermod -aG sudo ",
+                  { "Ref" : "Username" },
+                  "\n"
                 ]
               ]
             }
