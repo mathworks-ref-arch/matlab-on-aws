@@ -23,13 +23,13 @@ The following guide will help you automate the process of running the MATLAB des
 4. If necessary, [request a service limit increase](https://console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase&limitType=service-code-) for the Amazon EC2 instance type or VPCs.  You might need to do this if you already have existing deployments that use that instance type or you think you might exceed the [default limit](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-resource-limits.html) with this deployment.
 
 # Choose a Deployment Option
-To view instructions for deploying the MATLAB Parallel Server reference architecture, select a MATLAB release:
-- [R2019b](releases/R2019b/README.md)
-- [R2019a and older](releases/R2019a_and_older/README.md)
+
+- [Deploy MATLAB on AWS using Online Licensing](online-licensing-instructions.md)
+- [Deploy MATLAB on AWS using Network Licensing](license-manager-instructions.md)
 
 ## Architecture and Resources
 
-![MATLAB on AWS Reference Architecture](images/aws-matlab-diagram.png)
+![MATLAB on AWS Reference Architecture](../../images/aws-matlab-diagram.png)
 
 Deploying this reference architecture sets up a single AWS EC2 instance containing Linux and MATLAB, a private VPC with an internet gateway, a private subnet and a security group that opens the appropriate ports for SSH and RDP access.  
 
