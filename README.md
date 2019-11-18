@@ -3,7 +3,7 @@
 ## Requirements
 Before starting, you will need the following:
 -   A MATLAB® license that is current on Software
-    Maintenance Service (SMS). For more information, see [Configure MATLAB Licensing on the Cloud](https://www.mathworks.com/help/licensingoncloud/matlab-on-the-cloud.html.).
+    Maintenance Service (SMS). For more information, see [Configure MATLAB Licensing on the Cloud](https://www.mathworks.com/help/licensingoncloud/matlab-on-the-cloud.html).
 -   An Amazon Web Services™ (AWS) account.
 -   An SSH Key Pair for your AWS account in the appropriate region. For more information, see [Amazon EC2 Key Pairs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
 
