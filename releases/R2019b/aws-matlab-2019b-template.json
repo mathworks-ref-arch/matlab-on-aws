@@ -140,7 +140,7 @@
         },
         "Password": {
             "NoEcho": "true",
-            "Description": "Enter a password for the username",
+            "Description": "Enter a password for the username. Enclose within single quotes or escape special characters individually using backslashes.",
             "Type": "String",
             "ConstraintDescription": "",
             "Default": ""
