@@ -1,0 +1,477 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Mappings": {
+    "RegionMap": {
+      "us-east-1": {
+        "AMI": "ami-0032798a9845f7db4"
+      },
+      "us-east-2": {
+        "AMI": "ami-06572e87cc2e16b2e"
+      },
+      "us-west-1": {
+        "AMI": "ami-03e5a6904f47edf3b"
+      },
+      "us-west-2": {
+        "AMI": "ami-08b27fcc11b9840fa"
+      },
+      "ca-central-1": {
+        "AMI": "ami-032149788768201c7"
+      },
+      "eu-central-1": {
+        "AMI": "ami-017109b000a66134e"
+      },
+      "eu-west-1": {
+        "AMI": "ami-0c89b7de66e7b98c6"
+      },
+      "eu-west-2": {
+        "AMI": "ami-03f0a1cbd46e4f96c"
+      },
+      "eu-west-3": {
+        "AMI": "ami-0952209627405aa57"
+      },
+      "eu-north-1": {
+        "AMI": "ami-08a068f2c007158e4"
+      },
+      "sa-east-1": {
+        "AMI": "ami-047795caf6f05e0b4"
+      },
+      "me-south-1": {
+        "AMI": "ami-096e5d8963b81b682"
+      },
+      "ap-east-1": {
+        "AMI": "ami-0261137d3c8bdd157"
+      },
+      "ap-south-1": {
+        "AMI": "ami-0cf7e86ec97cffc5d"
+      },
+      "ap-northeast-1": {
+        "AMI": "ami-0a3f162bb0158c0eb"
+      },
+      "ap-northeast-2": {
+        "AMI": "ami-082a38aa40ad947ce"
+      },
+      "ap-southeast-1": {
+        "AMI": "ami-02df9d1af8a4373d8"
+      },
+      "ap-southeast-2": {
+        "AMI": "ami-06f79f6967c55f49b"
+      }
+    }
+  },
+  "Resources": {
+    "MATLABSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "GroupDescription": "Enable SSH and RDP Access",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": {
+              "Ref": "ClientIPAddress"
+            }
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "3389",
+            "ToPort": "3389",
+            "CidrIp": {
+              "Ref": "ClientIPAddress"
+            }
+          }
+        ]
+      }
+    },
+    "MATLABInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Condition": "UseIamRole",
+      "Properties": {
+        "Path": "/",
+        "Roles": [
+          {
+            "Ref": "IamRole"
+          }
+        ]
+      }
+    },
+    "MATLABEC2Instance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "RegionMap",
+            {
+              "Ref": "AWS::Region"
+            },
+            "AMI"
+          ]
+        },
+        "KeyName": {
+          "Ref": "SSHKeyName"
+        },
+        "SecurityGroupIds": [
+          {
+            "Ref": "MATLABSecurityGroup"
+          },
+          {
+            "Fn::If": [
+              "AddSG",
+              {
+                "Ref": "AdditionalSecurityGroup"
+              },
+              {
+                "Ref": "AWS::NoValue"
+              }
+            ]
+          }
+        ],
+        "SubnetId": {
+          "Ref": "Subnet"
+        },
+        "IamInstanceProfile": {
+          "Fn::If": [
+            "UseIamRole",
+            {
+              "Ref": "MATLABInstanceProfile"
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        },
+        "InstanceType": {
+          "Ref": "InstanceType"
+        },
+        "EbsOptimized": "true",
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "VolumeSize": {
+                "Ref": "RootVolumeSize"
+              }
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Ref": "InstanceName"
+            }
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash\n",
+                "# Copyright 2011-2020 The MathWorks, Inc.\n",
+                "cd /usr/local/matlab\n",
+                "sudo echo $PATH:/usr/local/matlab/bin | sudo tee /etc/environment > /dev/null\n",
+                "nohup /usr/local/matlab/bin/glnxa64/MATLABStartupAccelerator &>/dev/null &\n",
+                "sudo useradd -s /bin/bash -m -p `echo '",
+                {
+                  "Fn::Base64": {
+                    "Ref": "Password"
+                  }
+                },
+                "' | base64 -d | mkpasswd --method=sha-512 -s` ",
+                {
+                  "Ref": "Username"
+                },
+                "\n",
+                "if [ -n '",
+                {
+                  "Ref": "LicenseManager"
+                },
+                "' ]\n",
+                " then \n",
+                "#disable online licensing and enable a license server\n",
+                "sudo rm /usr/local/matlab/licenses/license_info.xml\n",
+                "echo 'export MLM_LICENSE_FILE=",
+                {
+                  "Ref": "LicenseManager"
+                },
+                "' | sudo tee -a /etc/profile.d/mlmlicensefile.sh\n",
+                "\n",
+                "fi\n",
+                "sudo usermod -aG sudo ",
+                {
+                  "Ref": "Username"
+                },
+                "\n",
+                "sudo curl -s https://s3.amazonaws.com/matlab-on-azure/matlab.mlsettings -o ",
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "/home/",
+                      {
+                        "Ref": "Username"
+                      },
+                      "/.matlab/R2020a/matlab.mlsettings"
+                    ]
+                  ]
+                },
+                "\n"
+              ]
+            ]
+          }
+        }
+      }
+    }
+  },
+  "Parameters": {
+    "InstanceType": {
+      "Description": "The AWS instance type to use for MATLAB. See https://aws.amazon.com/ec2/instance-types for a list of instance types.",
+      "Default": "m5.xlarge",
+      "Type": "String"
+    },
+    "InstanceName": {
+      "Description": "Give your MATLAB virtual machine a name",
+      "Default": "MATLAB Desktop",
+      "Type": "String"
+    },
+    "RootVolumeSize": {
+      "Description": "Specify the size in GB of the root volume",
+      "Default": "128",
+      "Type": "Number",
+      "MinValue": "128",
+      "MaxValue": "1024",
+      "ConstraintDescription": "Size must be between 64 and 1024GB"
+    },
+    "IamRole": {
+      "Description": "Specify an IAM Role to associate with this instance.",
+      "Default": "",
+      "Type": "String"
+    },
+    "VPC": {
+      "Description": "ID of an existing VPC in which to deploy this stack",
+      "Type": "AWS::EC2::VPC::Id",
+      "ConstraintDescription": "Must be the Id of an existing VPC.",
+      "Default": ""
+    },
+    "Subnet": {
+      "Description": "List of existing subnets IDs",
+      "Type": "AWS::EC2::Subnet::Id",
+      "ConstraintDescription": "must be the Id of an existing Subnet within the chosen VPC.",
+      "Default": ""
+    },
+    "SSHKeyName": {
+      "Description": "The name of an existing EC2 KeyPair to allow SSH access to all the instances. See https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for details on creating these.",
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "ConstraintDescription": "must be the name of an existing EC2 KeyPair.",
+      "Default": ""
+    },
+    "ClientIPAddress": {
+      "Description": "The IP address range that will be allowed to connect to this instance from outside of the VPC. This field should be formatted as <ip_address>/<mask>. E.g. 10.0.0.1/32. This is the public IP address which can be found by searching for 'what is my ip address' on the web. The mask determines the number of IP addresses to include. A mask of 32 is a single IP address. This calculator can be used to build a specific range: https://www.ipaddressguide.com/cidr. You may need to contact your IT administrator to determine which address is appropriate.",
+      "Type": "String",
+      "MinLength": "9",
+      "MaxLength": "18",
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x."
+    },
+    "Username": {
+      "Description": "Specify a user name.  This will create a new user on the instance which can be used to sign in using Remote Desktop Protocol (RDP).",
+      "Type": "String",
+      "ConstraintDescription": "Must be a valid user name",
+      "Default": ""
+    },
+    "Password": {
+      "NoEcho": "true",
+      "Description": "Enter a password for the username",
+      "Type": "String",
+      "ConstraintDescription": "",
+      "Default": ""
+    },
+    "ConfirmPassword": {
+      "NoEcho": "true",
+      "Description": "Confirm Password",
+      "Type": "String",
+      "ConstraintDescription": "",
+      "Default": ""
+    },
+    "LicenseManager": {
+      "Description": "Optional License Manager for MATLAB string in the form <port>@<hostname>. If not specified, online licensing is used. If specified, the license manager must be accessible from the specified VPC and subnets. If the Network License Manager for MATLAB was deployed using the reference architecture, this can be achieved by specifying the security group of that deployment as the AdditionalSecurityGroup parameter, and by using the private hostname of the license manager host.",
+      "Type": "String",
+      "Default": "",
+      "AllowedPattern": "([0-9]+@[a-zA-Z0-9.]+)?",
+      "ConstraintDescription": "If specified, must be in the form <port>@<hostname>"
+    },
+    "AdditionalSecurityGroup": {
+      "Description": "The ID of an additional (optional) Security Group for the instances to be placed in. Often the License Manager for MATLAB's Security Group.",
+      "Type": "String",
+      "Default": ""
+    }
+  },
+  "Rules": {
+    "matchPasswords": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Equals": [
+              {
+                "Ref": "Password"
+              },
+              {
+                "Ref": "ConfirmPassword"
+              }
+            ]
+          },
+          "AssertDescription": "Passwords do not match"
+        }
+      ]
+    },
+    "SubnetInVPC": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::EachMemberEquals": [
+              {
+                "Fn::ValueOfAll": [
+                  "AWS::EC2::Subnet::Id",
+                  "VpcId"
+                ]
+              },
+              {
+                "Ref": "VPC"
+              }
+            ]
+          },
+          "AssertDescription": "Subnet must exist in the VPC you have selected"
+        }
+      ]
+    }
+  },
+  "Conditions": {
+    "UseIamRole": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            "",
+            {
+              "Ref": "IamRole"
+            }
+          ]
+        }
+      ]
+    },
+    "AddSG": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AdditionalSecurityGroup"
+            },
+            ""
+          ]
+        }
+      ]
+    }
+  },
+  "Outputs": {
+    "RDPConnection": {
+      "Description": "Public DNSName of the newly created EC2 instance",
+      "Value": {
+        "Fn::GetAtt": [
+          "MATLABEC2Instance",
+          "PublicDnsName"
+        ]
+      }
+    }
+  },
+  "Metadata": {
+    "AWS::CloudFormation::Interface": {
+      "ParameterGroups": [
+        {
+          "Label": {
+            "default": "EC2 Instance"
+          },
+          "Parameters": [
+            "InstanceName",
+            "InstanceType",
+            "RootVolumeSize",
+            "IamRole"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Remote Access"
+          },
+          "Parameters": [
+            "ClientIPAddress",
+            "SSHKeyName",
+            "Username",
+            "Password",
+            "ConfirmPassword"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Network Configuration"
+          },
+          "Parameters": [
+            "VPC",
+            "Subnet",
+            "AdditionalSecurityGroup"
+          ]
+        },
+        {
+          "Label": {
+            "default": "License Configuration"
+          },
+          "Parameters": [
+            "LicenseManager"
+          ]
+        }
+      ],
+      "ParameterLabels": {
+        "ClientIPAddress": {
+          "default": "Allow RDP connections from"
+        },
+        "InstanceType": {
+          "default": "AWS EC2 Instance type"
+        },
+        "InstanceName": {
+          "default": "Instance Name"
+        },
+        "RootVolumeSize": {
+          "default": "Storage Size (GiB)"
+        },
+        "IamRole": {
+          "default": "IAM Role (Optional)"
+        },
+        "VPC": {
+          "default": "VPC to deploy this stack to"
+        },
+        "Subnet": {
+          "default": "Subnet"
+        },
+        "Username": {
+          "default": "Remote username"
+        },
+        "Password": {
+          "default": "Remote password"
+        },
+        "ConfirmPassword": {
+          "default": "Confirm remote password"
+        },
+        "SSHKeyName": {
+          "default": "SSH Key Pair"
+        },
+        "LicenseManager": {
+          "default": "License Manager for MATLAB connection string"
+        },
+        "AdditionalSecurityGroup": {
+          "default": "Additional security group to place instances in"
+        }
+      }
+    }
+  }
+}
