@@ -3,58 +3,58 @@
   "Mappings": {
     "RegionMap": {
       "us-east-1": {
-        "AMI": "ami-0032798a9845f7db4"
+        "AMI": "ami-068f31919b80f83c0"
       },
       "us-east-2": {
-        "AMI": "ami-06572e87cc2e16b2e"
+        "AMI": "ami-0547c4a9f9b76e707"
       },
       "us-west-1": {
-        "AMI": "ami-03e5a6904f47edf3b"
+        "AMI": "ami-08143b9fa008913d6"
       },
       "us-west-2": {
-        "AMI": "ami-08b27fcc11b9840fa"
+        "AMI": "ami-0ed83798ecd58abc4"
       },
       "ca-central-1": {
-        "AMI": "ami-032149788768201c7"
+        "AMI": "ami-0194d404e072a7810"
       },
       "eu-central-1": {
-        "AMI": "ami-017109b000a66134e"
+        "AMI": "ami-030fd8c4d047a5520"
       },
       "eu-west-1": {
-        "AMI": "ami-0c89b7de66e7b98c6"
+        "AMI": "ami-0ea1bce5093e830b8"
       },
       "eu-west-2": {
-        "AMI": "ami-03f0a1cbd46e4f96c"
+        "AMI": "ami-02551c90e29048c2b"
       },
       "eu-west-3": {
-        "AMI": "ami-0952209627405aa57"
+        "AMI": "ami-0eef871c04170aee5"
       },
       "eu-north-1": {
-        "AMI": "ami-08a068f2c007158e4"
+        "AMI": "ami-0c9eb2e13d9e72f59"
       },
       "sa-east-1": {
-        "AMI": "ami-047795caf6f05e0b4"
+        "AMI": "ami-045cf8bc5945857b9"
       },
       "me-south-1": {
-        "AMI": "ami-096e5d8963b81b682"
+        "AMI": "ami-0b3954e0b87a20da4"
       },
       "ap-east-1": {
-        "AMI": "ami-0261137d3c8bdd157"
+        "AMI": "ami-0518b1dbca7511976"
       },
       "ap-south-1": {
-        "AMI": "ami-0cf7e86ec97cffc5d"
+        "AMI": "ami-0ad21de45f700bfe6"
       },
       "ap-northeast-1": {
-        "AMI": "ami-0a3f162bb0158c0eb"
+        "AMI": "ami-0799b89de0252cdee"
       },
       "ap-northeast-2": {
-        "AMI": "ami-082a38aa40ad947ce"
+        "AMI": "ami-04cc1b560173a0bbf"
       },
       "ap-southeast-1": {
-        "AMI": "ami-02df9d1af8a4373d8"
+        "AMI": "ami-0e36e21da3ae705ce"
       },
       "ap-southeast-2": {
-        "AMI": "ami-06f79f6967c55f49b"
+        "AMI": "ami-0ef4c9e5cc1de2abd"
       }
     }
   },
@@ -206,7 +206,7 @@
                   "Ref": "Username"
                 },
                 "\n",
-                "sudo curl -s https://s3.amazonaws.com/matlab-on-azure/matlab.mlsettings -o ",
+                "sudo cp /usr/local/matlab/matlab.mlsettings ",
                 {
                   "Fn::Join": [
                     "",
