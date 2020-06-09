@@ -29,7 +29,7 @@ The following guide will help you automate the process of running the MATLAB des
 
 ## Architecture and Resources
 
-![MATLAB on AWS Reference Architecture](../../images/aws-matlab-diagram.png)
+![MATLAB on AWS Reference Architecture](../../img/aws-matlab-diagram.png)
 
 Deploying this reference architecture sets up a single AWS EC2 instance containing Linux and MATLAB, a private VPC with an internet gateway, a private subnet and a security group that opens the appropriate ports for SSH and RDP access.  
 
