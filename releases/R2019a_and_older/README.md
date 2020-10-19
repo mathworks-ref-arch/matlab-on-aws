@@ -31,25 +31,19 @@ The following guide will help you automate the process of running the MATLAB des
 
 ![MATLAB on AWS Reference Architecture](../../img/aws-matlab-diagram.png)
 
-Deploying this reference architecture sets up a single AWS EC2 instance containing Linux and MATLAB, a private VPC with an internet gateway, a private subnet and a security group that opens the appropriate ports for SSH and RDP access.  
+Deploying this reference architecture sets up a single AWS EC2 instance containing Linux and MATLAB, a private VPC with an internet gateway, a private subnet and a security group that opens the appropriate ports for SSH and RDP access.
 
 To make deployment easy we have prepared an Amazon Machine Image (AMI) running Ubuntu 16.04 with pre-installed drivers. The AMI contains the following software:
 * MATLAB, Simulink, Toolboxes, and support for GPUs.
 * Add-Ons: Neural Network Toolbox Model for AlexNet Network, Neural Network Toolbox Model for GoogLeNet Network, and Neural Network Toolbox(TM) Model for ResNet-50 Network
 
-The AMI is currently available in the US East (N. Virginia) and EU West (Ireland) regions only. 
+The AMI is currently available in the US East (N. Virginia) and EU West (Ireland) regions only.
 
 ### Resources
 
-The following resources will be created as part of the CloudFormation Stack.  
+The following resources will be created as part of the CloudFormation Stack.
 
 1. VPC w/Internet Gateway
 1. Subnet
 1. Security Group for SSH and RDP access
 1. EC2 Instance
-
-# Enhancement Request
-Provide suggestions for additional features or capabilities using the following link: https://www.mathworks.com/cloud/enhancement-request.html
-
-# Technical Support
-Email: `cloud-support@mathworks.com`

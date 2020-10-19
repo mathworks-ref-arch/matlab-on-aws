@@ -60,9 +60,9 @@ For other releases, see [How do I launch a template that uses a previous MATLAB 
     | **Subnet** | Select a subnet within the chosen VPC |
     | **License Manager (Optional)** | Enter the license manager hostname for in the form <port>@<hostname>. If not specified, online licensing is used. If specified, the license manager must be accessible from the specified VPC and subnets |
 
-    >**Note**: If you chose to associate an IAM role above you'll need to acknowledge that it may create IAM resources in the Capabilities before creating the stack. 
-    
-2. Click the **Create Stack** button.  The CloudFormation service will start creating the resources for the stack. <p>After clicking **Create** you will be taken to the *Stack Detail* page for your stack. Wait for the Status to reach **CREATE\_COMPLETE**. This may take up to 10 minutes.</p>  
+    >**Note**: If you chose to associate an IAM role above you'll need to acknowledge that it may create IAM resources in the Capabilities before creating the stack.
+
+2. Click the **Create Stack** button.  The CloudFormation service will start creating the resources for the stack. <p>After clicking **Create** you will be taken to the *Stack Detail* page for your stack. Wait for the Status to reach **CREATE\_COMPLETE**. This may take up to 10 minutes.</p>
 
 ## Step 3. Connect to the Virtual Machine in the Cloud
 
@@ -74,7 +74,7 @@ For other releases, see [How do I launch a template that uses a previous MATLAB 
 ## Step 4. Launch MATLAB
 Double-click the MATLAB icon on the virtual machine desktop to launch MATLAB. The first time you start MATLAB you will need to activate it. By default you will be asked to use your MathWorks Account to activate MATLAB. For other ways to activate MATLAB, see [Configure MATLAB Licensing on the Cloud](http://www.mathworks.com/support/cloud/configure-matlab-licensing-on-the-cloud.html).
 
->**Note**:It may take a few minutes for activation to complete and MATLAB to start. You will experience this delay only the first time you start MATLAB. 
+>**Note**:It may take a few minutes for activation to complete and MATLAB to start. You will experience this delay only the first time you start MATLAB.
 
 
 # Additional Information
@@ -91,33 +91,33 @@ Once you have finished using your stack, it is recommended that you delete all r
 
 | Release | Region | Ubuntu 16.04 VM |
 |---------------|-----------------|-----------------|
-| MATLAB R2018b | us-east-1 | <a href="https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?templateURL=https://s3.amazonaws.com/matlab-on-aws/aws-matlab-2018b-vpc-template.json" target="_blank">     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/> </a>  
+| MATLAB R2018b | us-east-1 | <a href="https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?templateURL=https://s3.amazonaws.com/matlab-on-aws/aws-matlab-2018b-vpc-template.json" target="_blank">     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/> </a>
 | MATLAB R2018a | us-east-1 | <a href="https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?templateURL=https://s3.amazonaws.com/matlab-on-aws/aws-matlab-2018a-vpc-template.json" target="_blank">     <img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png"/> </a> |
 
 
 ### How do I save my changes in the VM?
 All your files and changes are stored locally on the virtual machine.  They will persist until you either terminate the virtual machine instance or delete the stack.  Stopping the instance does not destroy the data on the instance.  If you want your changes to persist  outside the stack or before you terminate an instance you’ll need to:
-* copy your files to another location (*Example*: S3 or Mount an Amazon EBS volume and create a snapshot), or  
-* create an image of the virtual machine. 
+* copy your files to another location (*Example*: S3 or Mount an Amazon EBS volume and create a snapshot), or
+* create an image of the virtual machine.
 
 ### What happens to my data if I shutdown the instance?
 You may want to shutdown the instance when you aren’t using it to save some money (you only pay for the storage used by the virtual machine when it is stopped).  To shutdown an EC2 instance, locate it in the AWS web console, select the instance and choose “Instance State/Stop” from the “Actions” menu.  You can restart it from the same menu.  Any files or changes made to the virtual machine will persist when shutting down and will be there when you restart.  A side-effect of shutting down the virtual machine and restarting is that the public IP address and DNS name may change.  Inspecting the EC2 instance in the AWS console will reveal the new IP address and DNS name.
 ### How do I keep the same public IP address?
 To avoid having to change the IP address between restarts you can establish a static IP using AWS Elastic IP Address. For more information, see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html.
 ### How do I save a VM image?
-To save a VM image, locate the EC2 Instance in the AWS web console and from the "Actions" menu select the instance and choose “Image/Create Image”.  
+To save a VM image, locate the EC2 Instance in the AWS web console and from the "Actions" menu select the instance and choose “Image/Create Image”.
 ### How do I customize the VM image?
 You can customize a VM image by launching the reference architecture, applying any changes you want to the EC2 Instance such as installing additional software, drivers and files and then saving an image of that instance using the AWS Console. For more information, see [How Do I save a VM image?](#how-do-i-save-a-vm-image). When creating a stack, replace the AMI ID in the CloudFormation template with the AMI ID of your custom image.
-### How do I use a different license manager? 
-The VM image uses MathWorks Hosted License Manager by default.  For information on using other license managers, see [Configure MATLAB Licensing on the Cloud](http://www.mathworks.com/support/cloud/configure-matlab-licensing-on-the-cloud.html). 
+### How do I use a different license manager?
+The VM image uses MathWorks Hosted License Manager by default.  For information on using other license managers, see [Configure MATLAB Licensing on the Cloud](http://www.mathworks.com/support/cloud/configure-matlab-licensing-on-the-cloud.html).
 ### How do I deploy this reference architecture to an existing VPC?
-In the `templates` folder of this repository you will find an example template for launching the reference architecture within an existing VPC and subnet. Edit the template to deploy this reference architecure to an existing VPC. 
+In the `templates` folder of this repository you will find an example template for launching the reference architecture within an existing VPC and subnet. Edit the template to deploy this reference architecure to an existing VPC.
 
 ## Architecture and Resources
 
 ![MATLAB on AWS Reference Architecture](../../img/aws-matlab-diagram.png)
 
-Deploying this reference architecture sets up a single AWS EC2 instance containing Linux and MATLAB, a private VPC with an internet gateway, a private subnet and a security group that opens the appropriate ports for SSH and RDP access.  
+Deploying this reference architecture sets up a single AWS EC2 instance containing Linux and MATLAB, a private VPC with an internet gateway, a private subnet and a security group that opens the appropriate ports for SSH and RDP access.
 
 To make deployment easy we have prepared an Amazon Machine Image (AMI) running Ubuntu 16.04 with pre-installed drivers. The AMI contains the following software:
 * MATLAB, Simulink, Toolboxes, and support for GPUs.
@@ -125,13 +125,7 @@ To make deployment easy we have prepared an Amazon Machine Image (AMI) running U
 
 ### Resources
 
-The following resources will be created as part of the CloudFormation Stack.  
+The following resources will be created as part of the CloudFormation Stack.
 
 1. Security Group for SSH and RDP access
 1. EC2 Instance
-
-# Enhancement Request
-Provide suggestions for additional features or capabilities using the following link: https://www.mathworks.com/cloud/enhancement-request.html
-
-# Technical Support
-Email: `cloud-support@mathworks.com`
