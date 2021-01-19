@@ -1,4 +1,4 @@
-# MATLAB on Amazon Web Services (Linux VM)
+# MATLAB on Amazon Web Services
 
 ## Requirements
 Before starting, you will need the following:
@@ -12,7 +12,7 @@ You are responsible for the cost of the AWS services used when you create cloud 
 
 ## Introduction
 
-The following guide will help you automate the process of running the MATLAB desktop on Amazon Web Services using a Linux virtual machine and connect to it using the Remote Desktop Protocol (RDP). The automation is accomplished using an AWS CloudFormation template. The template is a JSON file that defines the resources needed to run MATLAB on AWS. For information about the architecture of this solution, see [Architecture and Resources](#architecture-and-resources). For information about templates, see [AWS CloudFormation Templates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-guide.html).
+The following guide will help you automate the process of running the MATLAB desktop on Amazon Web Services using a virtual machine and connect to it using the Remote Desktop Protocol (RDP). The automation is accomplished using an AWS CloudFormation template. The template is a JSON file that defines the resources needed to run MATLAB on AWS. For information about the architecture of this solution, see [Architecture and Resources](#architecture-and-resources). For information about templates, see [AWS CloudFormation Templates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-guide.html).
 
 
 ## Prepare your AWS Account
@@ -28,9 +28,9 @@ The MATLAB Reference Architecture is released in lockstep with the bi-annual MAT
 Each reference architecture release has its own instructions as we continue to evolve it.
 Select a release to continue:
 
-| Release |
-| ------- |
-| [R2020b](releases/R2020b/README.md) |
+| Linux | Windows |
+| ------- | ------- |
+| [R2020b](releases/R2020b/README.md) | [R2020b](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2020b) |
 | [R2020a](releases/R2020a/README.md) |
 | [R2019b](releases/R2019b/README.md) |
 | [R2019a\_and\_older](releases/R2019a_and_older/README.md) |
@@ -40,7 +40,7 @@ Select a release to continue:
 
 ![MATLAB on AWS Reference Architecture](img/aws-matlab-diagram.png)
 
-Deploying this reference architecture sets up a single AWS EC2 instance containing Linux and MATLAB, a private VPC with an internet gateway, a private subnet and a security group that opens the appropriate ports for SSH and RDP access.
+Deploying this reference architecture sets up a single AWS EC2 instance containing a virtual machine and MATLAB, a private VPC with an internet gateway, a private subnet and a security group that opens the appropriate ports for SSH and RDP access.
 
 To make deployment easy, we have prepared an Amazon Machine Image (AMI) running Ubuntu 16.04 with pre-installed drivers. The AMI contains the following software:
 * MATLAB, Simulink, Toolboxes, and support for GPUs.
