@@ -42,7 +42,7 @@ Select a release to continue:
 
 Deploying this reference architecture sets up a single AWS EC2 instance containing a virtual machine and MATLAB, a private VPC with an internet gateway, a private subnet and a security group that opens the appropriate ports for SSH and RDP access.
 
-To make deployment easy, we have prepared an Amazon Machine Image (AMI) running Ubuntu 16.04 with pre-installed drivers. The AMI contains the following software:
+To make deployment easy, we have prepared an Amazon Machine Image (AMI) running Ubuntu with pre-installed drivers. The AMI contains the following software:
 * MATLAB, Simulink, Toolboxes, and support for GPUs.
 * Add-Ons: Deep Learning Toolbox(TM) Model for AlexNet Network, Deep Learning Toolbox Model for GoogLeNet Network, and Deep Learning Toolbox Model for ResNet-50 Network
 
