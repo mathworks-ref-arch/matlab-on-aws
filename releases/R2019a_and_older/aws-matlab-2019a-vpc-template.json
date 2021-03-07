@@ -21,6 +21,14 @@
               "default": "Remote Access"
             },
             "Parameters": ["ClientIPAddress", "SSHKeyName", "Username", "Password", "ConfirmPassword"]
+          },
+          {
+            "Label": {
+              "default": "Un-attended Security Updates"
+            },
+            "Parameters": [
+              "SuppressSecurityUpdates"
+            ]
           }
         ],
         "ParameterLabels": {
@@ -41,6 +49,9 @@
           },
           "ConfirmPassword": {
             "default": "Confirm Password"
+          },
+          "SuppressSecurityUpdates": {
+            "default": "Suppress critical security updates"
           }
         }
       }
@@ -89,6 +100,13 @@
         "Type": "String",
         "ConstraintDescription": "",
         "Default": ""
+      },
+      "SuppressSecurityUpdates": {
+        "Description": "By default, the un-attended critical security upgrades are enabled, a user can explicitly suppress the security upgrades at their own risk.",
+        "Type": "String",
+        "Default": "No",
+        "AllowedPattern": "(?:Yes|No)",
+        "ConstraintDescription": "If specified, must be either No or Yes"
       }
     },
     "Rules" : {
@@ -227,7 +245,16 @@
                   "\n",
                   "sudo usermod -aG sudo ",
                   { "Ref" : "Username" },
-                  "\n"
+                  "\n",
+                  "if [ 'No' == '",
+                  { "Ref": "SuppressSecurityUpdates" },
+                  "' ]\n",
+                  " then \n",
+                  "#install unattended-upgrades\n",
+                  "sudo apt-get update --fix-missing\n",
+                  "sudo apt-get install unattended-upgrades\n",
+                  "\n",
+                  "fi\n"
                 ]
               ]
             }
@@ -243,5 +270,4 @@
           }
       }
     }
-  }
-  
+}
