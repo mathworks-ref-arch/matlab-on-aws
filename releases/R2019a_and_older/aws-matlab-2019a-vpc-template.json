@@ -105,7 +105,7 @@
         "Description": "By default, the un-attended critical security upgrades are enabled, a user can explicitly suppress the security upgrades at their own risk. Specify either 'No' or 'Yes'",
         "Type": "String",
         "Default": "No",
-        "AllowedPattern": "(?:Yes|No)",
+        "AllowedPattern": "(\bYes\b|\bNo\b)",
         "ConstraintDescription": "Must be either 'No' or 'Yes'"
       }
     },
