@@ -64,7 +64,7 @@ After you click the Launch Stack button above, the “Create stack” page will 
 1. In the login screen that's displayed, use the username `ubuntu` and the password you specified while setting up the stack in [Step 2](#step-2-configure-the-stack).
 
 ## Step 4. Launch MATLAB
-Double-click the MATLAB icon on the virtual machine desktop to launch MATLAB. The first time you start MATLAB you will need to activate it. By default, you will be asked to use your MathWorks Account to activate MATLAB. For other ways to activate MATLAB, see [Configure MATLAB Licensing on the Cloud](http://www.mathworks.com/support/cloud/configure-matlab-licensing-on-the-cloud.html).
+Double-click the MATLAB icon on the virtual machine desktop to launch MATLAB. The first time you start MATLAB you will need to activate it. By default, you will be asked to use your MathWorks Account to activate MATLAB. For other ways to activate MATLAB, see [MATLAB Licensing in the Cloud](https://www.mathworks.com/help/licensingoncloud/matlab-on-the-cloud.html).
 
 >**Note**: It may take a few minutes for activation to complete and MATLAB to start. You will experience this delay only the first time you start MATLAB.
 
