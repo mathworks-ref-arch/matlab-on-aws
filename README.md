@@ -3,7 +3,7 @@
 ## Requirements
 Before starting, you will need the following:
 -   A MATLAB® license that is current on Software
-    Maintenance Service (SMS). For more information, see [MATLAB Licensing in the Cloud](https://www.mathworks.com/help/licensingoncloud/matlab-on-the-cloud.html).
+    Maintenance Service (SMS). For more information, see [MATLAB Licensing in the Cloud](https://mathworks.com/help/install/license/licensing-for-mathworks-products-running-on-the-cloud.html).
 -   An Amazon Web Services™ (AWS) account.
 -   An SSH Key Pair for your AWS account in the appropriate region. For more information, see [Amazon EC2 Key Pairs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
 
@@ -30,6 +30,7 @@ Select a release to continue:
 
 | Linux | Windows |
 | ------- | ------- |
+| [R2021b](releases/R2021b/README.md) | |
 | [R2021a](releases/R2021a/README.md) |[R2021a](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2021a) |
 | [R2020b](releases/R2020b/README.md) |[R2020b](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2020b) |
 | [R2020a](releases/R2020a/README.md) |
@@ -87,7 +88,7 @@ You can now deploy the AMI in your target region using the AMI that you copied.
 You can customize a VM image by launching the reference architecture, applying any changes you want to the EC2 Instance (such as installing additional software, drivers, and files), and then saving an image of that instance using the AWS Console. For more information, see [How Do I save a VM image?](#how-do-i-save-a-vm-image). When you create a stack, replace the AMI ID in the CloudFormation template with the AMI ID of your customized image.
 
 ### How do I use a different license manager?
-The VM image uses MathWorks Hosted License Manager by default. For information on how to use other license managers, see [MATLAB Licensing in the Cloud](https://www.mathworks.com/help/licensingoncloud/matlab-on-the-cloud.html).
+The VM image uses MathWorks Hosted License Manager by default. For information on how to use other license managers, see [MATLAB Licensing in the Cloud](https://mathworks.com/help/install/license/licensing-for-mathworks-products-running-on-the-cloud.html).
 
 # Technical Support
 If you require assistance or have a request for additional features or capabilities, please contact [MathWorks Technical Support](https://www.mathworks.com/support/contact_us.html).
