@@ -30,7 +30,7 @@ Select a release to continue:
 
 | Linux | Windows |
 | ------- | ------- |
-| [R2021b](releases/R2021b/README.md) | |
+| [R2021b](releases/R2021b/README.md) |[R2021b](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2021b) |
 | [R2021a](releases/R2021a/README.md) |[R2021a](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2021a) |
 | [R2020b](releases/R2020b/README.md) |[R2020b](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2020b) |
 | [R2020a](releases/R2020a/README.md) |
