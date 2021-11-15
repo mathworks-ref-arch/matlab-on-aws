@@ -42,7 +42,7 @@ Select a release to continue:
 
 ![MATLAB on AWS Reference Architecture](img/aws-matlab-diagram.png)
 
-Deploying this reference architecture sets up a single AWS EC2 instance containing Linux and MATLAB, a private VPC with an internet gateway, a private subnet and a security group that opens the appropriate ports for SSH and RDP access.
+Deploying this reference architecture sets up a single AWS EC2 instance containing MATLAB and a security group that opens the appropriate ports for SSH and RDP access.
 
 To make deployment easy, we have prepared an Amazon Machine Image (AMI) running Ubuntu with pre-installed drivers. The AMI contains the following software:
 * MATLAB, Simulink, Toolboxes, and support for GPUs.
@@ -53,7 +53,7 @@ To make deployment easy, we have prepared an Amazon Machine Image (AMI) running 
 The following resources will be created as part of the CloudFormation Stack:
 
 1. Security Group for SSH and RDP access
-1. EC2 Instance
+2. EC2 Instance
 
 ## FAQ
 
@@ -66,7 +66,7 @@ All your files and changes are stored locally on the virtual machine.  They will
 You may want to shut down the instance when you aren’t using it to save some money (you only pay for the storage used by the virtual machine when it is stopped).  To shut down an EC2 instance, locate it in the AWS web console, select the instance and choose “Instance State/Stop” from the “Actions” menu.  You can restart it from the same menu.  Any files or changes made to the virtual machine will persist when shutting down and will be there when you restart.  A side-effect of shutting down the virtual machine and restarting is that the public IP address and DNS name may change.  Inspecting the EC2 instance in the AWS console will reveal the new IP address and DNS name.
 
 ### How do I keep the same public IP address?
-To avoid having to change the IP address between restarts, you can establish a static IP using AWS Elastic IP Address. For more information, see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html.
+To avoid having to change the IP address between restarts, you can enable the *Keep public IP address the same* during deployment.
 
 ### How do I save a VM image?
 To save a VM image, locate the EC2 Instance in the AWS web console and select **Actions** > **Image** > **Create Image.**

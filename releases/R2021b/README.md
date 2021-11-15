@@ -40,16 +40,19 @@ After you click the Launch Stack button above, the “Create stack” page will 
 | --------------- | ----------- |
 | **AWS EC2 Instance type** | The AWS instance type to use for MATLAB. See https://aws.amazon.com/ec2/instance-types for a list of instance types. |
 | **Instance Name** | Give your MATLAB virtual machine a name |
+| **Remote access protocol** | Specify the access protocol to access this instance |
+| **Keep public ip the same** | Choose whether you want to keep the same public IP address for the instance |
 | **Storage Size (GiB)** | Specify the size in GB of the root volume |
 | **IAM Role (Optional)** | Specify an IAM Role to associate with this instance. |
 | **VPC to deploy this stack to** | ID of an existing VPC in which to deploy this stack |
 | **Subnet** | List of existing subnets IDs |
 | **SSH Key Pair** | The name of an existing EC2 KeyPair to allow SSH access to all the instances. See https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for details on creating these. |
-| **Allow RDP connections from** | The IP address range that will be allowed to connect to this instance from outside of the VPC. This field should be formatted as \<ip_address>/\<mask>. E.g. 10.0.0.1/32. This is the public IP address which can be found by searching for 'what is my ip address' on the web. The mask determines the number of IP addresses to include. A mask of 32 is a single IP address. This calculator can be used to build a specific range: https://www.ipaddressguide.com/cidr. You may need to contact your IT administrator to determine which address is appropriate. |
+| **Allow connections from** | The IP address range that will be allowed to connect to this instance from outside of the VPC. This field should be formatted as \<ip_address>/\<mask>. E.g. 10.0.0.1/32. This is the public IP address which can be found by searching for 'what is my ip address' on the web. The mask determines the number of IP addresses to include. A mask of 32 is a single IP address. This calculator can be used to build a specific range: https://www.ipaddressguide.com/cidr. You may need to contact your IT administrator to determine which address is appropriate. |
 | **Remote password** | Enter a password for the "ubuntu" user |
 | **Confirm remote password** | Confirm Password |
 | **License Manager for MATLAB connection string** | Optional License Manager for MATLAB string in the form \<port>@\<hostname>. If not specified, online licensing is used. If specified, the license manager must be accessible from the specified VPC and subnets |
 | **Configure cloudwatch logging for the MATLAB instance** | Choose whether you want to enable cloudwatch logging for the MATLAB instance |
+| **AutoShutdown** | Choose whether you want to enable autoshutdown for your instance after a certain number of hours |
 | **Additional security group to place instances in** | The ID of an additional (optional) Security Group for the instances to be placed in. Often the License Manager for MATLAB's Security Group. |
 
 
@@ -59,9 +62,15 @@ After you click the Launch Stack button above, the “Create stack” page will 
 
 ## Step 3. Connect to the Virtual Machine in the Cloud
 
+If you chose RDP, then:
 1. Expand the **Outputs** section in the the *Stack Detail* page.
 1. Look for the key named `RDPConnection` and copy the corresponding public DNS name listed under value. *For example*: ec2-11-222-33-44.compute-1.amazonaws.com
 1. Launch any remote desktop client, paste the public DNS name in the appropriate field, and connect. On the Windows Remote Desktop Client you need to paste the public DNS name in the **Computer** field and click **Connect**.
+1. In the login screen that's displayed, use the username `ubuntu` and the password you specified while setting up the stack in [Step 2](#step-2-configure-the-stack).
+
+If you chose NICE DCV, then:
+1. Expand the **Outputs** section in the the *Stack Detail* page.
+1. Look for the key named `NiceDCVConnection` and click on it
 1. In the login screen that's displayed, use the username `ubuntu` and the password you specified while setting up the stack in [Step 2](#step-2-configure-the-stack).
 
 ## Step 4. Launch MATLAB
@@ -83,7 +92,7 @@ Once you have finished using your stack, it is recommended that you delete all r
 
 The following resources will be created as part of the CloudFormation Stack.
 
-1. Security Group for SSH and RDP access
+1. Security Group for SSH, RDP and NICE DCV access
 1. EC2 Instance
 
 ### CloudWatch Logs
