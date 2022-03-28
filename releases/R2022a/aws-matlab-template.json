@@ -1,0 +1,1220 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Mappings": {
+    "RegionMap": {
+      "us-east-1": {
+        "AMI": "ami-098f57ca9a68c5ca7"
+      },
+      "us-east-2": {
+        "AMI": "ami-06b1ce728b9e241db"
+      },
+      "us-west-1": {
+        "AMI": "ami-04002316b38ab0feb"
+      },
+      "us-west-2": {
+        "AMI": "ami-051706561aa103137"
+      },
+      "ca-central-1": {
+        "AMI": "ami-02b56f76178b708fa"
+      },
+      "eu-central-1": {
+        "AMI": "ami-024b62b6f5d66bc21"
+      },
+      "eu-west-1": {
+        "AMI": "ami-01466827f5c375c33"
+      },
+      "eu-west-2": {
+        "AMI": "ami-04c18f1b21499682a"
+      },
+      "eu-west-3": {
+        "AMI": "ami-0cc4bce3af3d6af1b"
+      },
+      "eu-north-1": {
+        "AMI": "ami-0bc23e7dacefda20c"
+      },
+      "sa-east-1": {
+        "AMI": "ami-063d7e452d8b0036d"
+      },
+      "me-south-1": {
+        "AMI": "ami-0270216933cf432e0"
+      },
+      "ap-east-1": {
+        "AMI": "ami-0edbe849b3cf7129b"
+      },
+      "ap-south-1": {
+        "AMI": "ami-0de3d883ce94aa9a4"
+      },
+      "ap-northeast-1": {
+        "AMI": "ami-019e7698f20f0e1b5"
+      },
+      "ap-northeast-2": {
+        "AMI": "ami-0e3e743f88feba9fb"
+      },
+      "ap-southeast-1": {
+        "AMI": "ami-0d2aab3a9dd9a6edc"
+      },
+      "ap-southeast-2": {
+        "AMI": "ami-00a00e7753dc676da"
+      }
+    }
+  },
+  "Resources": {
+    "PredefinedRole": {
+      "Type": "AWS::IAM::Role",
+      "Condition": "UsePredefinedRole",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ec2.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": "cloudwatch-access-policy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogStream",
+                    "logs:DescribeLogStreams",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": {
+                    "Fn::Join": [
+                      ":",
+                      [
+                        "arn:aws:logs",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "log-group",
+                        {
+                          "Fn::Join": [
+                            "-",
+                            [
+                              {
+                                "Ref": "AWS::StackName"
+                              },
+                              {
+                                "Fn::Select": [
+                                  "2",
+                                  {
+                                    "Fn::Split": [
+                                      "/",
+                                      {
+                                        "Ref": "AWS::StackId"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          ]
+                        },
+                        "*"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "dcv-access-policy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "s3:GetObject"
+                  ],
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:aws:s3:::dcv-license.",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "/*"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "ssm-access-policy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ssm:DescribeAssociation",
+                    "ssm:GetDeployablePatchSnapshotForInstance",
+                    "ssm:GetDocument",
+                    "ssm:DescribeDocument",
+                    "ssm:GetManifest",
+                    "ssm:GetParameter",
+                    "ssm:GetParameters",
+                    "ssm:ListAssociations",
+                    "ssm:ListInstanceAssociations",
+                    "ssm:PutInventory",
+                    "ssm:PutComplianceItems",
+                    "ssm:PutConfigurePackageResult",
+                    "ssm:UpdateAssociationStatus",
+                    "ssm:UpdateInstanceAssociationStatus",
+                    "ssm:UpdateInstanceInformation"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ssmmessages:CreateControlChannel",
+                    "ssmmessages:CreateDataChannel",
+                    "ssmmessages:OpenControlChannel",
+                    "ssmmessages:OpenDataChannel"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ec2messages:AcknowledgeMessage",
+                    "ec2messages:DeleteMessage",
+                    "ec2messages:FailMessage",
+                    "ec2messages:GetEndpoint",
+                    "ec2messages:GetMessages",
+                    "ec2messages:SendReply"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "describe-tags-policy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "ec2:DescribeTags",
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "MATLABInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Condition": "UsePredefinedRole",
+      "Properties": {
+        "Path": "/",
+        "Roles": [
+          {
+            "Ref": "PredefinedRole"
+          }
+        ]
+      }
+    },
+    "MATLABInstanceProfileCustom": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Condition": "UseCustomIamRole",
+      "Properties": {
+        "Path": "/",
+        "Roles": [
+          {
+            "Ref": "CustomIamRole"
+          }
+        ]
+      }
+    },
+    "MATLABSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "GroupDescription": "Enable SSH and RDP Access",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": {
+              "Ref": "ClientIPAddress"
+            }
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "3389",
+            "ToPort": "3389",
+            "CidrIp": {
+              "Ref": "ClientIPAddress"
+            }
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "8443",
+            "ToPort": "8443",
+            "CidrIp": {
+              "Ref": "ClientIPAddress"
+            }
+          }
+        ]
+      }
+    },
+    "MATLABEC2Instance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": {
+          "Fn::FindInMap": [
+            "RegionMap",
+            {
+              "Ref": "AWS::Region"
+            },
+            "AMI"
+          ]
+        },
+        "KeyName": {
+          "Ref": "SSHKeyName"
+        },
+        "SecurityGroupIds": [
+          {
+            "Ref": "MATLABSecurityGroup"
+          },
+          {
+            "Fn::If": [
+              "AddSG",
+              {
+                "Ref": "AdditionalSecurityGroup"
+              },
+              {
+                "Ref": "AWS::NoValue"
+              }
+            ]
+          }
+        ],
+        "SubnetId": {
+          "Ref": "Subnet"
+        },
+        "IamInstanceProfile": {
+          "Fn::If": [
+            "UsePredefinedRole",
+            {
+              "Ref": "MATLABInstanceProfile"
+            },
+            {
+              "Fn::If": [
+                "UseCustomIamRole",
+                {
+                  "Ref": "MATLABInstanceProfileCustom"
+                },
+                {
+                  "Ref": "AWS::NoValue"
+                }
+              ]
+            }
+          ]
+        },
+        "InstanceType": {
+          "Ref": "InstanceType"
+        },
+        "EbsOptimized": "true",
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "VolumeSize": {
+                "Ref": "RootVolumeSize"
+              }
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Ref": "InstanceName"
+            }
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#!/bin/bash\n",
+                "# Copyright 2011-2020 The MathWorks, Inc.\n",
+                "cd /usr/local/matlab\n",
+                "sudo echo $PATH:/usr/local/matlab/bin | sudo tee /etc/environment > /dev/null\n",
+                "nohup /usr/local/matlab/bin/glnxa64/MATLABStartupAccelerator &>/dev/null &\n",
+                "echo \"",
+                {
+                  "Fn::Join": [
+                    ":",
+                    [
+                      "ubuntu",
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "$(echo \"",
+                            {
+                              "Fn::Base64": {
+                                "Ref": "Password"
+                              }
+                            },
+                            "\" | base64 -d)"
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                },
+                "\" | sudo chpasswd",
+                "\n",
+                "if [ -n '",
+                {
+                  "Ref": "LicenseManager"
+                },
+                "' ]\n",
+                " then \n",
+                "#disable online licensing and enable a license server\n",
+                "sudo rm /usr/local/matlab/licenses/license_info.xml\n",
+                "echo 'export MLM_LICENSE_FILE=",
+                {
+                  "Ref": "LicenseManager"
+                },
+                "' | sudo tee -a /etc/profile.d/mlmlicensefile.sh\n",
+                "\n",
+                "fi\n",
+                {
+                  "Fn::Sub": "export ENABLE_CLOUDWATCH_LOGGING=\"${EnableCloudWatch}\""
+                },
+                "\n",
+                {
+                  "Fn::Join": [
+                    "=",
+                    [
+                      "export LOG_GROUP_NAME",
+                      {
+                        "Fn::Join": [
+                          "-",
+                          [
+                            {
+                              "Ref": "AWS::StackName"
+                            },
+                            {
+                              "Fn::Select": [
+                                "2",
+                                {
+                                  "Fn::Split": [
+                                    "/",
+                                    {
+                                      "Ref": "AWS::StackId"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                },
+                "\n",
+                "/usr/local/bin/start-logging.sh\n",
+                {
+                  "Fn::Sub": "export ACCESS_PROTOCOL=\"${AccessProtocol}\"\n"
+                },
+                "/usr/local/bin/start-desktop.sh\n",
+                "/usr/local/bin/aws-cfn-bootstrap-*/bin/cfn-signal -e $? ",
+                "         --stack ",
+                {
+                  "Ref": "AWS::StackName"
+                },
+                "         --resource MATLABEC2Instance ",
+                "         --region ",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "\n"
+              ]
+            ]
+          }
+        }
+      },
+      "CreationPolicy": {
+        "ResourceSignal": {
+          "Timeout": "PT15M"
+        }
+      }
+    },
+    "MATLABLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Condition": "UseCloudWatch",
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "-",
+            [
+              {
+                "Ref": "AWS::StackName"
+              },
+              {
+                "Fn::Select": [
+                  "2",
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Ref": "AWS::StackId"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "ElasticIP": {
+      "Type": "AWS::EC2::EIP",
+      "Condition": "UseElasticIPAddress",
+      "Properties": {
+        "InstanceId": {
+          "Ref": "MATLABEC2Instance"
+        },
+        "Domain": "vpc"
+      }
+    },
+    "document": {
+      "Type": "AWS::SSM::Document",
+      "Condition": "UsePredefinedRole",
+      "Properties": {
+        "Content": {
+          "schemaVersion": "2.2",
+          "description": "Run a script on Linux instances.",
+          "parameters": {
+            "commands": {
+              "type": "String",
+              "description": "Run script to switch between xrdp and nice dcv.",
+              "default": "/usr/local/bin/swap-desktop-solution.sh"
+            }
+          },
+          "mainSteps": [
+            {
+              "action": "aws:runShellScript",
+              "name": "runCommands",
+              "inputs": {
+                "timeoutSeconds": "60",
+                "runCommand": [
+                  "{{ commands }}"
+                ]
+              }
+            }
+          ]
+        },
+        "DocumentType": "Command",
+        "Name": {
+          "Fn::Select": [
+            "2",
+            {
+              "Fn::Split": [
+                "/",
+                {
+                  "Ref": "AWS::StackId"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "AutoShutdownLambda": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": {
+            "Fn::Sub": [
+              "import json\nfrom logging import shutdown\nimport boto3\nfrom datetime import datetime, timedelta\nimport re\n\nec2 = boto3.client(\"ec2\")\nDEFAULT_TIME_INTERVAL=\"${DEFAULT_TIME_INTERVAL}\"\nINSTANCE_ID=\"${INSTANCE_ID}\"\n\nLOG_MESSAGES={\n    \"instance-is-stopped\": \"Instance is stopped.\",\n    \"tag-is-never\": \"Autoshutdown is not enabled. Change the value of mw-autoshutdown tag of the EC2 instance to enable the autoshutdown feature.\",\n    \"tag-is-invalid\": \"The value of the mw-autoshutdown tag you have set is not valid. The format of the timestamp must be a valid RFC 1123 UTC timestamp, such as Thu, 16 Dec 2021 12:28:47 GMT.\",\n    \"instance-just-booted\": \"Instance has just started. Setting mw-autoshutdown value.\",\n    \"ready-to-shutdown\": \"Shutdown time has been reached. Shutting instance down.\",\n    \"too-early-to-shutdown\": \"Shutdown time has not been reached yet. Too early to shutdown instance.\"\n   }\n\ndef log_to_cloudwatch(message_id):\n    print(LOG_MESSAGES[message_id])\n\ndef get_start_time():\n    # Get boot time. This is always UTC\n    response = ec2.describe_instances(InstanceIds=[INSTANCE_ID])\n    launch_time = response[\"Reservations\"][0][\"Instances\"][0][\"LaunchTime\"]\n    return re.sub(r\"\\+00:00\",\"\",str(launch_time))\n\ndef get_shutdown_tag():\n    instance_tags = ec2.describe_tags(Filters=[{\"Name\": \"resource-id\", \"Values\": [INSTANCE_ID]}])\n    shutdown_tag = next((tag for tag in instance_tags[\"Tags\"] if tag[\"Key\"] == \"mw-autoshutdown\"), None)\n    return shutdown_tag\n\ndef set_shutdown_tag(shutdown_time):\n    ec2.create_tags(Resources=[INSTANCE_ID], Tags=[{\"Key\": \"mw-autoshutdown\",\"Value\": str(shutdown_time)}])\n\ndef set_last_autoshutdown_event_tag(shutdown_time):\n    ec2.create_tags(Resources=[INSTANCE_ID], Tags=[{\"Key\": \"mw-last-autoshutdown-event\",\"Value\": str(shutdown_time)}])\n\ndef clear_shutdown_tag():\n    ec2.delete_tags(Resources=[INSTANCE_ID], Tags=[{\"Key\": \"mw-autoshutdown\"}])\n\ndef set_shutdown_time():\n    time_interval_before_shutdown = int(re.findall(\"[0-9]+\", DEFAULT_TIME_INTERVAL)[0])\n    launch_time = datetime.fromisoformat(get_start_time())\n    shutdown_time = launch_time + timedelta(hours=int(time_interval_before_shutdown))\n    shutdown_time_formatted = datetime.strftime(shutdown_time,'%a, %d %b %Y %H:%M:%S GMT')\n    set_shutdown_tag(shutdown_time_formatted)\n\ndef is_instance_stopped():\n    response = ec2.describe_instances(InstanceIds=[INSTANCE_ID])\n    status = response[\"Reservations\"][0][\"Instances\"][0][\"State\"][\"Name\"]\n    if status == \"stopped\":\n        return True\n    return False\n\ndef lambda_handler(event, context):\n\n    # Don\"t do anything while the instance is stopped.\n    if is_instance_stopped():\n        log_to_cloudwatch(message_id=\"instance-is-stopped\")\n        return {\"statusCode\": 200}\n\n    shutdown_tag = get_shutdown_tag()\n\n    # When the lambda function first runs, the tag doesn't exist yet.\n    # Use the specified option to determine what to do.\n    if shutdown_tag is None:\n        if DEFAULT_TIME_INTERVAL == \"Never\":\n            # Set the tag to \"never\".\n            set_shutdown_tag(\"never\")\n            # Don't do anything when tag is \"never\"\n            log_to_cloudwatch(message_id=\"tag-is-never\")\n            return {\"statusCode\": 200}\n        else:\n            # Set the tag to start time + user chosen time interval.\n            set_shutdown_time()\n            log_to_cloudwatch(message_id=\"instance-just-booted\")\n            return {\"statusCode\": 200}\n\n    # If the tag exists, then use it to determine what to do.\n    if shutdown_tag[\"Value\"] == \"change_me_on_boot\":\n        set_shutdown_time()\n        log_to_cloudwatch(message_id=\"instance-just-booted\")\n        return {\"statusCode\": 200}\n    elif shutdown_tag[\"Value\"] == \"never\":\n        # Don't do anything when tag is \"never\"\n        log_to_cloudwatch(message_id=\"tag-is-never\")\n        return {\"statusCode\": 200}\n    else:\n        # Check the tag value to determine whether instance needs to be shutdown.\n        try:\n            shutdown_time = datetime.strptime(shutdown_tag[\"Value\"],'%a, %d %b %Y %H:%M:%S GMT')\n        except ValueError:\n            log_to_cloudwatch(message_id=\"tag-is-invalid\")\n            return {\"statusCode\": 200}\n        timezone = shutdown_time.tzinfo\n        current_time = datetime.now(timezone)\n\n        if current_time > shutdown_time:\n            ec2.stop_instances(InstanceIds=[INSTANCE_ID])\n\n            # Explicitly set the shutdown time as mw-last-autoshutdown-event tag\n            current_time_formatted = datetime.strftime(current_time, '%a, %d %b %Y %H:%M:%S GMT')\n            set_last_autoshutdown_event_tag(current_time_formatted)\n\n            log_to_cloudwatch(message_id=\"ready-to-shutdown\")\n\n            # If the DEFAULT_TIME_INTERVAL is never, set the tag to never. Otherwise, give the tag an empty value.\n            if DEFAULT_TIME_INTERVAL == \"Never\":\n                set_shutdown_tag(\"never\")\n            else:\n                set_shutdown_tag(\"change_me_on_boot\")\n            return {\"statusCode\": 200}\n        else:\n            log_to_cloudwatch(message_id=\"too-early-to-shutdown\")\n            return {\"statusCode\": 200}",
+              {
+                "INSTANCE_ID": {
+                  "Ref": "MATLABEC2Instance"
+                },
+                "DEFAULT_TIME_INTERVAL": {
+                  "Ref": "AutoShutdown"
+                }
+              }
+            ]
+          }
+        },
+        "Handler": "index.lambda_handler",
+        "Runtime": "python3.8",
+        "Timeout": "60",
+        "Role": {
+          "Fn::GetAtt": [
+            "AutoShutdownLambdaRole",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "AutoShutdownLambdaRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": "autoshutdown-policy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "ec2:DescribeInstances",
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "ec2:DescribeTags",
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "ec2:Stopinstances",
+                  "Resource": {
+                    "Fn::Sub": [
+                      "arn:aws:ec2:${region}:${accountId}:instance/${instanceId}",
+                      {
+                        "region": {
+                          "Ref": "AWS::Region"
+                        },
+                        "accountId": {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "instanceId": {
+                          "Ref": "MATLABEC2Instance"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "ec2:CreateTags",
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": "ec2:DeleteTags",
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                  ],
+                  "Resource": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:aws:logs:",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ":",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":",
+                        "log-group:",
+                        "/aws/lambda/*"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "AutoShutdownScheduledRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": "AutoShutdownScheduledRule",
+        "ScheduleExpression": "rate(15 minutes)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "AutoShutdownLambda",
+                "Arn"
+              ]
+            },
+            "Id": "TargetFunctionV1"
+          }
+        ]
+      }
+    },
+    "PermissionForEventsToInvokeLambda": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "AutoShutdownLambda"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "AutoShutdownScheduledRule",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "AutoShutdownLambdaLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "AutoShutdownLambda"
+              }
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "Parameters": {
+    "InstanceType": {
+      "Description": "The AWS instance type to use for MATLAB. See https://aws.amazon.com/ec2/instance-types for a list of instance types.",
+      "Default": "m5.xlarge",
+      "Type": "String"
+    },
+    "InstanceName": {
+      "Description": "Give your MATLAB virtual machine a name",
+      "Default": "MATLAB Desktop",
+      "Type": "String"
+    },
+    "AccessProtocol": {
+      "Description": "Specify the access protocol to access this instance",
+      "Default": "RDP",
+      "Type": "String",
+      "AllowedValues": [
+        "NICE DCV",
+        "RDP"
+      ]
+    },
+    "UseElasticIpAddress": {
+      "Description": "Choose whether you want to keep the same public IP address for the instance",
+      "Default": "No",
+      "Type": "String",
+      "AllowedValues": [
+        "Yes",
+        "No"
+      ]
+    },
+    "RootVolumeSize": {
+      "Description": "Specify the size in GB of the root volume",
+      "Default": "128",
+      "Type": "Number",
+      "MinValue": "128",
+      "MaxValue": "1024",
+      "ConstraintDescription": "Size must be between 64 and 1024GB"
+    },
+    "CustomIamRole": {
+      "Description": "Specify an IAM Role to associate with this instance.",
+      "Default": "",
+      "Type": "String"
+    },
+    "VPC": {
+      "Description": "ID of an existing VPC in which to deploy this stack",
+      "Type": "AWS::EC2::VPC::Id",
+      "ConstraintDescription": "Must be the ID of an existing VPC.",
+      "AllowedPattern": ".+"
+    },
+    "Subnet": {
+      "Description": "List of existing subnets IDs",
+      "Type": "AWS::EC2::Subnet::Id",
+      "ConstraintDescription": "Must be the ID of an existing Subnet within the chosen VPC.",
+      "AllowedPattern": ".+"
+    },
+    "SSHKeyName": {
+      "Description": "The name of an existing EC2 KeyPair to allow SSH access to all the instances. See https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for details on creating these.",
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "ConstraintDescription": "Must be the name of an existing EC2 KeyPair.",
+      "AllowedPattern": ".+"
+    },
+    "ClientIPAddress": {
+      "Description": "The IP address range that will be allowed to connect to this instance from outside of the VPC. This field should be formatted as <ip_address>/<mask>. E.g. 10.0.0.1/32. This is the public IP address which can be found by searching for 'what is my ip address' on the web. The mask determines the number of IP addresses to include. A mask of 32 is a single IP address. This calculator can be used to build a specific range: https://www.ipaddressguide.com/cidr. You may need to contact your IT administrator to determine which address is appropriate.",
+      "Type": "String",
+      "MinLength": "9",
+      "MaxLength": "18",
+      "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+      "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x."
+    },
+    "Password": {
+      "NoEcho": "true",
+      "Description": "Enter a password for the \"ubuntu\" user",
+      "Type": "String",
+      "ConstraintDescription": "",
+      "Default": ""
+    },
+    "ConfirmPassword": {
+      "NoEcho": "true",
+      "Description": "Confirm Password",
+      "Type": "String",
+      "ConstraintDescription": "",
+      "Default": ""
+    },
+    "LicenseManager": {
+      "Description": "Optional License Manager for MATLAB string in the form <port>@<hostname>. If not specified, online licensing is used. If specified, the license manager must be accessible from the specified VPC and subnets",
+      "Type": "String",
+      "Default": "",
+      "AllowedPattern": "([0-9]+@[a-zA-Z0-9.\\-]+)?",
+      "ConstraintDescription": "If specified, must be in the form <port>@<hostname>"
+    },
+    "EnableCloudWatch": {
+      "Description": "Choose whether you want to enable cloudwatch logging for the MATLAB instance",
+      "Type": "String",
+      "AllowedValues": [
+        "Yes",
+        "No"
+      ],
+      "Default": "No"
+    },
+    "AutoShutdown": {
+      "Description": "Choose whether you want to enable autoshutdown for your instance after a certain number of hours",
+      "Type": "String",
+      "AllowedValues": [
+        "Never",
+        "After 1 hour",
+        "After 2 hours",
+        "After 3 hours",
+        "After 4 hours",
+        "After 5 hours",
+        "After 6 hours",
+        "After 7 hours",
+        "After 8 hours",
+        "After 9 hours",
+        "After 10 hours",
+        "After 11 hours",
+        "After 12 hours",
+        "After 13 hours",
+        "After 14 hours",
+        "After 15 hours",
+        "After 16 hours",
+        "After 17 hours",
+        "After 18 hours",
+        "After 19 hours",
+        "After 20 hours",
+        "After 21 hours",
+        "After 22 hours",
+        "After 23 hours",
+        "After 24 hours"
+      ],
+      "Default": "Never"
+    },
+    "AdditionalSecurityGroup": {
+      "Description": "The ID of an additional (optional) Security Group for the instances to be placed in. Often the License Manager for MATLAB's Security Group.",
+      "Type": "String",
+      "Default": ""
+    }
+  },
+  "Rules": {
+    "matchPasswords": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Equals": [
+              {
+                "Ref": "Password"
+              },
+              {
+                "Ref": "ConfirmPassword"
+              }
+            ]
+          },
+          "AssertDescription": "Passwords do not match"
+        }
+      ]
+    },
+    "SubnetInVPC": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::EachMemberEquals": [
+              {
+                "Fn::ValueOfAll": [
+                  "AWS::EC2::Subnet::Id",
+                  "VpcId"
+                ]
+              },
+              {
+                "Ref": "VPC"
+              }
+            ]
+          },
+          "AssertDescription": "Subnet must exist in the VPC you have selected"
+        }
+      ]
+    },
+    "MultipleRolesMustNotExist": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Or": [
+              {
+                "Fn::Not": [
+                  {
+                    "Fn::Not": [
+                      {
+                        "Fn::Equals": [
+                          {
+                            "Ref": "CustomIamRole"
+                          },
+                          ""
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  "No",
+                  {
+                    "Ref": "EnableCloudWatch"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "You cannot use a custom IAM role when using CloudWatch. The deployment will create an IAM role which you can later modify with additional policies if needed."
+        },
+        {
+          "Assert": {
+            "Fn::Or": [
+              {
+                "Fn::Not": [
+                  {
+                    "Fn::Not": [
+                      {
+                        "Fn::Equals": [
+                          {
+                            "Ref": "CustomIamRole"
+                          },
+                          ""
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "Fn::Equals": [
+                  "RDP",
+                  {
+                    "Ref": "AccessProtocol"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "You cannot use a custom IAM role when using NICE DCV. The deployment will create an IAM role which you can later modify with additional policies if needed."
+        }
+      ]
+    }
+  },
+  "Conditions": {
+    "UsePredefinedRole": {
+      "Fn::Equals": [
+        "",
+        {
+          "Ref": "CustomIamRole"
+        }
+      ]
+    },
+    "UseCustomIamRole": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            "",
+            {
+              "Ref": "CustomIamRole"
+            }
+          ]
+        }
+      ]
+    },
+    "UseCloudWatch": {
+      "Fn::Equals": [
+        "Yes",
+        {
+          "Ref": "EnableCloudWatch"
+        }
+      ]
+    },
+    "UseNICEDCV": {
+      "Fn::Equals": [
+        "NICE DCV",
+        {
+          "Ref": "AccessProtocol"
+        }
+      ]
+    },
+    "UseXRDP": {
+      "Fn::Equals": [
+        "RDP",
+        {
+          "Ref": "AccessProtocol"
+        }
+      ]
+    },
+    "UseElasticIPAddress": {
+      "Fn::Equals": [
+        "Yes",
+        {
+          "Ref": "UseElasticIpAddress"
+        }
+      ]
+    },
+    "AddSG": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AdditionalSecurityGroup"
+            },
+            ""
+          ]
+        }
+      ]
+    }
+  },
+  "Outputs": {
+    "CloudWatchLogs": {
+      "Condition": "UseCloudWatch",
+      "Description": "The cloudwatch logs containing logging information about the MATLAB instance",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://console.aws.amazon.com/cloudwatch/home?region=",
+            {
+              "Ref": "AWS::Region"
+            },
+            "#logsV2:log-groups/log-group/",
+            {
+              "Fn::Join": [
+                "-",
+                [
+                  {
+                    "Ref": "AWS::StackName"
+                  },
+                  {
+                    "Fn::Select": [
+                      "2",
+                      {
+                        "Fn::Split": [
+                          "/",
+                          {
+                            "Ref": "AWS::StackId"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "NiceDCVConnection": {
+      "Condition": "UseNICEDCV",
+      "Description": "Public url of the newly created EC2 instance to connect to the session via NICE DCV",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Fn::GetAtt": [
+                "MATLABEC2Instance",
+                "PublicDnsName"
+              ]
+            },
+            ":8443/#console"
+          ]
+        ]
+      }
+    },
+    "RDPConnection": {
+      "Condition": "UseXRDP",
+      "Description": "Public DNSName of the newly created EC2 instance",
+      "Value": {
+        "Fn::GetAtt": [
+          "MATLABEC2Instance",
+          "PublicDnsName"
+        ]
+      }
+    }
+  },
+  "Metadata": {
+    "AWS::CloudFormation::Interface": {
+      "ParameterGroups": [
+        {
+          "Label": {
+            "default": "EC2 Instance"
+          },
+          "Parameters": [
+            "InstanceName",
+            "InstanceType",
+            "RootVolumeSize",
+            "CustomIamRole"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Remote Access"
+          },
+          "Parameters": [
+            "AccessProtocol",
+            "UseElasticIpAddress",
+            "ClientIPAddress",
+            "SSHKeyName",
+            "Password",
+            "ConfirmPassword"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Network Configuration"
+          },
+          "Parameters": [
+            "VPC",
+            "Subnet",
+            "AdditionalSecurityGroup"
+          ]
+        },
+        {
+          "Label": {
+            "default": "License Configuration"
+          },
+          "Parameters": [
+            "LicenseManager"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Logging Configuration"
+          },
+          "Parameters": [
+            "EnableCloudWatch"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Autoshutdown Configuration"
+          },
+          "Parameters": [
+            "AutoShutdown"
+          ]
+        }
+      ],
+      "ParameterLabels": {
+        "ClientIPAddress": {
+          "default": "Allow connections from"
+        },
+        "UseElasticIpAddress": {
+          "default": "Keep public ip the same"
+        },
+        "InstanceType": {
+          "default": "AWS EC2 Instance type"
+        },
+        "InstanceName": {
+          "default": "Instance Name"
+        },
+        "RootVolumeSize": {
+          "default": "Storage Size (GiB)"
+        },
+        "CustomIamRole": {
+          "default": "IAM Role (Optional)"
+        },
+        "VPC": {
+          "default": "VPC to deploy this stack to"
+        },
+        "Subnet": {
+          "default": "Subnet"
+        },
+        "Password": {
+          "default": "Remote password"
+        },
+        "ConfirmPassword": {
+          "default": "Confirm remote password"
+        },
+        "SSHKeyName": {
+          "default": "SSH Key Pair"
+        },
+        "LicenseManager": {
+          "default": "License Manager for MATLAB connection string"
+        },
+        "AdditionalSecurityGroup": {
+          "default": "Additional security group to place instances in"
+        },
+        "EnableCloudWatch": {
+          "default": "Configure cloudwatch logging for the MATLAB instance"
+        },
+        "AccessProtocol": {
+          "default": "Remote access protocol"
+        }
+      }
+    }
+  }
+}
