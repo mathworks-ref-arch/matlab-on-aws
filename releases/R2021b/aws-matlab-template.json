@@ -3,58 +3,58 @@
   "Mappings": {
     "RegionMap": {
       "us-east-1": {
-        "AMI": "ami-03b4ef2e448f5c14c"
+        "AMI": "ami-00282e5de381d22d0"
       },
       "us-east-2": {
-        "AMI": "ami-05f16b19a11630d63"
+        "AMI": "ami-0cd5d75abf4ee5fa6"
       },
       "us-west-1": {
-        "AMI": "ami-01b6ba331a47dc554"
+        "AMI": "ami-09ecf69bc33b5ec78"
       },
       "us-west-2": {
-        "AMI": "ami-0ee6f065044ab659c"
+        "AMI": "ami-0dd5497b8214e07dd"
       },
       "ca-central-1": {
-        "AMI": "ami-09cebdf07787f1c6a"
+        "AMI": "ami-042091a9569133846"
       },
       "eu-central-1": {
-        "AMI": "ami-068746e184d69f779"
+        "AMI": "ami-02677848a98ad11a3"
       },
       "eu-west-1": {
-        "AMI": "ami-076661998e41e8ca4"
+        "AMI": "ami-0f3c317a361b74291"
       },
       "eu-west-2": {
-        "AMI": "ami-0f4f270c3ea8feb29"
+        "AMI": "ami-0134913008077a451"
       },
       "eu-west-3": {
-        "AMI": "ami-052d5474c81206948"
+        "AMI": "ami-0d609b44f17adb28a"
       },
       "eu-north-1": {
-        "AMI": "ami-0651b0364a83e8a52"
+        "AMI": "ami-0f364a705053e71e7"
       },
       "sa-east-1": {
-        "AMI": "ami-0bb290d7c8d2a6f5b"
+        "AMI": "ami-08e1164afa912c3da"
       },
       "me-south-1": {
-        "AMI": "ami-098f2e16873ef92df"
+        "AMI": "ami-05881efb624d9c3d9"
       },
       "ap-east-1": {
-        "AMI": "ami-03db612e3543a9271"
+        "AMI": "ami-0d9a1e9df98fb356e"
       },
       "ap-south-1": {
-        "AMI": "ami-0772c561f2dd80da4"
+        "AMI": "ami-0d4fa33e7042a4966"
       },
       "ap-northeast-1": {
-        "AMI": "ami-07e073e67efa4ee98"
+        "AMI": "ami-0891fdcc6093d5edd"
       },
       "ap-northeast-2": {
-        "AMI": "ami-08f0ca7febb27cf37"
+        "AMI": "ami-057caf821d081c5df"
       },
       "ap-southeast-1": {
-        "AMI": "ami-0e8f832d42b9ea14e"
+        "AMI": "ami-064b3edd83eef28e4"
       },
       "ap-southeast-2": {
-        "AMI": "ami-030b3c353f73795d1"
+        "AMI": "ami-0ad0002436d0873a1"
       }
     }
   },
@@ -208,6 +208,19 @@
                 }
               ]
             }
+          },
+          {
+            "PolicyName": "describe-tags-policy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "ec2:DescribeTags",
+                  "Resource": "*"
+                }
+              ]
+            }
           }
         ]
       }
@@ -352,9 +365,8 @@
               "",
               [
                 "#!/bin/bash\n",
-                "# Copyright 2011-2020 The MathWorks, Inc.\n",
+                "# Copyright 2011-2022 The MathWorks, Inc.\n",
                 "cd /usr/local/matlab\n",
-                "sudo echo $PATH:/usr/local/matlab/bin | sudo tee /etc/environment > /dev/null\n",
                 "nohup /usr/local/matlab/bin/glnxa64/MATLABStartupAccelerator &>/dev/null &\n",
                 "echo \"",
                 {
