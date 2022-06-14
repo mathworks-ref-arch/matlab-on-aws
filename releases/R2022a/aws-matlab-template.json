@@ -3,58 +3,58 @@
   "Mappings": {
     "RegionMap": {
       "us-east-1": {
-        "AMI": "ami-08db913ee23828a48"
+        "AMI": "ami-071d56eb4e8630d21"
       },
       "us-east-2": {
-        "AMI": "ami-060dd245b5156196a"
+        "AMI": "ami-0e011d2231a21ee2a"
       },
       "us-west-1": {
-        "AMI": "ami-038721c52283c6577"
+        "AMI": "ami-0ece3ae02bb035158"
       },
       "us-west-2": {
-        "AMI": "ami-08fec2b1cb4ed9736"
+        "AMI": "ami-0202ed966393d2605"
       },
       "ca-central-1": {
-        "AMI": "ami-05b6238bf467ede09"
+        "AMI": "ami-0daf631cbe886ee52"
       },
       "eu-central-1": {
-        "AMI": "ami-096fd20df45cabd3f"
+        "AMI": "ami-0236b64f7295b2385"
       },
       "eu-west-1": {
-        "AMI": "ami-0f7e3f723dc79b2b9"
+        "AMI": "ami-09263a844932a2804"
       },
       "eu-west-2": {
-        "AMI": "ami-025cbfb6aabdec7d3"
+        "AMI": "ami-0136866271ea4172c"
       },
       "eu-west-3": {
-        "AMI": "ami-01dec248246222906"
+        "AMI": "ami-0777ff8fd714935b0"
       },
       "eu-north-1": {
-        "AMI": "ami-0fcc83c02ebffdd1c"
+        "AMI": "ami-0c10f405bb7fa9b68"
       },
       "sa-east-1": {
-        "AMI": "ami-03ff649ec9d7402a1"
+        "AMI": "ami-0a6803c566f2ae79d"
       },
       "me-south-1": {
-        "AMI": "ami-035e19f68dc3f4541"
+        "AMI": "ami-07d6095495c27e76f"
       },
       "ap-east-1": {
-        "AMI": "ami-064e3cd2833939b5a"
+        "AMI": "ami-0591152ab65d9cfcc"
       },
       "ap-south-1": {
-        "AMI": "ami-0f144494f02e88535"
+        "AMI": "ami-0e57d1c7bd22770be"
       },
       "ap-northeast-1": {
-        "AMI": "ami-0bb426b1ee15625f6"
+        "AMI": "ami-00bd94b01da81e42e"
       },
       "ap-northeast-2": {
-        "AMI": "ami-0872a425ec1815f4c"
+        "AMI": "ami-0ca869ec042810e74"
       },
       "ap-southeast-1": {
-        "AMI": "ami-0571574dbb4c04c20"
+        "AMI": "ami-076fc3b2cab7330e4"
       },
       "ap-southeast-2": {
-        "AMI": "ami-0031ff65b144f9d06"
+        "AMI": "ami-005ec2e91f769d650"
       }
     }
   },
@@ -365,9 +365,8 @@
               "",
               [
                 "#!/bin/bash\n",
-                "# Copyright 2011-2020 The MathWorks, Inc.\n",
+                "# Copyright 2011-2022 The MathWorks, Inc.\n",
                 "cd /usr/local/matlab\n",
-                "sudo echo $PATH:/usr/local/matlab/bin | sudo tee /etc/environment > /dev/null\n",
                 "nohup /usr/local/matlab/bin/glnxa64/MATLABStartupAccelerator &>/dev/null &\n",
                 "echo \"",
                 {
