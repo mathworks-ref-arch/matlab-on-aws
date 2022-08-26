@@ -1,19 +1,17 @@
-# MATLAB on Amazon Web Services (Linux VM)
+# MATLAB on Amazon Web Services
 
 ## Requirements
 Before starting, you will need the following:
--   A MATLAB® license that is current on Software
-    Maintenance Service (SMS). For more information, see [MATLAB Licensing in the Cloud](https://mathworks.com/help/install/license/licensing-for-mathworks-products-running-on-the-cloud.html).
--   An Amazon Web Services™ (AWS) account.
--   An SSH Key Pair for your AWS account in the appropriate region. For more information, see [Amazon EC2 Key Pairs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
+* A MATLAB&reg; license that is current on Software Maintenance Service (SMS). For more information, see [Confirm Licensing for MathWorks Products Running on the Cloud](https://mathworks.com/help/install/license/licensing-for-mathworks-products-running-on-the-cloud.html).
+* An Amazon Web Services&trade; (AWS) account.
+* A Key Pair for your AWS account in the appropriate region. For more information, see [Amazon EC2 Key Pairs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
 
 ## Costs
 You are responsible for the cost of the AWS services used when you create cloud resources using this guide. Resource settings, such as instance type, will affect the cost of deployment. For cost estimates, see the pricing pages for each AWS service you will be using. Prices are subject to change.
 
 ## Introduction
 
-The following guide will help you automate the process of running the MATLAB desktop on Amazon Web Services using a Linux virtual machine and connect to it using the Remote Desktop Protocol (RDP). The automation is accomplished using an AWS CloudFormation template. The template is a JSON file that defines the resources needed to run MATLAB on AWS. For information about the architecture of this solution, see [Architecture and Resources](#architecture-and-resources). For information about templates, see [AWS CloudFormation Templates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-guide.html).
-
+The following guide will help you automate the process of running the MATLAB desktop on Amazon Web Services using a virtual machine and connect to it using the Remote Desktop Protocol (RDP) or SSH. The automation is accomplished using an AWS CloudFormation template. The template is a JSON file that defines the resources needed to run MATLAB on AWS. For information about the architecture of this solution, see [Architecture and Resources](#architecture-and-resources). For information about templates, see [AWS CloudFormation Templates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-guide.html).
 
 ## Prepare your AWS Account
 
@@ -24,28 +22,28 @@ The following guide will help you automate the process of running the MATLAB des
 
 # Deployment Steps
 
-MATLAB Reference Architecture is released with the twice-yearly general release schedule of MATLAB. To view instructions for deploying the MATLAB reference architecture, select a MATLAB release:
+To view instructions for deploying the MATLAB reference architecture, select a MATLAB release:
 
-| Release |
-| ------- |
-| [R2022a](releases/R2022a/README.md) |
-| [R2021b](releases/R2021b/README.md) |
-| [R2021a](releases/R2021a/README.md) |
-| [R2020b](releases/R2020b/README.md) |
-| [R2020a](releases/R2020a/README.md) |
-| [R2019b](releases/R2019b/README.md) |
-| [R2019a\_and\_older](releases/R2019a_and_older/README.md) |
+| Linux | Windows |
+| ----- | ------- |
+| [R2022a](releases/R2022a/README.md) | [R2022a](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2022a/README.md) |
+| [R2021b](releases/R2021b/README.md) | [R2021b](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2021b/README.md) |
+| [R2021a](releases/R2021a/README.md) | [R2021a](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2021a/README.md) |
+| [R2020b](releases/R2020b/README.md) | [R2020b](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2020b/README.md) |
+| [R2020a](releases/R2020a/README.md) |  |
+| [R2019b](releases/R2019b/README.md) |  |
+| [R2019a\_and\_older](releases/R2019a_and_older/README.md) |  |
 
 
 ## Architecture and Resources
 
 ![MATLAB on AWS Reference Architecture](img/aws-matlab-diagram.png)
 
-Deploying this reference architecture sets up a single AWS EC2 instance containing MATLAB and a security group that opens the appropriate ports for SSH and RDP access.
+Deploying this reference architecture sets up a single AWS EC2 instance containing MATLAB, a private VPC with an internet gateway, a private subnet, and a security group that opens the appropriate ports for SSH and RDP access.
 
-To make deployment easy, we have prepared an Amazon Machine Image (AMI) running Ubuntu with pre-installed drivers. The AMI contains the following software:
+To make deployment easy, we have prepared an Amazon Machine Image (AMI) with pre-installed drivers. The AMI contains the following software:
 * MATLAB, Simulink, Toolboxes, and support for GPUs.
-* Add-Ons: Deep Learning Toolbox(TM) Model for AlexNet Network, Deep Learning Toolbox Model for GoogLeNet Network, and Deep Learning Toolbox Model for ResNet-50 Network
+* Add-ons: Several pretrained deep neural networks for classification, feature extraction, and transfer learning with Deep Learning Toolbox&trade;, including GoogLeNet, ResNet-50, and NASNet-Large.
 
 ### Resources
 
@@ -72,7 +70,7 @@ All your files and changes are stored locally on the virtual machine.  They will
 You may want to shut down the instance when you aren’t using it to save some money (you only pay for the storage used by the virtual machine when it is stopped).  To shut down an EC2 instance, locate it in the AWS web console, select the instance and choose “Instance State/Stop” from the “Actions” menu.  You can restart it from the same menu.  Any files or changes made to the virtual machine will persist when shutting down and will be there when you restart.  A side-effect of shutting down the virtual machine and restarting is that the public IP address and DNS name may change.  Inspecting the EC2 instance in the AWS console will reveal the new IP address and DNS name.
 
 ### How do I keep the same public IP address?
-To avoid having to change the IP address between restarts, you can enable the *Keep public IP address the same* during deployment.
+To avoid having to change the IP address between restarts, you can enable the *Keep public IP address the same* during deployment. For more information, see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html.
 
 ### How do I save a VM image?
 To save a VM image, locate the EC2 Instance in the AWS web console and select **Actions** > **Image** > **Create Image.**
@@ -92,7 +90,7 @@ You can now deploy the AMI in your target region using the AMI that you copied.
 You can customize a VM image by launching the reference architecture, applying any changes you want to the EC2 Instance (such as installing additional software, drivers, and files), and then saving an image of that instance using the AWS Console. For more information, see [How Do I save a VM image?](#how-do-i-save-a-vm-image). When you create a stack, replace the AMI ID in the CloudFormation template with the AMI ID of your customized image.
 
 ### How do I use a different license manager?
-The VM image uses MathWorks Hosted License Manager by default. For information on how to use other license managers, see [MATLAB Licensing in the Cloud](https://mathworks.com/help/install/license/licensing-for-mathworks-products-running-on-the-cloud.html).
+The VM image uses MathWorks Hosted License Manager by default. For information on how to use other license managers, see [MATLAB Licensing in the Cloud](https://www.mathworks.com/help/licensingoncloud/matlab-on-the-cloud.html).
 
 # Technical Support
 If you require assistance or have a request for additional features or capabilities, please contact [MathWorks Technical Support](https://www.mathworks.com/support/contact_us.html).

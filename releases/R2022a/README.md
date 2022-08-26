@@ -31,8 +31,7 @@ Click the **Launch Stack** button to deploy a standalone MATLAB desktop client o
 ## Step 2. Configure the Cloud Resources
 After you click the Launch Stack button above, the “Create stack” page will open in your browser where you can configure the parameters. It is easier to complete the steps if you position these instructions and the AWS console window side by side.
 
-1. Specify a stack name. This will be shown in the AWS CloudFormation console and must be unique within the AWS account.
-
+1. Specify a stack name. The stack name can contain only alphanumeric characters and hyphens. It must start with an alphabet and should not be longer than 128 characters. The stack name must be unique within the AWS account.
 
 2. Specify and check the defaults for these resource parameters:
 
