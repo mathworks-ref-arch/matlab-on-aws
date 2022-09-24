@@ -366,6 +366,7 @@
               [
                 "#!/bin/bash\n",
                 "# Copyright 2011-2022 The MathWorks, Inc.\n",
+                "sudo sed -i 's/^Prompt=.*/Prompt=never/' /etc/update-manager/release-upgrades\n",
                 "cd /usr/local/matlab\n",
                 "nohup /usr/local/matlab/bin/glnxa64/MATLABStartupAccelerator &>/dev/null &\n",
                 "echo \"",
