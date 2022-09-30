@@ -2,6 +2,12 @@
   "AWSTemplateFormatVersion": "2010-09-09",
   "Mappings": {
     "RegionMap": {
+      "us-gov-east-1": {
+        "AMI": "..OVERRIDE.."
+      },
+      "us-gov-west-1": {
+        "AMI": "..OVERRIDE.."
+      },
       "us-east-1": {
         "AMI": "ami-05cbf6c9967631993"
       },
@@ -93,7 +99,11 @@
                     "Fn::Join": [
                       ":",
                       [
-                        "arn:aws:logs",
+                        "arn",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        "logs",
                         {
                           "Ref": "AWS::Region"
                         },
@@ -146,7 +156,11 @@
                     "Fn::Join": [
                       "",
                       [
-                        "arn:aws:s3:::dcv-license.",
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":s3:::dcv-license.",
                         {
                           "Ref": "AWS::Region"
                         },
@@ -620,8 +634,11 @@
                   "Action": "ec2:Stopinstances",
                   "Resource": {
                     "Fn::Sub": [
-                      "arn:aws:ec2:${region}:${accountId}:instance/*",
+                      "arn:${partition}:ec2:${region}:${accountId}:instance/*",
                       {
+                        "partition": {
+                          "Ref": "AWS::Partition"
+                        },
                         "region": {
                           "Ref": "AWS::Region"
                         },
@@ -668,7 +685,11 @@
                     "Fn::Join": [
                       "",
                       [
-                        "arn:aws:logs:",
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":logs:",
                         {
                           "Ref": "AWS::Region"
                         },
