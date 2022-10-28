@@ -76,6 +76,22 @@
           ]
         },
         "Path": "/",
+        "ManagedPolicyArns": {
+          "Fn::If": [
+            "UseAdditionalPolicies",
+            {
+              "Fn::Split": [
+                ";",
+                {
+                  "Ref": "AdditionalIamPolicies"
+                }
+              ]
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        },
         "Policies": [
           {
             "PolicyName": "cloudwatch-access-policy",
@@ -227,24 +243,19 @@
     },
     "MATLABInstanceProfile": {
       "Type": "AWS::IAM::InstanceProfile",
-      "Condition": "UsePredefinedRole",
       "Properties": {
         "Path": "/",
         "Roles": [
           {
-            "Ref": "PredefinedRole"
-          }
-        ]
-      }
-    },
-    "MATLABInstanceProfileCustom": {
-      "Type": "AWS::IAM::InstanceProfile",
-      "Condition": "UseCustomIamRole",
-      "Properties": {
-        "Path": "/",
-        "Roles": [
-          {
-            "Ref": "CustomIamRole"
+            "Fn::If": [
+              "UsePredefinedRole",
+              {
+                "Ref": "PredefinedRole"
+              },
+              {
+                "Ref": "CustomIamRole"
+              }
+            ]
           }
         ]
       }
@@ -319,23 +330,7 @@
           "Ref": "Subnet"
         },
         "IamInstanceProfile": {
-          "Fn::If": [
-            "UsePredefinedRole",
-            {
-              "Ref": "MATLABInstanceProfile"
-            },
-            {
-              "Fn::If": [
-                "UseCustomIamRole",
-                {
-                  "Ref": "MATLABInstanceProfileCustom"
-                },
-                {
-                  "Ref": "AWS::NoValue"
-                }
-              ]
-            }
-          ]
+          "Ref": "MATLABInstanceProfile"
         },
         "InstanceType": {
           "Ref": "InstanceType"
@@ -741,31 +736,18 @@
     }
   },
   "Parameters": {
-    "InstanceName": {
-      "Description": "Give your MATLAB virtual machine a name",
-      "Default": "MATLAB Desktop",
-      "Type": "String"
-    },
     "InstanceType": {
-      "Description": "The AWS instance type to use for MATLAB. See https://aws.amazon.com/ec2/instance-types for a list of instance types.",
+      "Description": "AWS instance type to use for MATLAB. See https://aws.amazon.com/ec2/instance-types for a list of instance types.",
       "Default": "m5.xlarge",
       "Type": "String"
     },
-    "RootVolumeSize": {
-      "Description": "Specify the size in GB of the root volume",
-      "Default": "128",
-      "Type": "Number",
-      "MinValue": "128",
-      "MaxValue": "1024",
-      "ConstraintDescription": "Size must be between 64 and 1024GB"
-    },
-    "CustomIamRole": {
-      "Description": "Specify an IAM Role to associate with this instance.",
-      "Default": "",
+    "InstanceName": {
+      "Description": "Name for the MATLAB virtual machine",
+      "Default": "MATLAB Desktop",
       "Type": "String"
     },
     "AccessProtocol": {
-      "Description": "Specify the access protocol to access this instance",
+      "Description": "Access protocol to connect to this instance",
       "Default": "RDP",
       "Type": "String",
       "AllowedValues": [
@@ -774,7 +756,7 @@
       ]
     },
     "UseElasticIpAddress": {
-      "Description": "Choose whether you want to keep the same public IP address for the instance",
+      "Description": "Flag indicating whether you want to keep the same public IP address for the instance",
       "Default": "No",
       "Type": "String",
       "AllowedValues": [
@@ -782,23 +764,55 @@
         "No"
       ]
     },
+    "RootVolumeSize": {
+      "Description": "Size in GB of the root volume",
+      "Default": "128",
+      "Type": "Number",
+      "MinValue": "128",
+      "MaxValue": "1024",
+      "ConstraintDescription": "Size must be between 128 and 1024GB"
+    },
+    "CustomIamRole": {
+      "Description": "Name of a custom IAM Role to associate with this instance. If not specified, a predefined role is used. If specified, features requiring special permissions will be unavailable (NICE DCV, CloudWatch, IAM Policies).",
+      "Default": "",
+      "Type": "String"
+    },
+    "AdditionalIamPolicies": {
+      "Description": "Semicolon-delimited list of IAM Policy ARNs to add to the predefined role. This option cannot be used with a custom IAM Role.",
+      "Default": "",
+      "Type": "String",
+      "AllowedPattern": "^(arn:[^:;]+:iam::[^:;]+:policy/[^:;]+(;arn:[^:;]+:iam::[^:;]+:policy/[^:;]+)*)?$",
+      "ConstraintDescription": "If specified, must be a semicolon (;) delimited list of ARNs (arn:<partition>:iam::<account-id>:policy/<resource-id>)."
+    },
+    "VPC": {
+      "Description": "ID of an existing VPC in which to deploy this stack",
+      "Type": "AWS::EC2::VPC::Id",
+      "ConstraintDescription": "Must be the ID of an existing VPC.",
+      "AllowedPattern": ".+"
+    },
+    "Subnet": {
+      "Description": "ID of an existing subnet",
+      "Type": "AWS::EC2::Subnet::Id",
+      "ConstraintDescription": "Must be the ID of an existing Subnet within the chosen VPC.",
+      "AllowedPattern": ".+"
+    },
+    "SSHKeyName": {
+      "Description": "Name of an existing EC2 KeyPair to allow SSH access to all the instances. See https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for details on creating these.",
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "ConstraintDescription": "Must be the name of an existing EC2 KeyPair.",
+      "AllowedPattern": ".+"
+    },
     "ClientIPAddress": {
-      "Description": "The IP address range that will be allowed to connect to this instance from outside of the VPC. This field should be formatted as <ip_address>/<mask>. E.g. 10.0.0.1/32. This is the public IP address which can be found by searching for 'what is my ip address' on the web. The mask determines the number of IP addresses to include. A mask of 32 is a single IP address. This calculator can be used to build a specific range: https://www.ipaddressguide.com/cidr. You may need to contact your IT administrator to determine which address is appropriate.",
+      "Description": "IP address range that will be allowed to connect to this instance from outside of the VPC. This field should be formatted as <ip_address>/<mask>. E.g. 10.0.0.1/32. This is the public IP address which can be found by searching for 'what is my ip address' on the web. The mask determines the number of IP addresses to include. A mask of 32 is a single IP address. This calculator can be used to build a specific range: https://www.ipaddressguide.com/cidr. You may need to contact your IT administrator to determine which address is appropriate.",
       "Type": "String",
       "MinLength": "9",
       "MaxLength": "18",
       "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
       "ConstraintDescription": "Must be a valid IP CIDR range of the form x.x.x.x/x."
     },
-    "SSHKeyName": {
-      "Description": "The name of an existing EC2 KeyPair to allow SSH access to all the instances. See https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for details on creating these.",
-      "Type": "AWS::EC2::KeyPair::KeyName",
-      "ConstraintDescription": "Must be the name of an existing EC2 KeyPair.",
-      "AllowedPattern": ".+"
-    },
     "Password": {
       "NoEcho": "true",
-      "Description": "Enter a password for the \"ubuntu\" user",
+      "Description": "Password for the \"ubuntu\" user",
       "Type": "String",
       "ConstraintDescription": "",
       "Default": ""
@@ -810,23 +824,6 @@
       "ConstraintDescription": "",
       "Default": ""
     },
-    "VPC": {
-      "Description": "ID of an existing VPC in which to deploy this stack",
-      "Type": "AWS::EC2::VPC::Id",
-      "ConstraintDescription": "Must be the ID of an existing VPC.",
-      "AllowedPattern": ".+"
-    },
-    "Subnet": {
-      "Description": "List of existing subnets IDs",
-      "Type": "AWS::EC2::Subnet::Id",
-      "ConstraintDescription": "Must be the ID of an existing Subnet within the chosen VPC.",
-      "AllowedPattern": ".+"
-    },
-    "AdditionalSecurityGroup": {
-      "Description": "The ID of an additional (optional) Security Group for the instances to be placed in. Often the License Manager for MATLAB's Security Group.",
-      "Type": "String",
-      "Default": ""
-    },
     "LicenseManager": {
       "Description": "Optional License Manager for MATLAB string in the form <port>@<hostname>. If not specified, online licensing is used. If specified, the license manager must be accessible from the specified VPC and subnets",
       "Type": "String",
@@ -835,7 +832,7 @@
       "ConstraintDescription": "If specified, must be in the form <port>@<hostname>"
     },
     "EnableCloudWatch": {
-      "Description": "Choose whether you want to enable cloudwatch logging for the MATLAB instance",
+      "Description": "Flag indicating whether cloudwatch logging for the MATLAB instance is enabled.",
       "Type": "String",
       "AllowedValues": [
         "Yes",
@@ -874,6 +871,11 @@
         "After 24 hours"
       ],
       "Default": "Never"
+    },
+    "AdditionalSecurityGroup": {
+      "Description": "ID of an additional (optional) Security Group for the instances to be placed in. Often the License Manager for MATLAB's Security Group.",
+      "Type": "String",
+      "Default": ""
     }
   },
   "Rules": {
@@ -914,69 +916,72 @@
         }
       ]
     },
-    "MultipleRolesMustNotExist": {
+    "NoAdditionalPoliciesOnCustomRole": {
+      "RuleCondition": {
+        "Fn::Not": [
+          {
+            "Fn::Equals": [
+              {
+                "Ref": "CustomIamRole"
+              },
+              ""
+            ]
+          }
+        ]
+      },
       "Assertions": [
         {
           "Assert": {
-            "Fn::Or": [
+            "Fn::Equals": [
               {
-                "Fn::Not": [
-                  {
-                    "Fn::Not": [
-                      {
-                        "Fn::Equals": [
-                          {
-                            "Ref": "CustomIamRole"
-                          },
-                          ""
-                        ]
-                      }
-                    ]
-                  }
-                ]
+                "Ref": "AdditionalIamPolicies"
               },
-              {
-                "Fn::Equals": [
-                  "No",
-                  {
-                    "Ref": "EnableCloudWatch"
-                  }
-                ]
-              }
+              ""
             ]
           },
-          "AssertDescription": "You cannot use a custom IAM role when using CloudWatch. The deployment will create an IAM role which you can later modify with additional policies if needed."
+          "AssertDescription": "You cannot add IAM Policies when using a custom IAM Role."
+        }
+      ]
+    },
+    "MultipleRolesMustNotExist": {
+      "RuleCondition": {
+        "Fn::Not": [
+          {
+            "Fn::Equals": [
+              {
+                "Ref": "CustomIamRole"
+              },
+              ""
+            ]
+          }
+        ]
+      },
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Equals": [
+              {
+                "Ref": "EnableCloudWatch"
+              },
+              "No"
+            ]
+          },
+          "AssertDescription": "You cannot use CloudWatch when using a custom IAM role. The deployment will create an IAM role which you can later modify with additional policies if needed."
         },
         {
           "Assert": {
-            "Fn::Or": [
-              {
-                "Fn::Not": [
-                  {
-                    "Fn::Not": [
-                      {
-                        "Fn::Equals": [
-                          {
-                            "Ref": "CustomIamRole"
-                          },
-                          ""
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              },
+            "Fn::Not": [
               {
                 "Fn::Equals": [
-                  "RDP",
                   {
                     "Ref": "AccessProtocol"
-                  }
+                  },
+                  "NICE DCV"
                 ]
               }
             ]
           },
-          "AssertDescription": "You cannot use a custom IAM role when using NICE DCV. The deployment will create an IAM role which you can later modify with additional policies if needed."
+          "AssertDescription": "You cannot use NICE DCV when using a custom IAM role. The deployment will create an IAM role which you can later modify with additional policies if needed."
         }
       ]
     }
@@ -984,54 +989,66 @@
   "Conditions": {
     "UsePredefinedRole": {
       "Fn::Equals": [
-        "",
         {
           "Ref": "CustomIamRole"
-        }
+        },
+        ""
       ]
     },
     "UseCustomIamRole": {
       "Fn::Not": [
         {
           "Fn::Equals": [
-            "",
             {
               "Ref": "CustomIamRole"
-            }
+            },
+            ""
+          ]
+        }
+      ]
+    },
+    "UseAdditionalPolicies": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AdditionalIamPolicies"
+            },
+            ""
           ]
         }
       ]
     },
     "UseCloudWatch": {
       "Fn::Equals": [
-        "Yes",
         {
           "Ref": "EnableCloudWatch"
-        }
+        },
+        "Yes"
       ]
     },
     "UseNICEDCV": {
       "Fn::Equals": [
-        "NICE DCV",
         {
           "Ref": "AccessProtocol"
-        }
+        },
+        "NICE DCV"
       ]
     },
     "UseXRDP": {
       "Fn::Equals": [
-        "RDP",
         {
           "Ref": "AccessProtocol"
-        }
+        },
+        "RDP"
       ]
     },
     "UseElasticIPAddress": {
       "Fn::Equals": [
-        "Yes",
         {
           "Ref": "UseElasticIpAddress"
-        }
+        },
+        "Yes"
       ]
     },
     "AddSG": {
@@ -1128,7 +1145,8 @@
             "InstanceName",
             "InstanceType",
             "RootVolumeSize",
-            "CustomIamRole"
+            "CustomIamRole",
+            "AdditionalIamPolicies"
           ]
         },
         {
@@ -1196,7 +1214,10 @@
           "default": "Storage Size (GiB)"
         },
         "CustomIamRole": {
-          "default": "IAM Role (Optional)"
+          "default": "Custom IAM Role (Optional)"
+        },
+        "AdditionalIamPolicies": {
+          "default": "Additional IAM Policies (Optional)"
         },
         "VPC": {
           "default": "VPC to deploy this stack to"
