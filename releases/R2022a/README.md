@@ -31,28 +31,30 @@ Click the **Launch Stack** button to deploy a standalone MATLAB desktop client o
 ## Step 2. Configure the Cloud Resources
 After you click the Launch Stack button above, the “Create stack” page will open in your browser where you can configure the parameters. It is easier to complete the steps if you position these instructions and the AWS console window side by side.
 
-1. Specify a stack name. The stack name can contain only alphanumeric characters and hyphens. It must start with an alphabet and should not be longer than 128 characters. The stack name must be unique within the AWS account.
+1. Specify a stack name. This will be shown in the AWS CloudFormation console and must be unique within the AWS account.
+
 
 2. Specify and check the defaults for these resource parameters:
 
 | Parameter label | Description |
 | --------------- | ----------- |
-| **AWS EC2 Instance type** | The AWS instance type to use for MATLAB. See https://aws.amazon.com/ec2/instance-types for a list of instance types. |
-| **Instance Name** | Give your MATLAB virtual machine a name |
-| **Remote access protocol** | Specify the access protocol to access this instance |
-| **Keep public ip the same** | Choose whether you want to keep the same public IP address for the instance |
-| **Storage Size (GiB)** | Specify the size in GB of the root volume |
-| **IAM Role (Optional)** | Specify an IAM Role to associate with this instance. |
+| **AWS EC2 Instance type** | AWS instance type to use for MATLAB. See https://aws.amazon.com/ec2/instance-types for a list of instance types. |
+| **Instance Name** | Name for the MATLAB virtual machine |
+| **Remote access protocol** | Access protocol to connect to this instance |
+| **Keep public ip the same** | Flag indicating whether you want to keep the same public IP address for the instance |
+| **Storage Size (GiB)** | Size in GB of the root volume |
+| **Custom IAM Role (Optional)** | Name of a custom IAM Role to associate with this instance. If not specified, a predefined role is used. If specified, features requiring special permissions will be unavailable (NICE DCV, CloudWatch, IAM Policies). |
+| **Additional IAM Policies (Optional)** | Semicolon-delimited list of IAM Policy ARNs to add to the predefined role. This option cannot be used with a custom IAM Role. |
 | **VPC to deploy this stack to** | ID of an existing VPC in which to deploy this stack |
-| **Subnet** | List of existing subnets IDs |
-| **SSH Key Pair** | The name of an existing EC2 KeyPair to allow SSH access to all the instances. See https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for details on creating these. |
-| **Allow connections from** | The IP address range that will be allowed to connect to this instance from outside of the VPC. This field should be formatted as \<ip_address>/\<mask>. E.g. 10.0.0.1/32. This is the public IP address which can be found by searching for 'what is my ip address' on the web. The mask determines the number of IP addresses to include. A mask of 32 is a single IP address. This calculator can be used to build a specific range: https://www.ipaddressguide.com/cidr. You may need to contact your IT administrator to determine which address is appropriate. |
-| **Remote password** | Enter a password for the "ubuntu" user |
+| **Subnet** | ID of an existing subnet |
+| **SSH Key Pair** | Name of an existing EC2 KeyPair to allow SSH access to all the instances. See https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for details on creating these. |
+| **Allow connections from** | IP address range that will be allowed to connect to this instance from outside of the VPC. This field should be formatted as \<ip_address>/\<mask>. E.g. 10.0.0.1/32. This is the public IP address which can be found by searching for 'what is my ip address' on the web. The mask determines the number of IP addresses to include. A mask of 32 is a single IP address. This calculator can be used to build a specific range: https://www.ipaddressguide.com/cidr. You may need to contact your IT administrator to determine which address is appropriate. |
+| **Remote password** | Password for the "ubuntu" user |
 | **Confirm remote password** | Confirm Password |
 | **License Manager for MATLAB connection string** | Optional License Manager for MATLAB string in the form \<port>@\<hostname>. If not specified, online licensing is used. If specified, the license manager must be accessible from the specified VPC and subnets |
-| **Configure cloudwatch logging for the MATLAB instance** | Choose whether you want to enable cloudwatch logging for the MATLAB instance |
+| **Configure cloudwatch logging for the MATLAB instance** | Flag indicating whether cloudwatch logging for the MATLAB instance is enabled. |
 | **AutoShutdown** | Choose whether you want to enable autoshutdown for your instance after a certain number of hours |
-| **Additional security group to place instances in** | The ID of an additional (optional) Security Group for the instances to be placed in. Often the License Manager for MATLAB's Security Group. |
+| **Additional security group to place instances in** | ID of an additional (optional) Security Group for the instances to be placed in. Often the License Manager for MATLAB's Security Group. |
 
 
 >**Note**: If you chose to associate an IAM role above you'll need to acknowledge that it may create IAM resources in the Capabilities before creating the stack.
