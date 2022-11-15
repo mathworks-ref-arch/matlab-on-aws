@@ -3,58 +3,58 @@
   "Mappings": {
     "RegionMap": {
       "us-east-1": {
-        "AMI": "ami-0bf7601228cd01e44"
+        "AMI": "ami-0c7a6ee568b32bd67"
       },
       "us-east-2": {
-        "AMI": "ami-08e22dba279d56c63"
+        "AMI": "ami-0c964ca0d1404e96c"
       },
       "us-west-1": {
-        "AMI": "ami-0ddfdf5497a3528c1"
+        "AMI": "ami-0b099b2fbe2ea443c"
       },
       "us-west-2": {
-        "AMI": "ami-05a8a500227988f9c"
+        "AMI": "ami-005e2eef8bc57a110"
       },
       "ca-central-1": {
-        "AMI": "ami-08d69767e915122b2"
+        "AMI": "ami-0a9854facbe3f93e7"
       },
       "eu-central-1": {
-        "AMI": "ami-04d135d8949c66c11"
+        "AMI": "ami-0d11b6cbad71a7c03"
       },
       "eu-west-1": {
-        "AMI": "ami-0b2529a01f8423fa3"
+        "AMI": "ami-0e294bb9a3b9e286a"
       },
       "eu-west-2": {
-        "AMI": "ami-0bfcdd24549915979"
+        "AMI": "ami-0b81b60c60a57ba2a"
       },
       "eu-west-3": {
-        "AMI": "ami-0fad0c4b342e70a25"
+        "AMI": "ami-0bbbd382bb029a4ce"
       },
       "eu-north-1": {
-        "AMI": "ami-06a7af79eff64eaa8"
+        "AMI": "ami-06f03e4af1a41198c"
       },
       "sa-east-1": {
-        "AMI": "ami-041e3397c942a633c"
+        "AMI": "ami-0db47f5e319afd2c3"
       },
       "me-south-1": {
-        "AMI": "ami-0fc44f6dd1d7c9c67"
+        "AMI": "ami-09976598cec4f06be"
       },
       "ap-east-1": {
-        "AMI": "ami-03012631b4dd1578c"
+        "AMI": "ami-09cc9211a5f49f16b"
       },
       "ap-south-1": {
-        "AMI": "ami-00c2ba6dce4618596"
+        "AMI": "ami-03b72b46e76954037"
       },
       "ap-northeast-1": {
-        "AMI": "ami-044b7bbc8b1a928f7"
+        "AMI": "ami-0917c12d7c086ba17"
       },
       "ap-northeast-2": {
-        "AMI": "ami-0abdb0e471400e1a2"
+        "AMI": "ami-0b0857f9397e33262"
       },
       "ap-southeast-1": {
-        "AMI": "ami-0f2c66b2ff475ae56"
+        "AMI": "ami-078ab4bbbc859f4fd"
       },
       "ap-southeast-2": {
-        "AMI": "ami-0d8233be7591618d6"
+        "AMI": "ami-07bf7ff2b5c2c10f7"
       }
     }
   },
