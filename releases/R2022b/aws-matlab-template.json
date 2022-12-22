@@ -3,58 +3,58 @@
   "Mappings": {
     "RegionMap": {
       "us-east-1": {
-        "AMI": "ami-0afadd1711391423d"
+        "AMI": "ami-01d357a04465c77a1"
       },
       "us-east-2": {
-        "AMI": "ami-04b29b2cc75cbfef3"
+        "AMI": "ami-03f081d403f225594"
       },
       "us-west-1": {
-        "AMI": "ami-04dfe5df39d469a4a"
+        "AMI": "ami-0492ff910883692c8"
       },
       "us-west-2": {
-        "AMI": "ami-03c107683f6afc241"
+        "AMI": "ami-00dad8eea5e3c8a93"
       },
       "ca-central-1": {
-        "AMI": "ami-0ff9c87a1557f22c9"
+        "AMI": "ami-03d60419b10373140"
       },
       "eu-central-1": {
-        "AMI": "ami-0038b7a91dd98ca9d"
+        "AMI": "ami-0cadbd62d10ff2156"
       },
       "eu-west-1": {
-        "AMI": "ami-0fd2bb45b984f6511"
+        "AMI": "ami-045d012b4e261532c"
       },
       "eu-west-2": {
-        "AMI": "ami-079a3651a0621ad3a"
+        "AMI": "ami-072c269e57e941a34"
       },
       "eu-west-3": {
-        "AMI": "ami-090fd77400e97f781"
+        "AMI": "ami-071b1a13617f49645"
       },
       "eu-north-1": {
-        "AMI": "ami-0eaad05f82f15b21d"
+        "AMI": "ami-0ddd2a36318ce76e0"
       },
       "sa-east-1": {
-        "AMI": "ami-022968adb0474a493"
+        "AMI": "ami-00d2bc1c8b79c09d6"
       },
       "me-south-1": {
-        "AMI": "ami-0f038e5d9ac54697e"
+        "AMI": "ami-0baa771425a41ea1b"
       },
       "ap-east-1": {
-        "AMI": "ami-072f0de7f6615a12f"
+        "AMI": "ami-04a89c36e049bc334"
       },
       "ap-south-1": {
-        "AMI": "ami-06a9197b7e8b18c1a"
+        "AMI": "ami-041381f6e17a445fc"
       },
       "ap-northeast-1": {
-        "AMI": "ami-019c6f60cab370495"
+        "AMI": "ami-0143bb136833fb38c"
       },
       "ap-northeast-2": {
-        "AMI": "ami-01f767ee897dbd3fa"
+        "AMI": "ami-06cd95864b5dc645b"
       },
       "ap-southeast-1": {
-        "AMI": "ami-000373a1eab1dbe20"
+        "AMI": "ami-019b32dd568523325"
       },
       "ap-southeast-2": {
-        "AMI": "ami-0f7bf48f5da52b735"
+        "AMI": "ami-01f40bc0ad56340e9"
       }
     }
   },
@@ -357,104 +357,84 @@
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
-              "",
+              "\n",
               [
-                "#!/bin/bash\n",
-                "# Copyright 2011-2022 The MathWorks, Inc.\n",
-                "cd /usr/local/matlab\n",
-                "nohup /usr/local/matlab/bin/glnxa64/MATLABStartupAccelerator 64 /usr/local/matlab /usr/local/etc/msa/msa.ini /tmp/startup_accelerator.log &> /dev/null  &\n",
-                "echo \"",
+                "#!/bin/bash",
+                "",
+                "# Copyright 2022 The MathWorks, Inc.",
+                "",
+                "STARTUP_FOLDER=/opt/mathworks/startup",
+                "# Load startup variables",
+                "if [[ -r ${STARTUP_FOLDER}/.env ]]; then",
+                "    set -o allexport",
+                "    source ${STARTUP_FOLDER}/.env",
+                "    set +o allexport",
+                "fi",
+                "",
+                "# Define startup parameters",
                 {
-                  "Fn::Join": [
-                    ":",
-                    [
-                      "ubuntu",
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "$(echo \"",
-                            {
-                              "Fn::Base64": {
-                                "Ref": "Password"
-                              }
-                            },
-                            "\" | base64 -d)"
-                          ]
-                        ]
+                  "Fn::Sub": [
+                    "export PASSWORD=${PasswordBase64}",
+                    {
+                      "PasswordBase64": {
+                        "Fn::Base64": {
+                          "Ref": "Password"
+                        }
                       }
-                    ]
+                    }
                   ]
                 },
-                "\" | sudo chpasswd",
-                "\n",
-                "if [ -n '",
                 {
-                  "Ref": "LicenseManager"
+                  "Fn::Sub": "export MLM_LICENSE_FILE=${LicenseManager}"
                 },
-                "' ]\n",
-                " then \n",
-                "#disable online licensing and enable a license server\n",
-                "sudo rm /usr/local/matlab/licenses/license_info.xml\n",
-                "echo 'export MLM_LICENSE_FILE=",
                 {
-                  "Ref": "LicenseManager"
-                },
-                "' | sudo tee -a /etc/profile.d/mlmlicensefile.sh\n",
-                "\n",
-                "fi\n",
-                {
-                  "Fn::Sub": "export ENABLE_CLOUDWATCH_LOGGING=\"${EnableCloudWatch}\""
-                },
-                "\n",
-                {
-                  "Fn::Join": [
-                    "=",
-                    [
-                      "export LOG_GROUP_NAME",
-                      {
-                        "Fn::Join": [
-                          "-",
-                          [
-                            {
-                              "Ref": "AWS::StackName"
-                            },
-                            {
-                              "Fn::Select": [
-                                "2",
+                  "Fn::Sub": [
+                    "export CLOUD_LOG_NAME=${LogGroupName}",
+                    {
+                      "LogGroupName": {
+                        "Fn::If": [
+                          "UseCloudWatch",
+                          {
+                            "Fn::Join": [
+                              "-",
+                              [
                                 {
-                                  "Fn::Split": [
-                                    "/",
+                                  "Ref": "AWS::StackName"
+                                },
+                                {
+                                  "Fn::Select": [
+                                    "2",
                                     {
-                                      "Ref": "AWS::StackId"
+                                      "Fn::Split": [
+                                        "/",
+                                        {
+                                          "Ref": "AWS::StackId"
+                                        }
+                                      ]
                                     }
                                   ]
                                 }
                               ]
-                            }
-                          ]
+                            ]
+                          },
+                          ""
                         ]
                       }
-                    ]
+                    }
                   ]
                 },
-                "\n",
-                "/usr/local/bin/start-logging.sh\n",
                 {
-                  "Fn::Sub": "export ACCESS_PROTOCOL=\"${AccessProtocol}\"\n"
+                  "Fn::Sub": "export ACCESS_PROTOCOL='${AccessProtocol}'"
                 },
-                "/usr/local/bin/start-desktop.sh\n",
-                "/usr/local/bin/aws-cfn-bootstrap-*/bin/cfn-signal -e $? ",
-                "         --stack ",
+                "",
+                "# Run startup scripts",
+                "mkdir -p /var/log/mathworks",
+                "run-parts --exit-on-error --verbose --regex '^[0-9]+_.+$' ${STARTUP_FOLDER} >> /var/log/mathworks/startup.log 2>&1",
+                "",
+                "# Signal the status from cfn-init",
                 {
-                  "Ref": "AWS::StackName"
-                },
-                "         --resource MATLABEC2Instance ",
-                "         --region ",
-                {
-                  "Ref": "AWS::Region"
-                },
-                "\n"
+                  "Fn::Sub": "/opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --region ${AWS::Region} --resource MATLABEC2Instance"
+                }
               ]
             ]
           }
