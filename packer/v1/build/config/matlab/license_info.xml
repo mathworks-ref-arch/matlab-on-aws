@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <ActivationEntry hostname="*" idnumber="1"
+        matlabroot="/usr/local/matlab" user="*">
+        <licmode>online</licmode>
+    </ActivationEntry>
+</root>

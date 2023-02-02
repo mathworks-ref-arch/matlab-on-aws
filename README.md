@@ -21,7 +21,11 @@ The following guide will help you automate the process of running the MATLAB des
 4. If necessary, [request a service limit increase](https://console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase&limitType=service-code-) for the Amazon EC2 instance type or VPCs.  You might need to do this if you already have existing deployments that use that instance type or you think you might exceed the [default limit](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-resource-limits.html) with this deployment.
 
 # Deployment Steps
-
+By default, the MATLAB reference architectures below launch prebuilt machine images, described in [Architecture and Resources](#architecture-and-resources).
+Using a prebuilt machine image is the easiest way to deploy a MATLAB reference architecture.
+Alternatively, to build your own machine image with MATLAB using our build scripts,
+see [Build and Deploy Your Own Machine Image](#build-and-deploy-your-own-machine-image).
+## Deploy Prebuilt Machine Image
 To view instructions for deploying the MATLAB reference architecture, select a MATLAB release:
 
 | Linux | Windows |
@@ -35,6 +39,12 @@ To view instructions for deploying the MATLAB reference architecture, select a M
 | [R2019b](releases/R2019b/README.md) |  |
 | [R2019a\_and\_older](releases/R2019a_and_older/README.md) |  |
 
+
+## Build and Deploy Your Own Machine Image
+For details of the scripts which form the basis of the MathWorks AMI build process,
+see [Build Your Own Machine Image](./packer/v1).
+You can use these scripts to build your own custom machine image for running MATLAB on Amazon Web Services.
+You can then deploy this custom image with the MathWorks infrastructure as code (IaC) templates.
 
 ## Architecture and Resources
 
@@ -88,7 +98,9 @@ You can copy the AMI for a certain MATLAB version to a target region of your cho
 You can now deploy the AMI in your target region using the AMI that you copied.
 
 ### How do I customize the VM image?
-You can customize a VM image by launching the reference architecture, applying any changes you want to the EC2 Instance (such as installing additional software, drivers, and files), and then saving an image of that instance using the AWS Console. For more information, see [How Do I save a VM image?](#how-do-i-save-a-vm-image). When you create a stack, replace the AMI ID in the CloudFormation template with the AMI ID of your customized image.
+You can customize a prebuilt VM image by launching the reference architecture, applying any changes you want to the EC2 Instance (such as installing additional software, drivers, and files), and then saving an image of that instance using the AWS Console. For more information, see [How Do I save a VM image?](#how-do-i-save-a-vm-image). When you create a stack, replace the AMI ID in the CloudFormation template with the AMI ID of your customized image.
+
+You can also create a custom image by building your own using the Packer scripts we provide. See [Build and Deploy Your Own Machine Image](#build-and-deploy-your-own-machine-image).
 
 ### How do I use a different license manager?
 The VM image uses MathWorks Hosted License Manager by default. For information on how to use other license managers, see [MATLAB Licensing in the Cloud](https://www.mathworks.com/help/licensingoncloud/matlab-on-the-cloud.html).

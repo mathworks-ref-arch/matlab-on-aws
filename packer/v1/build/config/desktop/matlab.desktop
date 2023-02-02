@@ -1,0 +1,18 @@
+[Desktop Entry]
+Version=1.0
+Name=MATLAB
+Comment=Start MATLAB
+GenericName=Technical Computing
+Keywords=Programming
+Exec=/bin/sh -lc "/usr/local/bin/matlab -desktop -softwareopengl"
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Icon=matlab
+Categories=MATLAB
+StartupNotify=true
+Actions=new-window;new-private-window;
+
+[Desktop Action new-window]
+Name=Open a New Window
+Exec=/bin/sh -lc "/usr/local/bin/matlab -desktop -softwareopengl"

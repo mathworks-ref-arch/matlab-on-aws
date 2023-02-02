@@ -3,58 +3,58 @@
   "Mappings": {
     "RegionMap": {
       "us-east-1": {
-        "AMI": "ami-01d357a04465c77a1"
+        "AMI": "ami-0eceeeeb25c36f317"
       },
       "us-east-2": {
-        "AMI": "ami-03f081d403f225594"
+        "AMI": "ami-022b96c4fd032f688"
       },
       "us-west-1": {
-        "AMI": "ami-0492ff910883692c8"
+        "AMI": "ami-018c6ec057bc9441e"
       },
       "us-west-2": {
-        "AMI": "ami-00dad8eea5e3c8a93"
+        "AMI": "ami-0f25cc2d3ac162e0b"
       },
       "ca-central-1": {
-        "AMI": "ami-03d60419b10373140"
+        "AMI": "ami-05cb77f0eda9d1d47"
       },
       "eu-central-1": {
-        "AMI": "ami-0cadbd62d10ff2156"
+        "AMI": "ami-0b7d722a56661fb24"
       },
       "eu-west-1": {
-        "AMI": "ami-045d012b4e261532c"
+        "AMI": "ami-02c8ca4c4a494824a"
       },
       "eu-west-2": {
-        "AMI": "ami-072c269e57e941a34"
+        "AMI": "ami-06403e8b828b1952c"
       },
       "eu-west-3": {
-        "AMI": "ami-071b1a13617f49645"
+        "AMI": "ami-0a24d3759daa3d511"
       },
       "eu-north-1": {
-        "AMI": "ami-0ddd2a36318ce76e0"
+        "AMI": "ami-09b30da5e07f5d856"
       },
       "sa-east-1": {
-        "AMI": "ami-00d2bc1c8b79c09d6"
+        "AMI": "ami-0ef7a64579b3941f6"
       },
       "me-south-1": {
-        "AMI": "ami-0baa771425a41ea1b"
+        "AMI": "ami-0dfa332dd12d8304a"
       },
       "ap-east-1": {
-        "AMI": "ami-04a89c36e049bc334"
+        "AMI": "ami-07fa701c0aec02181"
       },
       "ap-south-1": {
-        "AMI": "ami-041381f6e17a445fc"
+        "AMI": "ami-02696d472db71bfe4"
       },
       "ap-northeast-1": {
-        "AMI": "ami-0143bb136833fb38c"
+        "AMI": "ami-0ffdc299fd7a6c53e"
       },
       "ap-northeast-2": {
-        "AMI": "ami-06cd95864b5dc645b"
+        "AMI": "ami-04deb431d93cb2ee0"
       },
       "ap-southeast-1": {
-        "AMI": "ami-019b32dd568523325"
+        "AMI": "ami-0c7f2027d61e634a9"
       },
       "ap-southeast-2": {
-        "AMI": "ami-01f40bc0ad56340e9"
+        "AMI": "ami-0b8b762605b25bb29"
       }
     }
   },
@@ -299,12 +299,20 @@
       "Type": "AWS::EC2::Instance",
       "Properties": {
         "ImageId": {
-          "Fn::FindInMap": [
-            "RegionMap",
+          "Fn::If": [
+            "UseCustomAMI",
             {
-              "Ref": "AWS::Region"
+              "Ref": "CustomAmiId"
             },
-            "AMI"
+            {
+              "Fn::FindInMap": [
+                "RegionMap",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "AMI"
+              ]
+            }
           ]
         },
         "KeyName": {
@@ -856,6 +864,11 @@
       "Description": "ID of an additional (optional) Security Group for the instances to be placed in. Often the License Manager for MATLAB's Security Group.",
       "Type": "String",
       "Default": ""
+    },
+    "CustomAmiId": {
+      "Default": "",
+      "Description": "ID of a custom Amazon Machine Image (AMI) in the target region (optional). If the build has been customized then the resulting machine image may no longer be compatible with the provided CloudFormation template. Compatability can in some cases be restored by making corresponding modifications to the CloudFormation template. The ID should start with 'ami-'.",
+      "Type": "String"
     }
   },
   "Rules": {
@@ -1031,6 +1044,18 @@
         "Yes"
       ]
     },
+    "UseCustomAMI": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "CustomAmiId"
+            },
+            ""
+          ]
+        }
+      ]
+    },
     "AddSG": {
       "Fn::Not": [
         {
@@ -1175,6 +1200,14 @@
           "Parameters": [
             "AutoShutdown"
           ]
+        },
+        {
+          "Label": {
+            "default": "Custom AMI"
+          },
+          "Parameters": [
+            "CustomAmiId"
+          ]
         }
       ],
       "ParameterLabels": {
@@ -1225,6 +1258,9 @@
         },
         "AccessProtocol": {
           "default": "Remote access protocol"
+        },
+        "CustomAmiId": {
+          "default": "Custom AMI ID (Optional)"
         }
       }
     }
