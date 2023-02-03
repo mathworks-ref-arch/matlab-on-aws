@@ -41,9 +41,9 @@ To view instructions for deploying the MATLAB reference architecture, select a M
 
 
 ## Build and Deploy Your Own Machine Image
-For details of the scripts which form the basis of the MathWorks AMI build process,
+For details of the scripts which form the basis of the MathWorks Linux AMI build process,
 see [Build Your Own Machine Image](./packer/v1).
-You can use these scripts to build your own custom machine image for running MATLAB on Amazon Web Services.
+You can use these scripts to build your own custom Linux machine image for running MATLAB on Amazon Web Services.
 You can then deploy this custom image with the MathWorks infrastructure as code (IaC) templates.
 
 ## Architecture and Resources
