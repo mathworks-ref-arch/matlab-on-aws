@@ -32,7 +32,7 @@ Launch the Packer build with the default settings.
 packer build build-matlab-ami.pkr.hcl
 ```
 Packer writes its output, including the ID of the generated machine image, to a `manifest.json` file at the end of the build.
-To use the built image with a MathWorks CloudFormation template, see [How to Deploy Machine Image](#how-to-deploy-machine-image).
+To use the built image with a MathWorks CloudFormation template, see [Deploy Machine Image](#deploy-machine-image).
 
 
 ## **How to Run the Packer Build**
@@ -66,7 +66,7 @@ packer build -var="PRODUCTS=MATLAB Deep_Learning_Toolbox" build-matlab-ami.pkr.h
 ```
 
 #### **Customize MATLAB Release to Install**
-To use an earlier MATLAB release, you must use one of the variable definition files in the [release-config](https://github.com/mathworks-ref-arch/matlab-on-aws/packer/v1/release-config) folder.
+To use an earlier MATLAB release, you must use one of the variable definition files in the [release-config](https://github.com/mathworks-ref-arch/matlab-on-aws/tree/master/packer/v1/release-config) folder.
 These are available for MATLAB R2020a and later.
 
 For example, install MATLAB R2020a and all available toolboxes.
@@ -90,7 +90,7 @@ PRODUCTS  = "MATLAB Deep_Learning_Toolbox Parallel_Computing_Toolbox"
 ```
 
 To specify a MATLAB release using a variable definition file, modify the variable definition file
-in the [release-config](https://github.com/mathworks-ref-arch/matlab-on-aws/packer/v1/release-config)
+in the [release-config](https://github.com/mathworks-ref-arch/matlab-on-aws/tree/master/packer/v1/release-config)
 folder corresponding to the desired release.
 
 Save the variable definition file and include it in the Packer build command.
