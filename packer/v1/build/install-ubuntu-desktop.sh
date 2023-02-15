@@ -27,10 +27,6 @@ sleep 10
 sudo apt-get -qq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  update
 sudo apt-get -qq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  upgrade
 
-# Pull in dconf
-sudo apt-get -qq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  install dconf-cli
-
-
 ###################################################### CONFIGURE XRDP ######################################################
 # Enable xfce
 sudo rm -f /usr/bin/x-session-manager
@@ -131,7 +127,15 @@ export DEBCONF_NONINTERACTIVE_SEEN=true
 sudo apt-get -qq update
 sudo apt-get -qq upgrade
 sudo apt-get -qq -o=Dpkg::Use-Pty=0 install ubuntu-mate-desktop
-sudo apt-get -qq install xserver-xorg-input-void xserver-xorg-video-dummy xfonts-cyrillic xfonts-cronyx-* libglvnd-dev xserver-xorg-dev dkms "linux-headers-$(uname -r)"
+sudo apt-get -qq install \
+    xserver-xorg-input-void \
+    xserver-xorg-video-dummy \
+    xfonts-cyrillic \
+    xfonts-cronyx-* \
+    libglvnd-dev \
+    xserver-xorg-dev
+# Install kernel header files
+sudo apt-get -qq install "linux-headers-$(uname -r)"
 
 # Use lightdm as display manager
 sudo chown ubuntu:ubuntu /etc/X11/default-display-manager

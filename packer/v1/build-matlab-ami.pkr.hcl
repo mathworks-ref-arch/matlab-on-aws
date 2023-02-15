@@ -24,7 +24,7 @@ variable "RELEASE" {
 
 variable "BASE_AMI" {
   type        = string
-  default     = "ami-0070c5311b7677678"
+  default     = "ami-0778521d914d23bc1"
   description = "Default AMI ID refers to ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20220706."
 
   validation {
@@ -35,7 +35,7 @@ variable "BASE_AMI" {
 
 variable "BUILD_SCRIPTS" {
   type        = list(string)
-  default     = ["install-startup-scripts.sh", "install-swap-desktop-solution.sh", "install-dependencies.sh", "install-matlab.sh", "install-glibc-ubuntu2004.sh", "setup-startup-accelerator.sh", "install-ubuntu-desktop.sh", "install-mate.sh", "install-fabric-manager-ubuntu2004.sh", "cleanup.sh"]
+  default     = ["install-startup-scripts.sh", "install-swap-desktop-solution.sh", "install-dependencies.sh", "install-ubuntu-desktop.sh", "install-mate.sh", "install-matlab.sh", "install-glibc-ubuntu2004.sh", "setup-startup-accelerator.sh", "install-fabric-manager-ubuntu2004.sh", "cleanup.sh"]
   description = "The list of installation scripts Packer will use when building the image."
 }
 
