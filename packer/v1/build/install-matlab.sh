@@ -24,10 +24,18 @@ sudo apt-get -qq install \
 sudo wget --no-verbose https://www.mathworks.com/mpm/glnxa64/mpm
 sudo chmod +x mpm
 
-# Run mpm to install MATLAB and other toolboxes in the RELEASE variable
+# The mpm --doc flag is supported in R2022b and older releases only.
+# To install doc for offline use, follow the steps in
+# https://www.mathworks.com/help/releases/R2023a/install/ug/install-documentation-on-offline-machines.html
+doc_flag=""
+if [[ $RELEASE < 'R2023a' ]]; then
+  doc_flag="--doc"
+fi
+
+# Run mpm to install MATLAB and toolboxes in the PRODUCTS variable
 # into the target location. The mpm installation is deleted afterwards.
 sudo ./mpm install \
-  --doc \
+  "${doc_flag}" \
   --release="${RELEASE}" \
   --destination="${MATLAB_ROOT}" \
   --products "${PRODUCTS}"

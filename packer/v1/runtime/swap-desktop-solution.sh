@@ -45,14 +45,6 @@ function init_dcv {
   fi
 }
 
-function modify_font {
-  sudo bash -c "cat > /home/ubuntu/Documents/MATLAB/startup.m" <<EOT
-s = settings;
-s.matlab.fonts.codefont.Size.TemporaryValue=22;
-clear s;
-EOT
-}
-
 if [[ $REMOTE_DESKTOP_SOLUTION == "rdp" ]] ; then
   # If xrdp is already running, exit
   xrdp_status=$(systemctl is-active xrdp)
@@ -77,9 +69,6 @@ else
   if [[ $dcv_status == "active" ]]; then
     exit 0
   fi
-
-  # Prepare startup.m (see g2611280)
-  modify_font
 
   # Stop and disable dcvserver
   cleanup_xrdp_session

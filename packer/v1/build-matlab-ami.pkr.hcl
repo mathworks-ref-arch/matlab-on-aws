@@ -6,14 +6,14 @@
 # under /packer/v1/release-config/ folder.
 variable "PRODUCTS" {
   type        = string
-  default     = "5G_Toolbox Antenna_Toolbox Aerospace_Blockset Mixed-Signal_Blockset Phased_Array_System_Toolbox AUTOSAR_Blockset Aerospace_Toolbox Audio_Toolbox Bioinformatics_Toolbox Bluetooth_Toolbox Simscape_Battery Curve_Fitting_Toolbox Communications_Toolbox MATLAB_Compiler Control_System_Toolbox Simulink_Coverage Database_Toolbox DDS_Blockset Datafeed_Toolbox Deep_Learning_HDL_Toolbox Parallel_Computing_Toolbox Automated_Driving_Toolbox DSP_System_Toolbox Simulink_Design_Verifier MATLAB_Parallel_Server Medical_Imaging_Toolbox Embedded_Coder HDL_Verifier Econometrics_Toolbox Filter_Design_HDL_Coder Financial_Toolbox Fuzzy_Logic_Toolbox GPU_Coder Global_Optimization_Toolbox HDL_Coder DSP_HDL_Toolbox SoC_Blockset Image_Acquisition_Toolbox Instrument_Control_Toolbox System_Identification_Toolbox Image_Processing_Toolbox Financial_Instruments_Toolbox Simscape_Driveline Wireless_HDL_Toolbox Lidar_Toolbox LTE_Toolbox MATLAB_Coder Mapping_Toolbox MATLAB_Compiler_SDK MATLAB Model_Predictive_Control_Toolbox MATLAB_Report_Generator Simscape_Multibody Motor_Control_Blockset MATLAB_Web_App_Server Deep_Learning_Toolbox Navigation_Toolbox Optimization_Toolbox Industrial_Communication_Toolbox Partial_Differential_Equation_Toolbox Simulink_PLC_Coder Predictive_Maintenance_Toolbox Fixed-Point_Designer MATLAB_Production_Server Simscape_Electrical Powertrain_Blockset Radar_Toolbox RF_Blockset Robust_Control_Toolbox RF_Toolbox Risk_Management_Toolbox Reinforcement_Learning_Toolbox Robotics_System_Toolbox RF_PCB_Toolbox Requirements_Toolbox ROS_Toolbox Simulink_Coder SimBiology Simulink_Control_Design SimEvents Stateflow Signal_Processing_Toolbox Simscape_Fluids Satellite_Communications_Toolbox Simulink_Compiler Simulink Symbolic_Math_Toolbox Simulink_Design_Optimization Signal_Integrity_Toolbox Simulink_Report_Generator Simscape Statistics_and_Machine_Learning_Toolbox SerDes_Toolbox Simulink_Test Text_Analytics_Toolbox Sensor_Fusion_and_Tracking_Toolbox UAV_Toolbox Vehicle_Dynamics_Blockset Vehicle_Network_Toolbox Computer_Vision_Toolbox Simulink_3D_Animation Vision_HDL_Toolbox Simulink_Check Wavelet_Toolbox Wireless_Testbench WLAN_Toolbox Simulink_Real-Time System_Composer"
+  default     = "5G_Toolbox Antenna_Toolbox Aerospace_Blockset Mixed-Signal_Blockset Phased_Array_System_Toolbox AUTOSAR_Blockset Aerospace_Toolbox Audio_Toolbox Bioinformatics_Toolbox Bluetooth_Toolbox Simscape_Battery C2000_Microcontroller_Blockset Curve_Fitting_Toolbox Communications_Toolbox MATLAB_Compiler Control_System_Toolbox Simulink_Coverage Database_Toolbox DDS_Blockset Datafeed_Toolbox Deep_Learning_HDL_Toolbox Parallel_Computing_Toolbox Automated_Driving_Toolbox DSP_System_Toolbox Simulink_Design_Verifier MATLAB_Parallel_Server Medical_Imaging_Toolbox Embedded_Coder HDL_Verifier Econometrics_Toolbox Filter_Design_HDL_Coder Financial_Toolbox Fuzzy_Logic_Toolbox GPU_Coder Global_Optimization_Toolbox HDL_Coder DSP_HDL_Toolbox SoC_Blockset Image_Acquisition_Toolbox Instrument_Control_Toolbox System_Identification_Toolbox Image_Processing_Toolbox Financial_Instruments_Toolbox Simscape_Driveline Wireless_HDL_Toolbox Lidar_Toolbox LTE_Toolbox MATLAB_Coder Mapping_Toolbox MATLAB_Compiler_SDK MATLAB Model_Predictive_Control_Toolbox MATLAB_Report_Generator Simscape_Multibody Motor_Control_Blockset MATLAB_Web_App_Server Deep_Learning_Toolbox Navigation_Toolbox Optimization_Toolbox Industrial_Communication_Toolbox Partial_Differential_Equation_Toolbox Simulink_PLC_Coder Predictive_Maintenance_Toolbox Fixed-Point_Designer MATLAB_Production_Server Simscape_Electrical Powertrain_Blockset Radar_Toolbox RF_Blockset Robust_Control_Toolbox RF_Toolbox Risk_Management_Toolbox Reinforcement_Learning_Toolbox Robotics_System_Toolbox RF_PCB_Toolbox Requirements_Toolbox ROS_Toolbox Simulink_Coder SimBiology Simulink_Control_Design SimEvents Stateflow Signal_Processing_Toolbox Simscape_Fluids Satellite_Communications_Toolbox Simulink_Compiler Simulink Symbolic_Math_Toolbox Simulink_Design_Optimization Signal_Integrity_Toolbox Simulink_Report_Generator Simscape Statistics_and_Machine_Learning_Toolbox SerDes_Toolbox Simulink_Test Text_Analytics_Toolbox MATLAB_Test Sensor_Fusion_and_Tracking_Toolbox UAV_Toolbox Vehicle_Dynamics_Blockset Vehicle_Network_Toolbox Computer_Vision_Toolbox Simulink_3D_Animation Vision_HDL_Toolbox Simulink_Check Wavelet_Toolbox Wireless_Testbench WLAN_Toolbox Simulink_Real-Time System_Composer"
   description = "Target products to install in the machine image, e.g. MATLAB SIMULINK."
 
 }
 
 variable "RELEASE" {
   type        = string
-  default     = "R2022b"
+  default     = "R2023a"
   description = "Target MATLAB release to install in the machine image, must start with \"R\"."
 
   validation {
@@ -25,7 +25,7 @@ variable "RELEASE" {
 variable "BASE_AMI" {
   type        = string
   default     = "ami-0778521d914d23bc1"
-  description = "Default AMI ID refers to ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20220706."
+  description = "Default AMI ID refers to the Ubuntu Server 20.04 image provided by Canonical."
 
   validation {
     condition     = substr(var.BASE_AMI, 0, 4) == "ami-"
@@ -35,13 +35,13 @@ variable "BASE_AMI" {
 
 variable "BUILD_SCRIPTS" {
   type        = list(string)
-  default     = ["install-startup-scripts.sh", "install-swap-desktop-solution.sh", "install-dependencies.sh", "install-ubuntu-desktop.sh", "install-mate.sh", "install-matlab.sh", "install-glibc-ubuntu2004.sh", "setup-startup-accelerator.sh", "install-fabric-manager-ubuntu2004.sh", "cleanup.sh"]
+  default     = ["install-startup-scripts.sh", "install-swap-desktop-solution.sh", "install-dependencies.sh", "install-ubuntu-desktop.sh", "install-mate.sh", "install-matlab.sh", "install-glibc-ubuntu2004.sh", "setup-startup-accelerator.sh", "install-fabric-manager-ubuntu2004.sh", "generate-toolbox-cache.sh", "cleanup.sh"]
   description = "The list of installation scripts Packer will use when building the image."
 }
 
 variable "STARTUP_SCRIPTS" {
   type        = list(string)
-  default     = [".env", "10_setup-disks.sh", "20_setup-machine.sh", "30_setup-logging.sh", "40_setup-rdp.sh", "50_setup-nicedcv.sh", "60_setup-matlab.sh", "70_warmup-matlab.sh"]
+  default     = [".env", "10_setup-disks.sh", "20_setup-machine.sh", "30_setup-logging.sh", "40_setup-rdp.sh", "50_setup-nicedcv.sh", "60_setup-matlab.sh", "70_warmup-matlab.sh", "99_run-optional-user-command.sh"]
   description = "The list of startup scripts Packer will copy to the remote machine image builder, which can be used during the CloudFormation Stack creation."
 }
 
@@ -59,7 +59,7 @@ variable "DCV_INSTALLER_URL" {
 
 variable "NVIDIA_DRIVER_VERSION" {
   type        = string
-  default     = "470"
+  default     = "515"
   description = "The version of target NVIDIA Driver to install."
 }
 

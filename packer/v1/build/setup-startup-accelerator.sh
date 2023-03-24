@@ -14,10 +14,3 @@ sudo mv "/var/tmp/config/matlab/startup-accelerator/${RELEASE}/msa.ini" /usr/loc
 
 #664 - owner can read/write, group/others can read only. Execute permissions not needed for msa.ini.
 sudo chmod 664 /usr/local/etc/msa/msa.ini
-
-# Move toolbox_cache file into MATLAB_ROOT
-sudo mv "/var/tmp/config/matlab/startup-accelerator/${RELEASE}/toolbox_cache-glnxa64.xml" "${MATLAB_ROOT}/toolbox/local/toolbox_cache-glnxa64.xml"
-sudo chmod 664 "${MATLAB_ROOT}/toolbox/local/toolbox_cache-glnxa64.xml"
-
-# Modify last write time of toolbox cache file as it needs to be newer than pathdef.m
-sudo touch -a -m "${MATLAB_ROOT}/toolbox/local/toolbox_cache-glnxa64.xml"
