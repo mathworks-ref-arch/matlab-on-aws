@@ -34,11 +34,13 @@ fi
 
 # Run mpm to install MATLAB and toolboxes in the PRODUCTS variable
 # into the target location. The mpm installation is deleted afterwards.
+# The PRODUCTS variable should be a space separated list of products, with no surrounding quotes.
+# Use quotes around the destination argument if it contains spaces.
 sudo ./mpm install \
-  "${doc_flag}" \
-  --release="${RELEASE}" \
+  ${doc_flag} \
+  --release=${RELEASE} \
   --destination="${MATLAB_ROOT}" \
-  --products "${PRODUCTS}"
+  --products ${PRODUCTS}
 sudo rm -f mpm /tmp/mathworks_root.log
 
 # Enable MHLM licensing default
