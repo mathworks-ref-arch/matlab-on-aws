@@ -874,7 +874,7 @@
       "Type": "String"
     },
     "OptionalUserCommand": {
-      "Description": "Provide an optional inline shell command to run on machine launch. For example, to set an environment variable CLOUD=AWS, use this command excluding the angle brackets: <echo -e \"export CLOUD=AWS\" | tee -a /etc/profile.d/setenvvar.sh && source /etc/profile>. To run an external script, use this command excluding the angle brackets: <wget -O /tmp/my-script.sh \"https://somedomain.com/script.sh\" && bash /tmp/my-script.sh>. Find the logs at '/var/log/mathworks/startup.log'.",
+      "Description": "Provide an optional inline shell command to run on machine launch. For example, to set an environment variable CLOUD=AWS, use this command excluding the angle brackets: <echo -e \"export CLOUD=AWS\" | tee -a /etc/profile.d/setenvvar.sh && source /etc/profile>. To run an external script, use this command excluding the angle brackets: <wget -O /tmp/my-script.sh \"https://www.example.com/script.sh\" && bash /tmp/my-script.sh>. Find the logs at '/var/log/mathworks/startup.log'.",
       "Type": "String",
       "Default": ""
     }
