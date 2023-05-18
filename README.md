@@ -40,6 +40,10 @@ To view instructions for deploying the MATLAB reference architecture, select a M
 | [R2019b](releases/R2019b/README.md) |  |
 | [R2019a\_and\_older](releases/R2019a_and_older/README.md) |  |
 
+The above instructions allow you to launch instances based on the latest prebuilt MathWorks&reg; Amazon Machine Images (AMIs).
+MathWorks periodically replaces older AMIs with new images.
+For more details, see
+[When are the MathWorks Amazon Machine Images updated?](#when-are-the-mathWorks-amazon-machine-images-updated)
 
 ## Build and Deploy Your Own Machine Image
 For details of the scripts which form the basis of the MathWorks Linux AMI build process,
@@ -73,7 +77,22 @@ The following resources may be created according to your deployment configuratio
 
 ## FAQ
 
-### How do I save my changes in the VM?
+### When are the MathWorks Amazon Machine Images updated?
+The links in [Deployment Steps](#deployment-steps) launch instances based on the latest MathWorks
+AMIs for at least the four most recent MATLAB releases. MATLAB releases occur twice each year.
+
+For each MATLAB release, MathWorks periodically replaces the corresponding AMI with a newer AMI
+that includes the latest MATLAB updates and important security updates of the base OS image.
+
+When MathWorks replaces an AMI, the older AMI is deleted.
+However, any running instances previously launched from the older AMI are not affected.
+To continue using an older AMI, copy the AMI into your AWS account.
+For more details on how to copy an AMI, see
+[How do I copy the AMI?](#how-do-I-copy-the-ami)
+For more details on how to customize the reference architectures to
+deploy the copied AMI see [How do I customize the AMI?](#how-do-I-customize-the-ami)
+
+### How do I save my changes in the AMI?
 All your files and changes are stored locally on the virtual machine.  They will persist until you either terminate the virtual machine instance or delete the stack.  Stopping the instance does not destroy the data on the instance.  If you want your changes to persist  outside the stack or before you terminate an instance, you’ll need to:
 * Copy your files to another location (*Example*: S3 or Mount an Amazon EBS volume and create a snapshot), or
 * Create an image of the virtual machine.
@@ -84,27 +103,26 @@ You may want to shut down the instance when you aren’t using it to save some m
 ### How do I keep the same public IP address?
 To avoid having to change the IP address between restarts, you can enable the *Keep public IP address the same* during deployment. For more information, see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html.
 
-### How do I save a VM image?
-To save a VM image, locate the EC2 Instance in the AWS web console and select **Actions** > **Image** > **Create Image.**
+### How do I save an AMI?
+To save an AMI, locate the EC2 Instance in the AWS web console and select **Actions** > **Image** > **Create Image.**
 
-### How do I copy the VM image to a different region?
-You can copy the AMI for a certain MATLAB version to a target region of your choice.
-
-* In the Releases folder of this repository, choose the MATLAB release that you want to copy. Download and open the CloudFormation template .json file for that release.
+### How do I copy the AMI?
+To copy the AMI for a certain MATLAB version to a target region of your choice, follow these steps:
+* Choose the MATLAB release that you want to copy from the Releases folder of this repository. Download and open the CloudFormation template .json file for that release.
 * Locate the Mappings section in the CloudFormation template. Copy the AMI ID for one of the existing regions, for example, us-east-1.
-* To copy the AMI to your target region, [follow the instructions at Copying an AMI on the AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html).
+* To copy the AMI to your target region, see [Copy an AMI](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/CopyingAMIs.html) in the AWS documentation.
 * In the Mappings section of the CloudFormation template, add a new RegionMap pair corresponding to your target region. Insert the new AMI ID of the AMI in the target region.
 * In your AWS Console, change your region to your target region. In the CloudFormation menu, select Create Stack > With new resources option. Provide the modified CloudFormation template.
 
 You can now deploy the AMI in your target region using the AMI that you copied.
 
-### How do I customize the VM image?
-You can customize a prebuilt VM image by launching the reference architecture, applying any changes you want to the EC2 Instance (such as installing additional software, drivers, and files), and then saving an image of that instance using the AWS Console. For more information, see [How Do I save a VM image?](#how-do-i-save-a-vm-image). When you create a stack, replace the AMI ID in the CloudFormation template with the AMI ID of your customized image.
+### How do I customize the AMI?
+You can customize a prebuilt AMI by launching the reference architecture, applying any changes you want to the EC2 Instance (such as installing additional software, drivers, and files), and then saving an image of that instance using the AWS Console. For more information, see [How do I save an AMI?](#how-do-i-save-an-ami). When you create a stack, replace the AMI ID in the CloudFormation template with the AMI ID of your customized image.
 
 You can also create a custom image by building your own using the Packer scripts we provide. See [Build and Deploy Your Own Machine Image](#build-and-deploy-your-own-machine-image).
 
 ### How do I use a different license manager?
-The VM image uses MathWorks Hosted License Manager by default. For information on how to use other license managers, see [MATLAB Licensing in the Cloud](https://www.mathworks.com/help/licensingoncloud/matlab-on-the-cloud.html).
+The AMI uses MathWorks Hosted License Manager by default. For information on how to use other license managers, see [MATLAB Licensing in the Cloud](https://www.mathworks.com/help/licensingoncloud/matlab-on-the-cloud.html).
 
 # Technical Support
 If you require assistance or have a request for additional features or capabilities, please contact [MathWorks Technical Support](https://www.mathworks.com/support/contact_us.html).
