@@ -8,8 +8,13 @@ set -euo pipefail
 # Ensure noninteractive frontend is disabled
 echo 'debconf debconf/frontend select dialog' | sudo debconf-set-selections
 
-# Clean up
-sudo rm -rf ~/ubuntu/.bash_history ~/ubuntu/.sudo* ~/root/.bash_history
-sudo rm -rf /etc/ssh/*_key /etc/ssh/*_key.pub ~/ubuntu/.ssh/* /root/.ssh/*
-sudo rm -rf /home/packer/
+# Clear build configuration files
 sudo rm -rf /var/tmp/config/
+
+# Clear SSH host keys
+sudo rm -f /etc/ssh/ssh_host_*_key*
+# Clear SSH local config (including authorized keys)
+sudo rm -rf ~/.ssh/ /root/.ssh/
+
+# Clear command history
+rm -f ~/.bash_history ~/.sudo*

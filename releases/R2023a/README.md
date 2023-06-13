@@ -46,7 +46,7 @@ After you click the Launch Stack button above, the “Create stack” page will 
 | **Custom IAM Role (Optional)** | Name of a custom IAM Role to associate with this instance. If not specified, a predefined role is used. If specified, features requiring special permissions will be unavailable (NICE DCV, CloudWatch, IAM Policies). |
 | **Additional IAM Policies (Optional)** | Semicolon-delimited list of IAM Policy ARNs to add to the predefined role. This option cannot be used with a custom IAM Role. |
 | **VPC to deploy this stack to** | ID of an existing VPC in which to deploy this stack |
-| **Subnet** | ID of an existing subnet |
+| **Subnet** | ID of an existing subnet. To access the instance from anywhere, ensure that your subnet auto-assigns public IP addresses and is connected to the internet. |
 | **SSH Key Pair** | Name of an existing EC2 KeyPair to allow SSH access to all the instances. See https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for details on creating these. |
 | **Allow connections from** | IP address range that will be allowed to connect to this instance from outside of the VPC. This field should be formatted as \<ip_address>/\<mask>. E.g. 10.0.0.1/32. This is the public IP address which can be found by searching for 'what is my ip address' on the web. The mask determines the number of IP addresses to include. A mask of 32 is a single IP address. This calculator can be used to build a specific range: https://www.ipaddressguide.com/cidr. You may need to contact your IT administrator to determine which address is appropriate. |
 | **Remote password** | Password for the "ubuntu" user |

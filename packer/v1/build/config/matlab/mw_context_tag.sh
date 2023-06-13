@@ -5,5 +5,6 @@
 # Your content, and information about the content within your files, is not shared with MathWorks. 
 # To opt out of this service, delete this file as well as the corresponding section in install-matlab.sh. 
 
+MW_DDUX_FORCE_ENABLE=true
 MW_CONTEXT_TAGS=MATLAB:AWS:PACKERFILE:V1
-export MW_CONTEXT_TAGS
+export MW_DDUX_FORCE_ENABLE MW_CONTEXT_TAGS

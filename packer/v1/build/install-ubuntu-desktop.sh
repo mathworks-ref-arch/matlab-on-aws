@@ -187,6 +187,9 @@ sudo sed -i 's/^#storage-root.*/storage-root="%home%"/' /etc/dcv/dcv.conf
 # Enable users to have upto 4K resolution while using web clients
 sudo sed -i 's/display]/&\nweb-client-max-head-resolution=(4096, 2160)/' /etc/dcv/dcv.conf
 
+# Enable software encoders. Uncomment the following line if you do not want NICE DCV to use the GPU.
+#sudo sed -i "s/display]/&\ndisplay-encoders=['ffmpeg', 'turbojpeg', 'lz4']/" /etc/dcv/dcv.conf
+
 sudo sed -i 's/enabled=1/enabled=0/' /etc/default/apport
 
 # Disable ubuntu upgrade notification pop-ups
