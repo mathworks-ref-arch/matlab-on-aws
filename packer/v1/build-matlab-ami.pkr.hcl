@@ -92,6 +92,11 @@ variable "SUBNET_ID" {
   }
 }
 
+variable "TEMPORARY_SECURITY_GROUP_SOURCE_CIDRS" {
+  type = list(string)
+  default = ["144.212.0.0/16","172.30.0.0/15","172.31.0.0/16","121.244.0.0/16","195.99.0.0/16"]
+}
+
 variable "INSTANCE_TAGS" {
   type = map(string)
   default = {
@@ -144,6 +149,7 @@ source "amazon-ebs" "AMI_Builder" {
   ssh_username = "ubuntu"
   run_tags     = "${var.INSTANCE_TAGS}"
   tags         = "${var.AMI_TAGS}"
+  temporary_security_group_source_cidrs = "${var.TEMPORARY_SECURITY_GROUP_SOURCE_CIDRS}"
   subnet_filter {
     most_free = true
     random    = false
