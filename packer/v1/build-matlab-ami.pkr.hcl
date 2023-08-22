@@ -155,6 +155,7 @@ source "amazon-ebs" "AMI_Builder" {
     }
   }
   vpc_id = "${var.VPC_ID}"
+  temporary_security_group_source_public_ip = "true"
 }
 
 # Build the machine image.
