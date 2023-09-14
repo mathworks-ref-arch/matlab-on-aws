@@ -3,7 +3,7 @@
 ## Requirements
 Before starting, you will need the following:
 * A MATLAB&reg; license. For more information, see [Confirm Licensing for MathWorks Products Running on the Cloud](https://www.mathworks.com/help/install/license/licensing-for-mathworks-products-running-on-the-cloud.html).
-* An Amazon Web Services&trade; (AWS) account.
+* An Amazon Web Services&reg; (AWS) account.
 * A Key Pair for your AWS account in the appropriate region. For more information, see [Amazon EC2 Key Pairs](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html).
 
 ## Costs
@@ -30,6 +30,7 @@ To view instructions for deploying the MATLAB reference architecture, select a M
 
 | Linux | Windows |
 | ----- | ------- |
+| [R2023b](releases/R2023b/README.md) | [R2023b](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2023b/README.md) |
 | [R2023a](releases/R2023a/README.md) | [R2023a](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2023a/README.md) |
 | [R2022b](releases/R2022b/README.md) | [R2022b](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2022b/README.md) |
 | [R2022a](releases/R2022a/README.md) | [R2022a](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2022a/README.md) |
@@ -127,3 +128,9 @@ The AMI uses MathWorks Hosted License Manager by default. For information on how
 
 # Technical Support
 If you require assistance or have a request for additional features or capabilities, please contact [MathWorks Technical Support](https://www.mathworks.com/support/contact_us.html).
+
+----
+
+Copyright 2018-2023 The MathWorks, Inc.
+
+----

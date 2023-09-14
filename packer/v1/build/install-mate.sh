@@ -53,5 +53,8 @@ sudo ln -sf /usr/share/matlab/matlab64.png /usr/share/icons/hicolor/128x128/apps
 sudo update-icon-caches /usr/share/icons/*
 sudo dconf update
 
+# Sleep for 1 minute to let any pending process complete
+sleep 60
+
 # Fix ubuntu user permissions
 sudo chown -R ubuntu:ubuntu /home/ubuntu

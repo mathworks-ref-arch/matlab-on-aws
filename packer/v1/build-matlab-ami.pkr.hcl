@@ -6,14 +6,14 @@
 # under /packer/v1/release-config/ folder.
 variable "PRODUCTS" {
   type        = string
-  default     = "5G_Toolbox Antenna_Toolbox Aerospace_Blockset Mixed-Signal_Blockset Phased_Array_System_Toolbox AUTOSAR_Blockset Aerospace_Toolbox Audio_Toolbox Bioinformatics_Toolbox Bluetooth_Toolbox Simscape_Battery C2000_Microcontroller_Blockset Curve_Fitting_Toolbox Communications_Toolbox MATLAB_Compiler Control_System_Toolbox Simulink_Coverage Database_Toolbox DDS_Blockset Datafeed_Toolbox Deep_Learning_HDL_Toolbox Parallel_Computing_Toolbox Automated_Driving_Toolbox DSP_System_Toolbox Simulink_Design_Verifier MATLAB_Parallel_Server Medical_Imaging_Toolbox Embedded_Coder HDL_Verifier Econometrics_Toolbox Filter_Design_HDL_Coder Financial_Toolbox Fuzzy_Logic_Toolbox GPU_Coder Global_Optimization_Toolbox HDL_Coder DSP_HDL_Toolbox SoC_Blockset Image_Acquisition_Toolbox Instrument_Control_Toolbox System_Identification_Toolbox Image_Processing_Toolbox Financial_Instruments_Toolbox Simscape_Driveline Wireless_HDL_Toolbox Lidar_Toolbox LTE_Toolbox MATLAB_Coder Mapping_Toolbox MATLAB_Compiler_SDK MATLAB Model_Predictive_Control_Toolbox MATLAB_Report_Generator Simscape_Multibody Motor_Control_Blockset MATLAB_Web_App_Server Deep_Learning_Toolbox Navigation_Toolbox Optimization_Toolbox Industrial_Communication_Toolbox Partial_Differential_Equation_Toolbox Simulink_PLC_Coder Predictive_Maintenance_Toolbox Fixed-Point_Designer MATLAB_Production_Server Simscape_Electrical Powertrain_Blockset Radar_Toolbox RF_Blockset Robust_Control_Toolbox RF_Toolbox Risk_Management_Toolbox Reinforcement_Learning_Toolbox Robotics_System_Toolbox RF_PCB_Toolbox Requirements_Toolbox ROS_Toolbox Simulink_Coder SimBiology Simulink_Control_Design SimEvents Stateflow Signal_Processing_Toolbox Simscape_Fluids Satellite_Communications_Toolbox Simulink_Compiler Simulink Symbolic_Math_Toolbox Simulink_Design_Optimization Signal_Integrity_Toolbox Simulink_Report_Generator Simscape Statistics_and_Machine_Learning_Toolbox SerDes_Toolbox Simulink_Test Text_Analytics_Toolbox MATLAB_Test Sensor_Fusion_and_Tracking_Toolbox UAV_Toolbox Vehicle_Dynamics_Blockset Vehicle_Network_Toolbox Computer_Vision_Toolbox Simulink_3D_Animation Vision_HDL_Toolbox Simulink_Check Wavelet_Toolbox Wireless_Testbench WLAN_Toolbox Simulink_Real-Time System_Composer"
+  default     = "5G_Toolbox AUTOSAR_Blockset Aerospace_Blockset Aerospace_Toolbox Antenna_Toolbox Audio_Toolbox Automated_Driving_Toolbox Bioinformatics_Toolbox Bluetooth_Toolbox C2000_Microcontroller_Blockset Communications_Toolbox Computer_Vision_Toolbox Control_System_Toolbox Curve_Fitting_Toolbox DDS_Blockset DSP_HDL_Toolbox DSP_System_Toolbox Database_Toolbox Datafeed_Toolbox Deep_Learning_HDL_Toolbox Deep_Learning_Toolbox Econometrics_Toolbox Embedded_Coder Filter_Design_HDL_Coder Financial_Instruments_Toolbox Financial_Toolbox Fixed-Point_Designer Fuzzy_Logic_Toolbox GPU_Coder Global_Optimization_Toolbox HDL_Coder HDL_Verifier Image_Acquisition_Toolbox Image_Processing_Toolbox Industrial_Communication_Toolbox Instrument_Control_Toolbox LTE_Toolbox Lidar_Toolbox MATLAB MATLAB_Coder MATLAB_Compiler MATLAB_Compiler_SDK MATLAB_Production_Server MATLAB_Report_Generator MATLAB_Test MATLAB_Web_App_Server Mapping_Toolbox Medical_Imaging_Toolbox Mixed-Signal_Blockset Model_Predictive_Control_Toolbox Motor_Control_Blockset Navigation_Toolbox Optimization_Toolbox Parallel_Computing_Toolbox Partial_Differential_Equation_Toolbox Phased_Array_System_Toolbox Powertrain_Blockset Predictive_Maintenance_Toolbox RF_Blockset RF_PCB_Toolbox RF_Toolbox ROS_Toolbox Radar_Toolbox Reinforcement_Learning_Toolbox Requirements_Toolbox Risk_Management_Toolbox Robotics_System_Toolbox Robust_Control_Toolbox Satellite_Communications_Toolbox Sensor_Fusion_and_Tracking_Toolbox SerDes_Toolbox Signal_Integrity_Toolbox Signal_Processing_Toolbox SimBiology SimEvents Simscape Simscape_Battery Simscape_Driveline Simscape_Electrical Simscape_Fluids Simscape_Multibody Simulink Simulink_3D_Animation Simulink_Check Simulink_Coder Simulink_Compiler Simulink_Control_Design Simulink_Coverage Simulink_Design_Optimization Simulink_Design_Verifier Simulink_Desktop_Real-Time Simulink_Fault_Analyzer Simulink_PLC_Coder Simulink_Real-Time Simulink_Report_Generator Simulink_Test SoC_Blockset Stateflow Statistics_and_Machine_Learning_Toolbox Symbolic_Math_Toolbox System_Composer System_Identification_Toolbox Text_Analytics_Toolbox UAV_Toolbox Vehicle_Dynamics_Blockset Vehicle_Network_Toolbox Vision_HDL_Toolbox WLAN_Toolbox Wavelet_Toolbox Wireless_HDL_Toolbox Wireless_Testbench"
   description = "Target products to install in the machine image, e.g. MATLAB SIMULINK."
 
 }
 
 variable "RELEASE" {
   type        = string
-  default     = "R2023a"
+  default     = "R2023b"
   description = "Target MATLAB release to install in the machine image, must start with \"R\"."
 
   validation {
@@ -24,8 +24,8 @@ variable "RELEASE" {
 
 variable "BASE_AMI" {
   type        = string
-  default     = "ami-0778521d914d23bc1"
-  description = "Default AMI ID refers to the Ubuntu Server 20.04 image provided by Canonical."
+  default     = "ami-06a1f46caddb5669e"
+  description = "Default AMI ID refers to the Ubuntu Server 22.04 image provided by Canonical."
 
   validation {
     condition     = substr(var.BASE_AMI, 0, 4) == "ami-"
@@ -35,13 +35,13 @@ variable "BASE_AMI" {
 
 variable "BUILD_SCRIPTS" {
   type        = list(string)
-  default     = ["install-startup-scripts.sh", "install-swap-desktop-solution.sh", "install-dependencies.sh", "install-ubuntu-desktop.sh", "install-mate.sh", "install-matlab.sh", "install-glibc-ubuntu2004.sh", "setup-startup-accelerator.sh", "install-fabric-manager-ubuntu2004.sh", "generate-toolbox-cache.sh", "cleanup.sh"]
+  default     = ["install-startup-scripts.sh", "install-swap-desktop-solution.sh", "install-dependencies.sh", "install-matlab-dependencies-ubuntu.sh", "install-ubuntu-desktop.sh", "install-mate.sh", "install-matlab.sh", "setup-startup-accelerator.sh", "install-fabric-manager-ubuntu.sh", "generate-toolbox-cache.sh", "cleanup.sh"]
   description = "The list of installation scripts Packer will use when building the image."
 }
 
 variable "STARTUP_SCRIPTS" {
   type        = list(string)
-  default     = [".env", "10_setup-disks.sh", "20_setup-machine.sh", "30_setup-logging.sh", "40_setup-rdp.sh", "50_setup-nicedcv.sh", "60_setup-matlab.sh", "70_warmup-matlab.sh", "99_run-optional-user-command.sh"]
+  default     = [".env", "00_check-profile.sh", "10_setup-disks.sh", "20_setup-machine.sh", "30_setup-logging.sh", "40_setup-rdp.sh", "50_setup-nicedcv.sh", "60_setup-matlab.sh", "70_warmup-matlab.sh", "99_run-optional-user-command.sh"]
   description = "The list of startup scripts Packer will copy to the remote machine image builder, which can be used during the CloudFormation Stack creation."
 }
 
@@ -53,7 +53,7 @@ variable "RUNTIME_SCRIPTS" {
 
 variable "DCV_INSTALLER_URL" {
   type        = string
-  default     = "https://d1uj6qtbmh3dt5.cloudfront.net/2022.2/Servers/nice-dcv-2022.2-13907-ubuntu2004-x86_64.tgz"
+  default     = "https://d1uj6qtbmh3dt5.cloudfront.net/2023.0/Servers/nice-dcv-2023.0-15065-ubuntu2204-x86_64.tgz"
   description = "The URL to install NICE DCV, a remote display protocol to use."
 }
 
@@ -67,6 +67,12 @@ variable "NVIDIA_CUDA_TOOLKIT" {
   type        = string
   default     = "https://developer.download.nvidia.com/compute/cuda/11.7.1/local_installers/cuda_11.7.1_515.65.01_linux.run"
   description = "The URL to install NVIDIA CUDA Toolkit into the target machine image. "
+}
+
+variable "NVIDIA_CUDA_KEYRING_URL" {
+  type        = string
+  default     = "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb"
+  description = "NVIDIA CUDA keyring url."
 }
 
 # The following variables share the same setup across all MATLAB releases.
@@ -188,6 +194,7 @@ build {
       "DCV_INSTALLER_URL=${var.DCV_INSTALLER_URL}",
       "NVIDIA_DRIVER_VERSION=${var.NVIDIA_DRIVER_VERSION}",
       "NVIDIA_CUDA_TOOLKIT=${var.NVIDIA_CUDA_TOOLKIT}",
+      "NVIDIA_CUDA_KEYRING_URL=${var.NVIDIA_CUDA_KEYRING_URL}",
       "MATLAB_ROOT=/usr/local/matlab"
     ]
     expect_disconnect = true

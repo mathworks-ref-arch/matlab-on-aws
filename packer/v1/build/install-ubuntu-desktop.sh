@@ -39,6 +39,8 @@ sudo apt-get -qq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--forc
 # https://github.com/neutrinolabs/xrdp/wiki/Building-on-Debian-8
 sudo mv /var/lib/dpkg/info/install-info.postinst /var/lib/dpkg/info/install-info.postinst.bad
 
+UBUNTU_VERSION=$(lsb_release -rs | tr -d '.')
+
 sudo apt-get -qq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"  install \
   autoconf \
   automake \
@@ -62,11 +64,12 @@ sudo apt-get -qq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--forc
   make \
   nasm \
   pkg-config \
-  python-libxml2 \
   xserver-xorg-dev \
   xsltproc \
   xutils \
-  xutils-dev
+  xutils-dev \
+  "$([[ $UBUNTU_VERSION -lt 2204 ]] && echo "python-libxml2" || echo "python3-libxml2")"
+
 
 sudo apt-get -qq install --reinstall xserver-xorg-video-intel xserver-xorg-core
 
@@ -128,12 +131,13 @@ sudo apt-get -qq update
 sudo apt-get -qq upgrade
 sudo apt-get -qq -o=Dpkg::Use-Pty=0 install ubuntu-mate-desktop
 sudo apt-get -qq install \
-    xserver-xorg-input-void \
     xserver-xorg-video-dummy \
     xfonts-cyrillic \
     xfonts-cronyx-* \
     libglvnd-dev \
-    xserver-xorg-dev
+    xserver-xorg-dev \
+    "$( [[ $UBUNTU_VERSION -lt 2204 ]] && echo "xserver-xorg-input-void" )"
+
 # Install kernel header files
 sudo apt-get -qq install "linux-headers-$(uname -r)"
 
@@ -150,16 +154,18 @@ sudo cp /var/tmp/config/nvidia/xorg.conf /etc/X11/xorg.conf
 # Installing NICE DCV server
 sudo wget --no-verbose "${DCV_INSTALLER_URL}"
 sudo tar xvf nice-dcv-*.tgz
-sudo apt-get -qq install ./nice-dcv-*-ubuntu2004-x86_64/nice-dcv-server_*.ubuntu2004.deb
-sudo apt-get -qq install ./nice-dcv-*-ubuntu2004-x86_64/nice-dcv-web-*.ubuntu2004.deb
+sudo apt-get -qq install ./nice-dcv-*-ubuntu*-x86_64/nice-dcv-server_*.ubuntu*.deb
+sudo apt-get -qq install ./nice-dcv-*-ubuntu*-x86_64/nice-dcv-web-*.ubuntu*.deb
 
 # Remove gnome option from the lightdm menu
-sudo mv /usr/share/xsessions/ubuntu.desktop /usr/share/xsessions/ubuntu.desktop.disabled
+if [[ -e "/usr/share/xsessions/ubuntu.desktop" ]]; then
+    sudo mv /usr/share/xsessions/ubuntu.desktop /usr/share/xsessions/ubuntu.desktop.disabled
+fi
 sudo systemctl set-default multi-user.target
 
 # Clean up
 cd /home/ubuntu
-sudo rm -r nice-dcv-*-ubuntu2004-x86_64
+sudo rm -r nice-dcv-*-ubuntu*-x86_64
 sudo rm nice-dcv-*.tgz
 
 sudo sed -i '/\[session-management\]/ a agent-launch-strategy=\"run-user\"' /etc/dcv/dcv.conf
@@ -172,7 +178,9 @@ sudo bash -c "cat > /etc/lightdm/lightdm.conf" <<EOT
 greeter-session=lightdm-slick-greeter
 autologin-user=ubuntu
 EOT
-sudo rm /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
+if [[ -e "/usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf" ]]; then
+    sudo rm /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
+fi
 
 # Configure automatic console sessions on service startup
 sudo sed -i 's/^#owner.*$/owner="ubuntu"/' /etc/dcv/dcv.conf

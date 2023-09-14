@@ -9,7 +9,7 @@ LOCAL_USER=ubuntu
 
 # Create MATLAB Home directory in ~/Documents,
 # which was created in during the MATE setup.
-mkdir /home/${LOCAL_USER}/Documents/MATLAB/
+mkdir -p /home/${LOCAL_USER}/Documents/MATLAB/
 
 # Configure MATLAB_ROOT directory
 sudo mkdir -p "${MATLAB_ROOT}"
@@ -55,10 +55,10 @@ sudo ln -s "${MATLAB_ROOT}/bin/matlab" /usr/local/bin
 sudo mkdir -p "/etc/skel/.matlab/${RELEASE}"
 sudo cp /var/tmp/config/matlab/matlab.prf  "/etc/skel/.matlab/${RELEASE}/"
 
-# Set keyboard settings to windows flavor for ubuntu user.
+# Set keyboard settings to windows flavor for the local user.
 sudo mkdir -p "/home/${LOCAL_USER}/.matlab/${RELEASE}"
 sudo cp /var/tmp/config/matlab/matlab.prf "/home/${LOCAL_USER}/.matlab/${RELEASE}/"
-sudo chown -R ubuntu:ubuntu "/home/${LOCAL_USER}/.matlab"
+sudo chown -R ${LOCAL_USER}:${LOCAL_USER} "/home/${LOCAL_USER}/.matlab"
 
 # Enable DDUX collection by default for the VM
 cd "${MATLAB_ROOT}/bin/glnxa64"

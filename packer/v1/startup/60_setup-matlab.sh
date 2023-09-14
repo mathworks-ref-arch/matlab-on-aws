@@ -15,3 +15,5 @@ if [[ -n ${MLM_LICENSE_FILE} ]]; then
 else
     echo "License MATLAB using Online Licensing"
 fi
+
+sudo chown -R ubuntu:ubuntu /home/ubuntu/Desktop
