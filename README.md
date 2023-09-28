@@ -1,5 +1,5 @@
 # MATLAB on Amazon Web Services
-
+[![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=mathworks-ref-arch/matlab-on-aws)
 ## Requirements
 Before starting, you will need the following:
 * A MATLAB&reg; license. For more information, see [Confirm Licensing for MathWorks Products Running on the Cloud](https://www.mathworks.com/help/install/license/licensing-for-mathworks-products-running-on-the-cloud.html).
