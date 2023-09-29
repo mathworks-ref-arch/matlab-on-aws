@@ -58,3 +58,5 @@ sleep 60
 
 # Fix ubuntu user permissions
 sudo chown -R ubuntu:ubuntu /home/ubuntu
+
+sudo update-alternatives --set x-session-manager /usr/bin/mate-session

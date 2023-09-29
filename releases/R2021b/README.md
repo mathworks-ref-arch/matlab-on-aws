@@ -2,7 +2,7 @@
 
 ## Step 1. Launch the Template
 
-Click the **Launch Stack** button to deploy a standalone MATLAB desktop client on AWS. This will open the CloudFormation Create Stack screen in your web browser.
+Click the **Launch Stack** button to deploy a standalone MATLAB&reg; desktop client on AWS&reg;. This will open the CloudFormation Create Stack screen in your web browser.
 
 | Region | Launch Link |
 | --------------- | ----------- |
@@ -38,25 +38,28 @@ After you click the Launch Stack button above, the “Create stack” page will 
 
 | Parameter label | Description |
 | --------------- | ----------- |
-| **AWS EC2 Instance type** | The AWS instance type to use for MATLAB. See https://aws.amazon.com/ec2/instance-types for a list of instance types. |
-| **Instance Name** | Give your MATLAB virtual machine a name |
-| **Remote access protocol** | Specify the access protocol to access this instance |
-| **Keep public ip the same** | Choose whether you want to keep the same public IP address for the instance |
-| **Storage Size (GiB)** | Specify the size in GB of the root volume |
-| **IAM Role (Optional)** | Specify an IAM Role to associate with this instance. |
+| **AWS EC2 Instance type** | AWS instance type to use for MATLAB. See https://aws.amazon.com/ec2/instance-types for a list of instance types. |
+| **Instance Name** | Name for the MATLAB virtual machine |
+| **Remote access protocol** | Access protocol to connect to this instance |
+| **Keep public ip the same** | Flag indicating whether you want to keep the same public IP address for the instance |
+| **Storage Size (GiB)** | Size in GB of the root volume |
+| **Custom IAM Role (Optional)** | Name of a custom IAM Role to associate with this instance. If not specified, a predefined role is used. If specified, features requiring special permissions will be unavailable (NICE DCV, CloudWatch, IAM Policies). |
+| **Additional IAM Policies (Optional)** | Semicolon-delimited list of IAM Policy ARNs to add to the predefined role. This option cannot be used with a custom IAM Role. |
 | **VPC to deploy this stack to** | ID of an existing VPC in which to deploy this stack |
-| **Subnet** | List of existing subnets IDs |
-| **SSH Key Pair** | The name of an existing EC2 KeyPair to allow SSH access to all the instances. See https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for details on creating these. |
-| **Allow connections from** | The IP address range that will be allowed to connect to this instance from outside of the VPC. This field should be formatted as \<ip_address>/\<mask>. E.g. 10.0.0.1/32. This is the public IP address which can be found by searching for 'what is my ip address' on the web. The mask determines the number of IP addresses to include. A mask of 32 is a single IP address. This calculator can be used to build a specific range: https://www.ipaddressguide.com/cidr. You may need to contact your IT administrator to determine which address is appropriate. |
-| **Remote password** | Enter a password for the "ubuntu" user |
+| **Subnet** | ID of an existing subnet. To access the instance from anywhere, ensure that your subnet auto-assigns public IP addresses and is connected to the internet. |
+| **SSH Key Pair** | Name of an existing EC2 KeyPair to allow SSH access to all the instances. See https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for details on creating these. |
+| **Allow connections from** | IP address range that will be allowed to connect to this instance from outside of the VPC. This field should be formatted as \<ip_address>/\<mask>. E.g. 10.0.0.1/32. This is the public IP address which can be found by searching for 'what is my ip address' on the web. The mask determines the number of IP addresses to include. A mask of 32 is a single IP address. This calculator can be used to build a specific range: https://www.ipaddressguide.com/cidr. You may need to contact your IT administrator to determine which address is appropriate. |
+| **Remote password** | Password for the "ubuntu" user |
 | **Confirm remote password** | Confirm Password |
-| **License Manager for MATLAB connection string** | Optional License Manager for MATLAB string in the form \<port>@\<hostname>. If not specified, online licensing is used. If specified, the license manager must be accessible from the specified VPC and subnets |
-| **Configure cloudwatch logging for the MATLAB instance** | Choose whether you want to enable cloudwatch logging for the MATLAB instance |
+| **License Manager for MATLAB connection string** | Optional License Manager for MATLAB, specified as a string in the form \<port>@\<hostname>. If not specified, use online licensing. If specified, the network license manager (NLM) must be accessible from the specified VPC and subnets. To use the private hostname of the NLM hub instead of the public hostname, specify the security group ID of the NLM hub in the AdditionalSecurityGroup parameter. For more information, see https://github.com/mathworks-ref-arch/license-manager-for-matlab-on-aws. |
+| **Configure cloudwatch logging for the MATLAB instance** | Flag indicating whether cloudwatch logging for the MATLAB instance is enabled. |
 | **AutoShutdown** | Choose whether you want to enable autoshutdown for your instance after a certain number of hours |
-| **Additional security group to place instances in** | The ID of an additional (optional) Security Group for the instances to be placed in. Often the License Manager for MATLAB's Security Group. |
+| **Additional security group to place instances in** | ID of an additional (optional) Security Group for the instances to be placed in. Often the License Manager for MATLAB's Security Group. |
+| **Custom AMI ID (Optional)** | ID of a custom Amazon Machine Image (AMI) in the target region (optional). If the build has been customized then the resulting machine image may no longer be compatible with the provided CloudFormation template. Compatability can in some cases be restored by making corresponding modifications to the CloudFormation template. The ID should start with 'ami-'. |
+| **Optional user inline command** | Provide an optional inline shell command to run on machine launch. For example, to set an environment variable CLOUD=AWS, use this command excluding the angle brackets: \<echo -e "export CLOUD=AWS" \| tee -a /etc/profile.d/setenvvar.sh && source /etc/profile>. To run an external script, use this command excluding the angle brackets: \<wget -O /tmp/my-script.sh "https://www.example.com/script.sh" && bash /tmp/my-script.sh>. Find the logs at '/var/log/mathworks/startup.log'. |
 
 
->**Note**: If you chose to associate an IAM role above you'll need to acknowledge that it may create IAM resources in the Capabilities before creating the stack.
+>**Note**: In the capabilities section, you must acknowledge that AWS Cloudformation might create IAM resources and autoexpand nested templates when creating the stack.
 
 3. Click the **Create Stack** button.  The CloudFormation service will start creating the resources for the stack. <p>After clicking **Create** you will be taken to the *Stack Detail* page for your stack. Wait for the Status to reach **CREATE\_COMPLETE**. This may take up to 10 minutes.</p>
 
@@ -73,10 +76,10 @@ If you chose NICE DCV, then:
 1. Look for the key named `NiceDCVConnection` and click on it
 1. In the login screen that's displayed, use the username `ubuntu` and the password you specified while setting up the stack in [Step 2](#step-2-configure-the-stack).
 
-## Step 4. Launch MATLAB
-Double-click the MATLAB icon on the virtual machine desktop to launch MATLAB. The first time you start MATLAB you will need to activate it. By default, you will be asked to use your MathWorks Account to activate MATLAB. For other ways to activate MATLAB, see [MATLAB Licensing in the Cloud](https://mathworks.com/help/install/license/licensing-for-mathworks-products-running-on-the-cloud.html).
+## Step 4. Start MATLAB
+Double-click the MATLAB icon on the virtual machine desktop to start MATLAB. The first time you start MATLAB, you need to enter your MathWorks&reg; Account credentials to license MATLAB. For other ways to license MATLAB, see [MATLAB Licensing in the Cloud](https://www.mathworks.com/help/install/license/licensing-for-mathworks-products-running-on-the-cloud.html).
 
->**Note**: It may take a few minutes for activation to complete and MATLAB to start. You will experience this delay only the first time you start MATLAB.
+>**Note**: It may take up to a minute for MATLAB to start the first time.
 
 
 # Additional Information
@@ -88,12 +91,15 @@ Once you have finished using your stack, it is recommended that you delete all r
 1. Go to the AWS CloudFormation page and select the stack you created.
 1. Click the **Actions** button and click **Delete Stack** from the menu that appears.
 
-### Resources
+## Nested Stacks
 
-The following resources will be created as part of the CloudFormation Stack.
+This CloudFormation template uses nested stacks to reference templates used by multiple reference architectures. For details, see the [MathWorks Infrastructure as Code Building Blocks](https://github.com/mathworks-ref-arch/iac-building-blocks) repository.
 
-1. Security Group for SSH, RDP and NICE DCV access
-1. EC2 Instance
-
-### CloudWatch Logs
+## CloudWatch Logs
 CloudWatch logs enables you to access logs from all the resources in your stack in a single place. To use CloudWatch logs, launch the stack with the feature "Configure cloudwatch logging for the MATLAB instance" enabled. Once the stack deployment is complete, you can access your logs in the "Outputs" of the stack by clicking the link next to "CloudWatchLogs". Note that if you delete the stack, the CloudWatch log group is also deleted. For more information, see [What is Amazon CloudWatch Logs?](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html).
+
+----
+
+Copyright 2018-2023 The MathWorks, Inc.
+
+----

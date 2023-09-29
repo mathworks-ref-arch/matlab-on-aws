@@ -14,3 +14,9 @@ sudo mv "/var/tmp/config/matlab/startup-accelerator/${RELEASE}/msa.ini" /usr/loc
 
 #664 - owner can read/write, group/others can read only. Execute permissions not needed for msa.ini.
 sudo chmod 664 /usr/local/etc/msa/msa.ini
+
+if [[  ${RELEASE} < "R2022a" ]]; then
+    sudo apt-get -qq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install parallel
+fi
+
+
