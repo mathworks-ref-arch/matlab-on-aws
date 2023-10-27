@@ -3,58 +3,58 @@
   "Mappings": {
     "RegionMap": {
       "us-east-1": {
-        "AMI": "ami-0a0cae317c162455a"
+        "AMI": "ami-0d1078a69750bfbc4"
       },
       "us-east-2": {
-        "AMI": "ami-0fb6cd6ecd78a1a5c"
+        "AMI": "ami-0fb91d934974a4de0"
       },
       "us-west-1": {
-        "AMI": "ami-0a6663a1ff89601f6"
+        "AMI": "ami-08d265b6caa87e411"
       },
       "us-west-2": {
-        "AMI": "ami-02de1e821fd2af4ea"
+        "AMI": "ami-020cdbdaee0134718"
       },
       "ca-central-1": {
-        "AMI": "ami-0c64ec1a39c5b3ebe"
+        "AMI": "ami-034cb530434624ff8"
       },
       "eu-central-1": {
-        "AMI": "ami-0204417bb1682599d"
+        "AMI": "ami-04e719b190863e3de"
       },
       "eu-west-1": {
-        "AMI": "ami-035e9dd157053c36e"
+        "AMI": "ami-01b5e0b66a6b48ed9"
       },
       "eu-west-2": {
-        "AMI": "ami-079ab14e3e63471f3"
+        "AMI": "ami-03e6be0f400a10078"
       },
       "eu-west-3": {
-        "AMI": "ami-0945756314f78162c"
+        "AMI": "ami-027c7238cce3d287a"
       },
       "eu-north-1": {
-        "AMI": "ami-00cea1d19d32b3dd3"
+        "AMI": "ami-0708cf9b7149999ee"
       },
       "sa-east-1": {
-        "AMI": "ami-01befc7921363ee51"
+        "AMI": "ami-05271723d9f291581"
       },
       "me-south-1": {
-        "AMI": "ami-00a2b11afce110279"
+        "AMI": "ami-0f3198888435d82b6"
       },
       "ap-east-1": {
-        "AMI": "ami-0182af36a27e35947"
+        "AMI": "ami-07bdbec29faa6b981"
       },
       "ap-south-1": {
-        "AMI": "ami-0309f418e5fead2f1"
+        "AMI": "ami-01d5fa7ac35ce18a1"
       },
       "ap-northeast-1": {
-        "AMI": "ami-01c556a5cef7e8ec6"
+        "AMI": "ami-0aa0acc19f4c3717c"
       },
       "ap-northeast-2": {
-        "AMI": "ami-009d1a087035e7e10"
+        "AMI": "ami-00a6c633ad617a7f9"
       },
       "ap-southeast-1": {
-        "AMI": "ami-0e72f4733e597d97a"
+        "AMI": "ami-06f3f38b0b0b68802"
       },
       "ap-southeast-2": {
-        "AMI": "ami-00095be9fb68c97fe"
+        "AMI": "ami-0ed5b8ce637ca0bbf"
       }
     }
   },
@@ -94,59 +94,41 @@
         },
         "Policies": [
           {
-            "PolicyName": "cloudwatch-access-policy",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": [
-                    "logs:CreateLogStream",
-                    "logs:DescribeLogStreams",
-                    "logs:PutLogEvents"
-                  ],
-                  "Resource": {
-                    "Fn::Join": [
-                      ":",
-                      [
-                        "arn:aws:logs",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        {
-                          "Ref": "AWS::AccountId"
-                        },
-                        "log-group",
-                        {
-                          "Fn::Join": [
-                            "-",
-                            [
-                              {
-                                "Ref": "AWS::StackName"
-                              },
-                              {
-                                "Fn::Select": [
-                                  "2",
-                                  {
-                                    "Fn::Split": [
-                                      "/",
-                                      {
-                                        "Ref": "AWS::StackId"
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          ]
-                        },
-                        "*"
-                      ]
-                    ]
-                  }
+            "Fn::If": [
+              "UseCloudWatch",
+              {
+                "PolicyName": "cloudwatch-access-policy",
+                "PolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "logs:CreateLogStream",
+                        "logs:DescribeLogStreams",
+                        "logs:PutLogEvents"
+                      ],
+                      "Resource": {
+                        "Fn::Sub": [
+                          "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${name}:*",
+                          {
+                            "name": {
+                              "Fn::GetAtt": [
+                                "MWLogLocation",
+                                "Outputs.LogGroupName"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
                 }
-              ]
-            }
+              },
+              {
+                "Ref": "AWS::NoValue"
+              }
+            ]
           },
           {
             "PolicyName": "dcv-access-policy",
@@ -155,20 +137,9 @@
               "Statement": [
                 {
                   "Effect": "Allow",
-                  "Action": [
-                    "s3:GetObject"
-                  ],
+                  "Action": "s3:GetObject",
                   "Resource": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "arn:aws:s3:::dcv-license.",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "/*"
-                      ]
-                    ]
+                    "Fn::Sub": "arn:aws:s3:::dcv-license.${AWS::Region}/*"
                   }
                 }
               ]
@@ -267,17 +238,7 @@
                   "Effect": "Allow",
                   "Action": "cloudformation:DescribeStackResource",
                   "Resource": {
-                    "Fn::Sub": [
-                      "arn:aws:cloudformation:${region}:${accountId}:stack/*",
-                      {
-                        "region": {
-                          "Ref": "AWS::Region"
-                        },
-                        "accountId": {
-                          "Ref": "AWS::AccountId"
-                        }
-                      }
-                    ]
+                    "Fn::Sub": "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
                   }
                 },
                 {
@@ -285,11 +246,8 @@
                   "Action": "iam:PassRole",
                   "Resource": {
                     "Fn::Sub": [
-                      "arn:aws:iam::${accountId}:role/${role}",
+                      "arn:aws:iam::${AWS::AccountId}:role/${role}",
                       {
-                        "accountId": {
-                          "Ref": "AWS::AccountId"
-                        },
                         "role": {
                           "Fn::If": [
                             "UsePredefinedRole",
@@ -307,33 +265,14 @@
                 },
                 {
                   "Effect": "Allow",
-                  "Action": [
-                    "ec2:AssociateIamInstanceProfile"
-                  ],
+                  "Action": "ec2:AssociateIamInstanceProfile",
                   "Resource": {
-                    "Fn::Sub": [
-                      "arn:aws:ec2:${region}:${accountId}:instance/*",
-                      {
-                        "region": {
-                          "Ref": "AWS::Region"
-                        },
-                        "accountId": {
-                          "Ref": "AWS::AccountId"
-                        }
-                      }
-                    ]
+                    "Fn::Sub": "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/*"
                   },
                   "Condition": {
                     "StringEquals": {
                       "aws:ResourceTag/aws:cloudformation:stack-name": {
-                        "Fn::Sub": [
-                          "${stack}",
-                          {
-                            "stack": {
-                              "Ref": "AWS::StackName"
-                            }
-                          }
-                        ]
+                        "Ref": "AWS::StackName"
                       },
                       "aws:ResourceTag/aws:cloudformation:logical-id": "MATLABEC2Instance"
                     }
@@ -347,17 +286,7 @@
                     "logs:PutLogEvents"
                   ],
                   "Resource": {
-                    "Fn::Sub": [
-                      "arn:aws:logs:${region}:${accountId}:log-group:/aws/lambda/*",
-                      {
-                        "region": {
-                          "Ref": "AWS::Region"
-                        },
-                        "accountId": {
-                          "Ref": "AWS::AccountId"
-                        }
-                      }
-                    ]
+                    "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
                   }
                 }
               ]
@@ -420,39 +349,28 @@
         ]
       }
     },
-    "MATLABSecurityGroup": {
-      "Type": "AWS::EC2::SecurityGroup",
+    "MWSecurityGroup": {
+      "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "VpcId": {
-          "Ref": "VPC"
-        },
-        "GroupDescription": "Enable SSH and RDP Access",
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "22",
-            "ToPort": "22",
-            "CidrIp": {
-              "Ref": "ClientIPAddress"
-            }
+        "TemplateURL": "https://mathworks-reference-architectures-templates.s3.amazonaws.com/security-group/v1/0/0/security-group.yml",
+        "Parameters": {
+          "VpcId": {
+            "Ref": "VPC"
           },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "3389",
-            "ToPort": "3389",
-            "CidrIp": {
-              "Ref": "ClientIPAddress"
-            }
+          "CidrIp": {
+            "Ref": "ClientIPAddress"
           },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "8443",
-            "ToPort": "8443",
-            "CidrIp": {
-              "Ref": "ClientIPAddress"
-            }
-          }
-        ]
+          "SSHAccess": "Yes",
+          "RDPAccess": "Yes",
+          "NICEDCVAccess": "Yes"
+        }
+      }
+    },
+    "MWLogLocation": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Condition": "UseCloudWatch",
+      "Properties": {
+        "TemplateURL": "https://mathworks-reference-architectures-templates.s3.amazonaws.com/log-location/v1/0/0/log-location.yml"
       }
     },
     "MATLABEC2Instance": {
@@ -480,7 +398,10 @@
         },
         "SecurityGroupIds": [
           {
-            "Ref": "MATLABSecurityGroup"
+            "Fn::GetAtt": [
+              "MWSecurityGroup",
+              "Outputs.SecurityGroupId"
+            ]
           },
           {
             "Fn::If": [
@@ -560,26 +481,9 @@
                         "Fn::If": [
                           "UseCloudWatch",
                           {
-                            "Fn::Join": [
-                              "-",
-                              [
-                                {
-                                  "Ref": "AWS::StackName"
-                                },
-                                {
-                                  "Fn::Select": [
-                                    "2",
-                                    {
-                                      "Fn::Split": [
-                                        "/",
-                                        {
-                                          "Ref": "AWS::StackId"
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ]
+                            "Fn::GetAtt": [
+                              "MWLogLocation",
+                              "Outputs.LogGroupName"
                             ]
                           },
                           ""
@@ -611,35 +515,6 @@
       "CreationPolicy": {
         "ResourceSignal": {
           "Timeout": "PT15M"
-        }
-      }
-    },
-    "MATLABLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "Condition": "UseCloudWatch",
-      "Properties": {
-        "LogGroupName": {
-          "Fn::Join": [
-            "-",
-            [
-              {
-                "Ref": "AWS::StackName"
-              },
-              {
-                "Fn::Select": [
-                  "2",
-                  {
-                    "Fn::Split": [
-                      "/",
-                      {
-                        "Ref": "AWS::StackId"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          ]
         }
       }
     },
@@ -759,29 +634,12 @@
                   "Effect": "Allow",
                   "Action": "ec2:Stopinstances",
                   "Resource": {
-                    "Fn::Sub": [
-                      "arn:aws:ec2:${region}:${accountId}:instance/*",
-                      {
-                        "region": {
-                          "Ref": "AWS::Region"
-                        },
-                        "accountId": {
-                          "Ref": "AWS::AccountId"
-                        }
-                      }
-                    ]
+                    "Fn::Sub": "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/*"
                   },
                   "Condition": {
                     "StringEquals": {
                       "aws:ResourceTag/aws:cloudformation:stack-name": {
-                        "Fn::Sub": [
-                          "${STACK_NAME}",
-                          {
-                            "STACK_NAME": {
-                              "Ref": "AWS::StackName"
-                            }
-                          }
-                        ]
+                        "Ref": "AWS::StackName"
                       },
                       "aws:ResourceTag/aws:cloudformation:logical-id": "MATLABEC2Instance"
                     }
@@ -805,22 +663,7 @@
                     "logs:PutLogEvents"
                   ],
                   "Resource": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "arn:aws:logs:",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        ":",
-                        {
-                          "Ref": "AWS::AccountId"
-                        },
-                        ":",
-                        "log-group:",
-                        "/aws/lambda/*"
-                      ]
-                    ]
+                    "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
                   }
                 }
               ]
@@ -1246,26 +1089,9 @@
             },
             "#logsV2:log-groups/log-group/",
             {
-              "Fn::Join": [
-                "-",
-                [
-                  {
-                    "Ref": "AWS::StackName"
-                  },
-                  {
-                    "Fn::Select": [
-                      "2",
-                      {
-                        "Fn::Split": [
-                          "/",
-                          {
-                            "Ref": "AWS::StackId"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
+              "Fn::GetAtt": [
+                "MWLogLocation",
+                "Outputs.LogGroupName"
               ]
             }
           ]

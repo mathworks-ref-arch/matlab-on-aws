@@ -2,7 +2,7 @@
 
 ## Step 1. Launch the Template
 
-Click the **Launch Stack** button to deploy a standalone MATLAB desktop client on AWS. This will open the CloudFormation Create Stack screen in your web browser.
+Click the **Launch Stack** button to deploy a standalone MATLAB&reg; desktop client on AWS&reg;. This will open the CloudFormation Create Stack screen in your web browser.
 
 | Region | Launch Link |
 | --------------- | ----------- |
@@ -59,7 +59,7 @@ After you click the Launch Stack button above, the “Create stack” page will 
 | **Optional user inline command** | Provide an optional inline shell command to run on machine launch. For example, to set an environment variable CLOUD=AWS, use this command excluding the angle brackets: \<echo -e "export CLOUD=AWS" \| tee -a /etc/profile.d/setenvvar.sh && source /etc/profile>. To run an external script, use this command excluding the angle brackets: \<wget -O /tmp/my-script.sh "https://www.example.com/script.sh" && bash /tmp/my-script.sh>. Find the logs at '/var/log/mathworks/startup.log'. |
 
 
->**Note**: If you chose to associate an IAM role above you'll need to acknowledge that it may create IAM resources in the Capabilities before creating the stack.
+>**Note**: In the capabilities section, you must acknowledge that AWS Cloudformation might create IAM resources and autoexpand nested templates when creating the stack.
 
 3. Click the **Create Stack** button.  The CloudFormation service will start creating the resources for the stack. <p>After clicking **Create** you will be taken to the *Stack Detail* page for your stack. Wait for the Status to reach **CREATE\_COMPLETE**. This may take up to 10 minutes.</p>
 
@@ -77,7 +77,7 @@ If you chose NICE DCV, then:
 1. In the login screen that's displayed, use the username `ubuntu` and the password you specified while setting up the stack in [Step 2](#step-2-configure-the-stack).
 
 ## Step 4. Start MATLAB
-Double-click the MATLAB icon on the virtual machine desktop to start MATLAB. The first time you start MATLAB, you need to enter your MathWorks Account credentials to license MATLAB. For other ways to license MATLAB, see [MATLAB Licensing in the Cloud](https://www.mathworks.com/help/install/license/licensing-for-mathworks-products-running-on-the-cloud.html).
+Double-click the MATLAB icon on the virtual machine desktop to start MATLAB. The first time you start MATLAB, you need to enter your MathWorks&reg; Account credentials to license MATLAB. For other ways to license MATLAB, see [MATLAB Licensing in the Cloud](https://www.mathworks.com/help/install/license/licensing-for-mathworks-products-running-on-the-cloud.html).
 
 >**Note**: It may take up to a minute for MATLAB to start the first time.
 
@@ -91,18 +91,15 @@ Once you have finished using your stack, it is recommended that you delete all r
 1. Go to the AWS CloudFormation page and select the stack you created.
 1. Click the **Actions** button and click **Delete Stack** from the menu that appears.
 
-### Resources
+## Nested Stacks
 
-The following resources will be created as part of the CloudFormation Stack.
+This CloudFormation template uses nested stacks to reference templates used by multiple reference architectures. For details, see the [MathWorks Infrastructure as Code Building Blocks](https://github.com/mathworks-ref-arch/iac-building-blocks) repository.
 
-1. Security Group for SSH, RDP and NICE DCV access
-1. EC2 Instance
-
-### CloudWatch Logs
+## CloudWatch Logs
 CloudWatch logs enables you to access logs from all the resources in your stack in a single place. To use CloudWatch logs, launch the stack with the feature "Configure cloudwatch logging for the MATLAB instance" enabled. Once the stack deployment is complete, you can access your logs in the "Outputs" of the stack by clicking the link next to "CloudWatchLogs". Note that if you delete the stack, the CloudWatch log group is also deleted. For more information, see [What is Amazon CloudWatch Logs?](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html).
 
 ----
 
-Copyright (c) 2018-2023 The MathWorks, Inc. All rights reserved.
+Copyright 2018-2023 The MathWorks, Inc.
 
 ----

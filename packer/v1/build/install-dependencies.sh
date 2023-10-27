@@ -32,7 +32,7 @@ rm amazon-cloudwatch-agent.deb
 sudo apt-get -qq install python3-pip
 
 # Install NVIDIA CUDA Toolkit
-if [ ! -z "${NVIDIA_CUDA_TOOLKIT}" ]; then
+if [[ -n "${NVIDIA_CUDA_TOOLKIT}" ]]; then
   wget --no-verbose "${NVIDIA_CUDA_TOOLKIT}"
   chmod +x cuda*.run
   sudo bash cuda*.run --silent --override --toolkit --samples --toolkitpath=/usr/local/cuda-toolkit --samplespath=/usr/local/cuda --no-opengl-libs
@@ -53,3 +53,6 @@ tar -xzf aws-cfn-bootstrap-py3-latest.tar.gz -C $AWS_CFN_INSTALL_DIR --strip-com
   sudo python3 setup.py -q install --install-scripts /opt/aws/bin
 )
 sudo rm -rf aws-cfn-bootstrap-*
+
+# Install Firefox to ensure a web browser is available
+sudo apt-get -qq install firefox
