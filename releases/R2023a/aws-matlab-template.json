@@ -3,58 +3,58 @@
   "Mappings": {
     "RegionMap": {
       "us-east-1": {
-        "AMI": "ami-0d1078a69750bfbc4"
+        "AMI": "ami-078da44e0f053addb"
       },
       "us-east-2": {
-        "AMI": "ami-0fb91d934974a4de0"
+        "AMI": "ami-0e38fa5ec2719817f"
       },
       "us-west-1": {
-        "AMI": "ami-08d265b6caa87e411"
+        "AMI": "ami-09d1a12db2d223157"
       },
       "us-west-2": {
-        "AMI": "ami-020cdbdaee0134718"
+        "AMI": "ami-04fbaf1323e01bd2b"
       },
       "ca-central-1": {
-        "AMI": "ami-034cb530434624ff8"
+        "AMI": "ami-019632f6b22dc5403"
       },
       "eu-central-1": {
-        "AMI": "ami-04e719b190863e3de"
+        "AMI": "ami-04e51a8d2a72ab42a"
       },
       "eu-west-1": {
-        "AMI": "ami-01b5e0b66a6b48ed9"
+        "AMI": "ami-06b35c73c7551b472"
       },
       "eu-west-2": {
-        "AMI": "ami-03e6be0f400a10078"
+        "AMI": "ami-0574999593a3fb2e6"
       },
       "eu-west-3": {
-        "AMI": "ami-027c7238cce3d287a"
+        "AMI": "ami-0b9488fb3c29a26b6"
       },
       "eu-north-1": {
-        "AMI": "ami-0708cf9b7149999ee"
+        "AMI": "ami-0dce5293fa3b54ab7"
       },
       "sa-east-1": {
-        "AMI": "ami-05271723d9f291581"
+        "AMI": "ami-00b8160b7150b2364"
       },
       "me-south-1": {
-        "AMI": "ami-0f3198888435d82b6"
+        "AMI": "ami-03d98c99bb9f58174"
       },
       "ap-east-1": {
-        "AMI": "ami-07bdbec29faa6b981"
+        "AMI": "ami-04803f423402673bd"
       },
       "ap-south-1": {
-        "AMI": "ami-01d5fa7ac35ce18a1"
+        "AMI": "ami-07671a6b3840ee4f5"
       },
       "ap-northeast-1": {
-        "AMI": "ami-0aa0acc19f4c3717c"
+        "AMI": "ami-015b32b0cf4d8d4ff"
       },
       "ap-northeast-2": {
-        "AMI": "ami-00a6c633ad617a7f9"
+        "AMI": "ami-088d7d698d2a22e3d"
       },
       "ap-southeast-1": {
-        "AMI": "ami-06f3f38b0b0b68802"
+        "AMI": "ami-050a9e2e98226882c"
       },
       "ap-southeast-2": {
-        "AMI": "ami-0ed5b8ce637ca0bbf"
+        "AMI": "ami-07749018ec952ad97"
       }
     }
   },
@@ -306,9 +306,9 @@
         },
         "Runtime": "python3.8",
         "Handler": "index.lambda_handler",
-        "Timeout": "300",
+        "Timeout": "600",
         "Code": {
-          "ZipFile": "# Copyright 2023 The MathWorks Inc.\nimport http, json, os, uuid, boto3\nfrom urllib.parse import urlparse\nfrom botocore.waiter import WaiterModel as Waiter, create_waiter_with_client as create_waiter\n\nINSTANCE_ID=os.environ['EC2_INSTANCE_ID']\nPROFILE_ID=os.environ['INSTANCE_PROFILE_ID']\nREGION=os.environ['AWS_REGION']\nLOG_GROUP='https://'+REGION+'.console.aws.amazon.com/cloudwatch/home?region='+REGION+'#logsV2:log-groups/log-group/$252Faws$252Flambda$252F'+os.environ['AWS_LAMBDA_FUNCTION_NAME']\n\ndef get_waiter_cfg(operation,argument,expected):\n    cfg={\"version\":2,\"waiters\":{\"CustomWaiter\":{\"delay\":2,\"operation\":operation,\"maxAttempts\":90,\"acceptors\":[{\"matcher\":\"path\",\"expected\":True,\"argument\":argument,\"state\":\"success\"},{\"matcher\":\"error\",\"expected\":expected,\"state\":\"retry\",\"argument\":\"Code\"}]}}}\n    return cfg\n\ndef get_resources(stack,response):\n    cfn=boto3.client('cloudformation')\n    res={}\n    waiter_cfg=get_waiter_cfg(\"DescribeStackResource\",\"StackResourceDetail.ResourceStatus==`CREATE_IN_PROGRESS` || StackResourceDetail.ResourceStatus==`CREATE_COMPLETE`\",\"ValidationError\")\n    waiter=create_waiter('CustomWaiter', Waiter(waiter_cfg), cfn)\n    for id in [INSTANCE_ID, PROFILE_ID]:\n        try:\n            waiter.wait(StackName=stack,LogicalResourceId=id)\n            resource=cfn.describe_stack_resource(StackName=stack,LogicalResourceId=id)\n            res[id]=resource['StackResourceDetail']['PhysicalResourceId']\n        except Exception as E:\n            print(E)\n            response['Reason']='Failed to get information on EC2 instance or instance profile. Check the log stream under the CloudWatch log group: '+LOG_GROUP\n    return res\n\ndef send_response(request,response):\n    url=urlparse(request['ResponseURL'])\n    body=json.dumps(response)\n    https=http.client.HTTPSConnection(url.netloc)\n    https.request('PUT', url.path+'?'+url.query,body)\n    return response\n \ndef lambda_handler(event,context): \n    response={'StackId':event['StackId'],'RequestId':event['RequestId'],'LogicalResourceId':event['LogicalResourceId'],'Status':'SUCCESS'}\n    stack=str(event['StackId']).split('/')[1]\n    if 'PhysicalResourceId' in event:\n        response['PhysicalResourceId']=event['PhysicalResourceId']\n    else:\n        response['PhysicalResourceId']=str(uuid.uuid4())\n    if event['RequestType'] == 'Delete':\n        return send_response(event,response)\n    try:\n        ec2=boto3.client('ec2')\n        resources=get_resources(stack,response)\n        waiter_cfg=get_waiter_cfg(\"AssociateIamInstanceProfile\",\"IamInstanceProfileAssociation.State==`associated` || IamInstanceProfileAssociation.State==`associating`\",\"InvalidParameterValue\")\n        waiter=create_waiter('CustomWaiter', Waiter(waiter_cfg), ec2)\n        waiter.wait(IamInstanceProfile={'Name':resources[PROFILE_ID]},InstanceId=resources[INSTANCE_ID])\n        response['Reason']='Attached instance profile successfully'\n        print(response['Reason'])\n    except Exception as E:\n        print(E)\n        response['Status']='FAILED'\n        if 'Reason' not in response:\n           response['Reason']='Failed to attach instance profile to the EC2 instance. Check the log stream under the CloudWatch log group: '+LOG_GROUP\n    return send_response(event,response)"
+          "ZipFile": "# Copyright 2023 The MathWorks Inc.\nimport http, json, os, uuid, boto3\nfrom urllib.parse import urlparse\nfrom botocore.waiter import WaiterModel as Waiter, create_waiter_with_client as create_waiter\n\nINSTANCE_ID=os.environ['EC2_INSTANCE_ID']\nPROFILE_ID=os.environ['INSTANCE_PROFILE_ID']\nREGION=os.environ['AWS_REGION']\nLOG_GROUP='https://'+REGION+'.console.aws.amazon.com/cloudwatch/home?region='+REGION+'#logsV2:log-groups/log-group/$252Faws$252Flambda$252F'+os.environ['AWS_LAMBDA_FUNCTION_NAME']\n\ndef get_waiter_cfg(operation,argument,error_codes):\n    acceptors = [{\"matcher\":\"path\",\"expected\":True,\"argument\":argument,\"state\":\"success\"}] + [{\"matcher\":\"error\",\"expected\":error_code,\"state\":\"retry\",\"argument\":\"Code\"} for error_code in error_codes]\n    cfg={\"version\":2,\"waiters\":{\"CustomWaiter\":{\"delay\":3,\"operation\":operation,\"maxAttempts\":100,\"acceptors\": acceptors}}}\n    return cfg\n\ndef get_resources(stack,response):\n    cfn=boto3.client('cloudformation')\n    res={}\n    waiter_cfg=get_waiter_cfg(\"DescribeStackResource\",\"StackResourceDetail.ResourceStatus==`CREATE_IN_PROGRESS` || StackResourceDetail.ResourceStatus==`CREATE_COMPLETE`\",[\"ValidationError\"])\n    waiter=create_waiter('CustomWaiter', Waiter(waiter_cfg), cfn)\n    for id in [INSTANCE_ID, PROFILE_ID]:\n        try:\n            waiter.wait(StackName=stack,LogicalResourceId=id)\n            resource=cfn.describe_stack_resource(StackName=stack,LogicalResourceId=id)\n            res[id]=resource['StackResourceDetail']['PhysicalResourceId']\n        except Exception as E:\n            print(E)\n            response['Reason']='Failed to get information on EC2 instance or instance profile. Check the log stream under the CloudWatch log group: '+LOG_GROUP\n    return res\n\ndef send_response(request,response):\n    url=urlparse(request['ResponseURL'])\n    body=json.dumps(response)\n    https=http.client.HTTPSConnection(url.netloc)\n    https.request('PUT', url.path+'?'+url.query,body)\n    return response\n \ndef lambda_handler(event,context): \n    response={'StackId':event['StackId'],'RequestId':event['RequestId'],'LogicalResourceId':event['LogicalResourceId'],'Status':'SUCCESS'}\n    stack=str(event['StackId']).split('/')[1]\n    if 'PhysicalResourceId' in event:\n        response['PhysicalResourceId']=event['PhysicalResourceId']\n    else:\n        response['PhysicalResourceId']=str(uuid.uuid4())\n    if event['RequestType'] == 'Delete':\n        return send_response(event,response)\n    try:\n        ec2=boto3.client('ec2')\n        resources=get_resources(stack,response)\n        waiter_cfg=get_waiter_cfg(\"AssociateIamInstanceProfile\",\"IamInstanceProfileAssociation.State==`associated` || IamInstanceProfileAssociation.State==`associating`\",[\"InvalidParameterValue\",\"IncorrectInstanceState\"])\n        waiter=create_waiter('CustomWaiter', Waiter(waiter_cfg), ec2)\n        waiter.wait(IamInstanceProfile={'Name':resources[PROFILE_ID]},InstanceId=resources[INSTANCE_ID])\n        response['Reason']='Attached instance profile successfully'\n        print(response['Reason'])\n    except Exception as E:\n        print(E)\n        response['Status']='FAILED'\n        if 'Reason' not in response:\n           response['Reason']='Failed to attach instance profile to the EC2 instance. Check the log stream under the CloudWatch log group: '+LOG_GROUP\n    return send_response(event,response)"
         },
         "Environment": {
           "Variables": {
