@@ -30,13 +30,13 @@ To view instructions for deploying the MATLAB reference architecture, select a M
 
 | Linux | Windows |
 | ----- | ------- |
-| [R2023b](releases/R2023b/README.md) | [R2023b](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2023b/README.md) |
-| [R2023a](releases/R2023a/README.md) | [R2023a](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2023a/README.md) |
-| [R2022b](releases/R2022b/README.md) | [R2022b](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2022b/README.md) |
-| [R2022a](releases/R2022a/README.md) | [R2022a](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2022a/README.md) |
-| [R2021b](releases/R2021b/README.md) | [R2021b](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2021b/README.md) |
-| [R2021a](releases/R2021a/README.md) | [R2021a](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2021a/README.md) |
-| [R2020b](releases/R2020b/README.md) | [R2020b](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2020b/README.md) |
+| [R2023b](releases/R2023b/README.md) |  |
+| [R2023a](releases/R2023a/README.md) |  |
+| [R2022b](releases/R2022b/README.md) |  |
+| [R2022a](releases/R2022a/README.md) |  |
+| [R2021b](releases/R2021b/README.md) |  |
+| [R2021a](releases/R2021a/README.md) |  |
+| [R2020b](releases/R2020b/README.md) |  |
 | [R2020a](releases/R2020a/README.md) |  |
 | [R2019b](releases/R2019b/README.md) |  |
 | [R2019a\_and\_older](releases/R2019a_and_older/README.md) |  |
