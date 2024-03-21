@@ -45,6 +45,7 @@ supports these build-time variables.
 | Argument Name | Default Value | Description |
 |---|---|---|
 | [PRODUCTS](#customize-products-to-install)| MATLAB and all available toolboxes | Products to install, specified as a list of product names separated by spaces. For example, `MATLAB Simulink Deep_Learning_Toolbox Parallel_Computing_Toolbox`.<br/>If no products are specified, the Packer build will install MATLAB with all available toolboxes. For more information, see [MATLAB Package Manager](https://github.com/mathworks-ref-arch/matlab-dockerfile/blob/main/MPM.md).|
+| SPKGS | List of Deep Learning Support Packages, specified in [release-config](https://github.mathworks.com/development/matlab-aws-refarch/tree/dev/packer/v1/release-config) | A list of support packages to install, specified as a list of support package names separated by spaces. For example, `Deep_Learning_Toolbox_Model_for_GoogLeNet_Network Deep_Learning_Toolbox_Model_for_ResNet-101_Network` |
 | BASE_AMI | Default AMI ID refers to ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server. | The base AMI upon which the image is built, defaults to an official Canonical Ubuntu image. |
 | VPC_ID | *unset* | VPC to assign to the Packer build instance. If no VPC is specified, the default VPC will be used.|
 | SUBNET_ID | *unset* | Subnet to assign to the Packer build instance. If no subnet is specified, the subnet with the most free IPv4 addresses will be used.|

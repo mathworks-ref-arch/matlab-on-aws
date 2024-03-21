@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
 #
-# Copyright 2023 The MathWorks Inc.
+# Copyright 2023-2024 The MathWorks Inc.
 
 # Print commands for logging purposes.
 set -x
 
 if [[ -z ${USERNAME} ]]; then
     USERNAME=ubuntu
+fi
+
+if [[ -z ${GROUPNAME} ]]; then
+    GROUPNAME=ubuntu
 fi
 
 # Set password for user
@@ -31,3 +35,5 @@ if [[ -d /proc/driver/nvidia/gpus ]]; then
         nvidia-xconfig --enable-all-gpus --preserve-busid
     fi
 fi
+
+chown -R ${USERNAME}:${GROUPNAME} /home/${USERNAME}/Desktop

@@ -31,6 +31,9 @@ rm amazon-cloudwatch-agent.deb
 # Install pip
 sudo apt-get -qq install python3-pip
 
+#Install xvfb for matlab-proxy
+sudo apt-get -qq install xvfb
+
 # Install NVIDIA CUDA Toolkit
 if [[ -n "${NVIDIA_CUDA_TOOLKIT}" ]]; then
   wget --no-verbose "${NVIDIA_CUDA_TOOLKIT}"

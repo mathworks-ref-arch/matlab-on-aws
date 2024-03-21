@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright 2021-2023 The MathWorks, Inc.
+# Copyright 2021-2024 The MathWorks, Inc.
 
 # Print commands for logging purposes, including timestamps.
 PS4='+ [\d \t] '
@@ -62,6 +62,11 @@ if [[ -n ${CLOUD_LOG_NAME} ]]; then
                         "file_path": "/var/log/syslog",
                         "log_group_name": "${CLOUD_LOG_NAME}",
                         "log_stream_name": "syslog"
+                    },
+                    {
+                        "file_path": "/home/*/.MathWorks/mwrefarch/mwrefarch.log",
+                        "log_group_name": "${CLOUD_LOG_NAME}",
+                        "log_stream_name": "mwrefarch"
                     }
                 ]
             }

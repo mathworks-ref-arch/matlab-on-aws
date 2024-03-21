@@ -1,4 +1,4 @@
-# Copyright 2023 The MathWorks Inc.
+# Copyright 2023-2024 The MathWorks Inc.
 
 # The following variables may have different value across releases and 
 # it is recommended to modify them via the release-specific configuration file.
@@ -11,9 +11,16 @@ variable "PRODUCTS" {
 
 }
 
+variable "SPKGS" {
+  type        = string
+  default     = "Deep_Learning_Toolbox_Model_for_AlexNet_Network Deep_Learning_Toolbox_Model_for_EfficientNet-b0_Network Deep_Learning_Toolbox_Model_for_GoogLeNet_Network Deep_Learning_Toolbox_Model_for_ResNet-101_Network Deep_Learning_Toolbox_Model_for_ResNet-18_Network Deep_Learning_Toolbox_Model_for_ResNet-50_Network Deep_Learning_Toolbox_Model_for_Inception-ResNet-v2_Network Deep_Learning_Toolbox_Model_for_Inception-v3_Network Deep_Learning_Toolbox_Model_for_DenseNet-201_Network Deep_Learning_Toolbox_Model_for_Xception_Network Deep_Learning_Toolbox_Model_for_MobileNet-v2_Network Deep_Learning_Toolbox_Model_for_Places365-GoogLeNet_Network Deep_Learning_Toolbox_Model_for_NASNet-Large_Network Deep_Learning_Toolbox_Model_for_NASNet-Mobile_Network Deep_Learning_Toolbox_Model_for_ShuffleNet_Network Deep_Learning_Toolbox_Model_for_DarkNet-19_Network Deep_Learning_Toolbox_Model_for_DarkNet-53_Network Deep_Learning_Toolbox_Model_for_VGG-16_Network Deep_Learning_Toolbox_Model_for_VGG-19_Network"
+  description = "Target support packages to install in the machine image, e.g. Deep_Learning_Toolbox_Model_for_AlexNet_Network."
+
+}
+
 variable "RELEASE" {
   type        = string
-  default     = "R2023b"
+  default     = "R2024a"
   description = "Target MATLAB release to install in the machine image, must start with \"R\"."
 
   validation {
@@ -35,19 +42,19 @@ variable "BASE_AMI" {
 
 variable "BUILD_SCRIPTS" {
   type        = list(string)
-  default     = ["install-startup-scripts.sh", "install-swap-desktop-solution.sh", "install-dependencies.sh", "install-matlab-dependencies-ubuntu.sh", "install-ubuntu-desktop.sh", "install-mate.sh", "install-matlab.sh", "setup-startup-accelerator.sh", "install-fabric-manager-ubuntu.sh", "generate-toolbox-cache.sh", "cleanup.sh"]
+  default     = ["install-startup-scripts.sh", "install-swap-desktop-solution.sh", "install-dependencies.sh", "install-matlab-proxy.sh", "install-matlab-dependencies-ubuntu.sh", "install-ubuntu-desktop.sh", "install-mate.sh", "install-matlab.sh", "install-support-packages.sh", "setup-startup-accelerator.sh", "install-fabric-manager-ubuntu.sh", "generate-toolbox-cache.sh", "cleanup.sh"]
   description = "The list of installation scripts Packer will use when building the image."
 }
 
 variable "STARTUP_SCRIPTS" {
   type        = list(string)
-  default     = [".env", "00_check-profile.sh", "10_setup-disks.sh", "20_setup-machine.sh", "30_setup-logging.sh", "40_setup-rdp.sh", "50_setup-nicedcv.sh", "60_setup-matlab.sh", "70_warmup-matlab.sh", "99_run-optional-user-command.sh"]
+  default     = [".env", "00_check-profile.sh", "10_setup-disks.sh", "20_setup-machine.sh", "30_setup-logging.sh", "40_setup-rdp.sh", "50_setup-nicedcv.sh", "60_setup-matlab-proxy.sh", "70_setup-matlab.sh", "80_warmup-matlab.sh", "99_run-optional-user-command.sh"]
   description = "The list of startup scripts Packer will copy to the remote machine image builder, which can be used during the CloudFormation Stack creation."
 }
 
 variable "RUNTIME_SCRIPTS" {
   type        = list(string)
-  default     = ["swap-desktop-solution.sh"]
+  default     = ["swap-desktop-solution.sh", "launch-matlab-proxy.sh", "generate-certificate.py"]
   description = "The list of runtime scripts Packer will copy to the remote machine image builder, which can be used after the CloudFormation Stack creation."
 }
 
@@ -59,13 +66,13 @@ variable "DCV_INSTALLER_URL" {
 
 variable "NVIDIA_DRIVER_VERSION" {
   type        = string
-  default     = "515"
+  default     = "535"
   description = "The version of target NVIDIA Driver to install."
 }
 
 variable "NVIDIA_CUDA_TOOLKIT" {
   type        = string
-  default     = "https://developer.download.nvidia.com/compute/cuda/11.7.1/local_installers/cuda_11.7.1_515.65.01_linux.run"
+  default     = "https://developer.download.nvidia.com/compute/cuda/12.2.2/local_installers/cuda_12.2.2_535.104.05_linux.run"
   description = "The URL to install NVIDIA CUDA Toolkit into the target machine image. "
 }
 
@@ -73,6 +80,22 @@ variable "NVIDIA_CUDA_KEYRING_URL" {
   type        = string
   default     = "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb"
   description = "NVIDIA CUDA keyring url."
+}
+
+variable "MATLAB_PROXY_VERSION" {
+  type        = string
+  description = "Version of matlab-proxy to pull from PyPI."
+  default     = "0.10.0"
+  validation {
+    condition     = length(var.MATLAB_PROXY_VERSION) > 0
+    error_message = "A valid version must be provided to install matlab-proxy."
+  }
+}
+
+variable "MATLAB_SOURCE_URL" {
+  type        = string
+  default     = ""
+  description = "Optional URL from which to download a MATLAB and toolbox source file, for use with the mpm --source option."
 }
 
 # The following variables share the same setup across all MATLAB releases.
@@ -160,7 +183,7 @@ source "amazon-ebs" "AMI_Builder" {
       isDefault = "true"
     }
   }
-  vpc_id = "${var.VPC_ID}"
+  vpc_id                                    = "${var.VPC_ID}"
   temporary_security_group_source_public_ip = "true"
 }
 
@@ -190,11 +213,14 @@ build {
   provisioner "shell" {
     environment_vars = [
       "RELEASE=${var.RELEASE}",
+      "SPKGS=${var.SPKGS}",
       "PRODUCTS=${var.PRODUCTS}",
+      "MATLAB_PROXY_VERSION=${var.MATLAB_PROXY_VERSION}",
       "DCV_INSTALLER_URL=${var.DCV_INSTALLER_URL}",
       "NVIDIA_DRIVER_VERSION=${var.NVIDIA_DRIVER_VERSION}",
       "NVIDIA_CUDA_TOOLKIT=${var.NVIDIA_CUDA_TOOLKIT}",
       "NVIDIA_CUDA_KEYRING_URL=${var.NVIDIA_CUDA_KEYRING_URL}",
+      "MATLAB_SOURCE_URL=${var.MATLAB_SOURCE_URL}",
       "MATLAB_ROOT=/usr/local/matlab"
     ]
     expect_disconnect = true
@@ -207,6 +233,7 @@ build {
     custom_data = {
       release            = "MATLAB ${var.RELEASE}"
       specified_products = "${var.PRODUCTS}"
+      specified_spkgs    = "${var.SPKGS}"
       build_scripts      = join(", ", "${var.BUILD_SCRIPTS}")
     }
   }
