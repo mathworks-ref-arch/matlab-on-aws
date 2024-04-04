@@ -33,6 +33,14 @@ sudo HOME=${HOME} ./mpm install \
   || (echo "MPM Installation Failure. See below for more information:" && cat /tmp/mathworks_root.log) \
   && sudo rm -f mpm /tmp/mathworks_root.log
 
+# Make local user the owner of MATLAB_ROOT and the support packages root folders to enable support packages installation without root permissions.
+# See: https://in.mathworks.com/help/matlab/ref/matlabshared.supportpkg.setsupportpackageroot.html#description
 GROUP=$(id -gn)
+DEFAULT_SPKG_ROOT="/home/${USER}/Documents/MATLAB/SupportPackages"
+
 sudo chown -R ${USER}:${GROUP} "${MATLAB_ROOT}"
+if [[ -d "${DEFAULT_SPKG_ROOT}" ]]; then
+  sudo chown -R ${USER}:${GROUP} ${DEFAULT_SPKG_ROOT}	
+fi
+
 sudo rm -rf ${HOME}/.MathWorks
