@@ -3,58 +3,58 @@
   "Mappings": {
     "RegionMap": {
       "us-east-1": {
-        "AMI": "ami-032edf9e64d9afacc"
+        "AMI": "ami-00d7b1550989508bf"
       },
       "us-east-2": {
-        "AMI": "ami-02bb5f5b46cb8f6cb"
+        "AMI": "ami-0460d5289281e9aa4"
       },
       "us-west-1": {
-        "AMI": "ami-09d923f4859462c54"
+        "AMI": "ami-07f13f142b864ad93"
       },
       "us-west-2": {
-        "AMI": "ami-0071eb02ba05c9447"
+        "AMI": "ami-067c03e12f38d59f8"
       },
       "ca-central-1": {
-        "AMI": "ami-051bcf3cbddaff702"
+        "AMI": "ami-0c1ddd4f4ac9dab4f"
       },
       "eu-central-1": {
-        "AMI": "ami-01ba9e11b06f7d5e7"
+        "AMI": "ami-062ddfd4e0d2ffd1a"
       },
       "eu-west-1": {
-        "AMI": "ami-0a783b73da3e799f8"
+        "AMI": "ami-0fda759e83b7723c2"
       },
       "eu-west-2": {
-        "AMI": "ami-09e3062571839d3c9"
+        "AMI": "ami-09f921ace83773bfb"
       },
       "eu-west-3": {
-        "AMI": "ami-0efb33f517e26c21c"
+        "AMI": "ami-0acb55cfa9246881f"
       },
       "eu-north-1": {
-        "AMI": "ami-0375898080b8172c9"
+        "AMI": "ami-01cee1545a798c28f"
       },
       "sa-east-1": {
-        "AMI": "ami-0f9fd2572715b5bb4"
+        "AMI": "ami-08bb5a5c3da2770b8"
       },
       "me-south-1": {
-        "AMI": "ami-0c2e244beb3aeefc2"
+        "AMI": "ami-08718415f60033fef"
       },
       "ap-east-1": {
-        "AMI": "ami-03d51b90bd4604365"
+        "AMI": "ami-02cbc45249ac98972"
       },
       "ap-south-1": {
-        "AMI": "ami-08701cabb68849829"
+        "AMI": "ami-0ef0c9591d768fb0d"
       },
       "ap-northeast-1": {
-        "AMI": "ami-0b072ed618b9cb6ad"
+        "AMI": "ami-077ba598869a44b13"
       },
       "ap-northeast-2": {
-        "AMI": "ami-092d1477c435b510a"
+        "AMI": "ami-0d2ba5f732acd66cc"
       },
       "ap-southeast-1": {
-        "AMI": "ami-0373b8bab87feca91"
+        "AMI": "ami-0847d946a20dd1d65"
       },
       "ap-southeast-2": {
-        "AMI": "ami-0545d3a95efcd8c7c"
+        "AMI": "ami-0a7b6aba8001a95d5"
       }
     }
   },
@@ -94,59 +94,41 @@
         },
         "Policies": [
           {
-            "PolicyName": "cloudwatch-access-policy",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": [
-                    "logs:CreateLogStream",
-                    "logs:DescribeLogStreams",
-                    "logs:PutLogEvents"
-                  ],
-                  "Resource": {
-                    "Fn::Join": [
-                      ":",
-                      [
-                        "arn:aws:logs",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        {
-                          "Ref": "AWS::AccountId"
-                        },
-                        "log-group",
-                        {
-                          "Fn::Join": [
-                            "-",
-                            [
-                              {
-                                "Ref": "AWS::StackName"
-                              },
-                              {
-                                "Fn::Select": [
-                                  "2",
-                                  {
-                                    "Fn::Split": [
-                                      "/",
-                                      {
-                                        "Ref": "AWS::StackId"
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
-                            ]
-                          ]
-                        },
-                        "*"
-                      ]
-                    ]
-                  }
+            "Fn::If": [
+              "UseCloudWatch",
+              {
+                "PolicyName": "cloudwatch-access-policy",
+                "PolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "logs:CreateLogStream",
+                        "logs:DescribeLogStreams",
+                        "logs:PutLogEvents"
+                      ],
+                      "Resource": {
+                        "Fn::Sub": [
+                          "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${name}:*",
+                          {
+                            "name": {
+                              "Fn::GetAtt": [
+                                "MWLogLocation",
+                                "Outputs.LogGroupName"
+                              ]
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
                 }
-              ]
-            }
+              },
+              {
+                "Ref": "AWS::NoValue"
+              }
+            ]
           },
           {
             "PolicyName": "dcv-access-policy",
@@ -155,20 +137,9 @@
               "Statement": [
                 {
                   "Effect": "Allow",
-                  "Action": [
-                    "s3:GetObject"
-                  ],
+                  "Action": "s3:GetObject",
                   "Resource": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "arn:aws:s3:::dcv-license.",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "/*"
-                      ]
-                    ]
+                    "Fn::Sub": "arn:aws:s3:::dcv-license.${AWS::Region}/*"
                   }
                 }
               ]
@@ -267,17 +238,7 @@
                   "Effect": "Allow",
                   "Action": "cloudformation:DescribeStackResource",
                   "Resource": {
-                    "Fn::Sub": [
-                      "arn:aws:cloudformation:${region}:${accountId}:stack/*",
-                      {
-                        "region": {
-                          "Ref": "AWS::Region"
-                        },
-                        "accountId": {
-                          "Ref": "AWS::AccountId"
-                        }
-                      }
-                    ]
+                    "Fn::Sub": "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
                   }
                 },
                 {
@@ -285,11 +246,8 @@
                   "Action": "iam:PassRole",
                   "Resource": {
                     "Fn::Sub": [
-                      "arn:aws:iam::${accountId}:role/${role}",
+                      "arn:aws:iam::${AWS::AccountId}:role/${role}",
                       {
-                        "accountId": {
-                          "Ref": "AWS::AccountId"
-                        },
                         "role": {
                           "Fn::If": [
                             "UsePredefinedRole",
@@ -307,33 +265,14 @@
                 },
                 {
                   "Effect": "Allow",
-                  "Action": [
-                    "ec2:AssociateIamInstanceProfile"
-                  ],
+                  "Action": "ec2:AssociateIamInstanceProfile",
                   "Resource": {
-                    "Fn::Sub": [
-                      "arn:aws:ec2:${region}:${accountId}:instance/*",
-                      {
-                        "region": {
-                          "Ref": "AWS::Region"
-                        },
-                        "accountId": {
-                          "Ref": "AWS::AccountId"
-                        }
-                      }
-                    ]
+                    "Fn::Sub": "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/*"
                   },
                   "Condition": {
                     "StringEquals": {
                       "aws:ResourceTag/aws:cloudformation:stack-name": {
-                        "Fn::Sub": [
-                          "${stack}",
-                          {
-                            "stack": {
-                              "Ref": "AWS::StackName"
-                            }
-                          }
-                        ]
+                        "Ref": "AWS::StackName"
                       },
                       "aws:ResourceTag/aws:cloudformation:logical-id": "MATLABEC2Instance"
                     }
@@ -347,17 +286,7 @@
                     "logs:PutLogEvents"
                   ],
                   "Resource": {
-                    "Fn::Sub": [
-                      "arn:aws:logs:${region}:${accountId}:log-group:/aws/lambda/*",
-                      {
-                        "region": {
-                          "Ref": "AWS::Region"
-                        },
-                        "accountId": {
-                          "Ref": "AWS::AccountId"
-                        }
-                      }
-                    ]
+                    "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
                   }
                 }
               ]
@@ -377,9 +306,9 @@
         },
         "Runtime": "python3.8",
         "Handler": "index.lambda_handler",
-        "Timeout": "300",
+        "Timeout": "600",
         "Code": {
-          "ZipFile": "# Copyright 2023 The MathWorks Inc.\nimport http, json, os, uuid, boto3\nfrom urllib.parse import urlparse\nfrom botocore.waiter import WaiterModel as Waiter, create_waiter_with_client as create_waiter\n\nINSTANCE_ID=os.environ['EC2_INSTANCE_ID']\nPROFILE_ID=os.environ['INSTANCE_PROFILE_ID']\nREGION=os.environ['AWS_REGION']\nLOG_GROUP='https://'+REGION+'.console.aws.amazon.com/cloudwatch/home?region='+REGION+'#logsV2:log-groups/log-group/$252Faws$252Flambda$252F'+os.environ['AWS_LAMBDA_FUNCTION_NAME']\n\ndef get_waiter_cfg(operation,argument,expected):\n    cfg={\"version\":2,\"waiters\":{\"CustomWaiter\":{\"delay\":2,\"operation\":operation,\"maxAttempts\":90,\"acceptors\":[{\"matcher\":\"path\",\"expected\":True,\"argument\":argument,\"state\":\"success\"},{\"matcher\":\"error\",\"expected\":expected,\"state\":\"retry\",\"argument\":\"Code\"}]}}}\n    return cfg\n\ndef get_resources(stack,response):\n    cfn=boto3.client('cloudformation')\n    res={}\n    waiter_cfg=get_waiter_cfg(\"DescribeStackResource\",\"StackResourceDetail.ResourceStatus==`CREATE_IN_PROGRESS` || StackResourceDetail.ResourceStatus==`CREATE_COMPLETE`\",\"ValidationError\")\n    waiter=create_waiter('CustomWaiter', Waiter(waiter_cfg), cfn)\n    for id in [INSTANCE_ID, PROFILE_ID]:\n        try:\n            waiter.wait(StackName=stack,LogicalResourceId=id)\n            resource=cfn.describe_stack_resource(StackName=stack,LogicalResourceId=id)\n            res[id]=resource['StackResourceDetail']['PhysicalResourceId']\n        except Exception as E:\n            print(E)\n            response['Reason']='Failed to get information on EC2 instance or instance profile. Check the log stream under the CloudWatch log group: '+LOG_GROUP\n    return res\n\ndef send_response(request,response):\n    url=urlparse(request['ResponseURL'])\n    body=json.dumps(response)\n    https=http.client.HTTPSConnection(url.netloc)\n    https.request('PUT', url.path+'?'+url.query,body)\n    return response\n \ndef lambda_handler(event,context): \n    response={'StackId':event['StackId'],'RequestId':event['RequestId'],'LogicalResourceId':event['LogicalResourceId'],'Status':'SUCCESS'}\n    stack=str(event['StackId']).split('/')[1]\n    if 'PhysicalResourceId' in event:\n        response['PhysicalResourceId']=event['PhysicalResourceId']\n    else:\n        response['PhysicalResourceId']=str(uuid.uuid4())\n    if event['RequestType'] == 'Delete':\n        return send_response(event,response)\n    try:\n        ec2=boto3.client('ec2')\n        resources=get_resources(stack,response)\n        waiter_cfg=get_waiter_cfg(\"AssociateIamInstanceProfile\",\"IamInstanceProfileAssociation.State==`associated` || IamInstanceProfileAssociation.State==`associating`\",\"InvalidParameterValue\")\n        waiter=create_waiter('CustomWaiter', Waiter(waiter_cfg), ec2)\n        waiter.wait(IamInstanceProfile={'Name':resources[PROFILE_ID]},InstanceId=resources[INSTANCE_ID])\n        response['Reason']='Attached instance profile successfully'\n        print(response['Reason'])\n    except Exception as E:\n        print(E)\n        response['Status']='FAILED'\n        if 'Reason' not in response:\n           response['Reason']='Failed to attach instance profile to the EC2 instance. Check the log stream under the CloudWatch log group: '+LOG_GROUP\n    return send_response(event,response)"
+          "ZipFile": "# Copyright 2023 The MathWorks Inc.\nimport http, json, os, uuid, boto3\nfrom urllib.parse import urlparse\nfrom botocore.waiter import WaiterModel as Waiter, create_waiter_with_client as create_waiter\n\nINSTANCE_ID=os.environ['EC2_INSTANCE_ID']\nPROFILE_ID=os.environ['INSTANCE_PROFILE_ID']\nREGION=os.environ['AWS_REGION']\nLOG_GROUP='https://'+REGION+'.console.aws.amazon.com/cloudwatch/home?region='+REGION+'#logsV2:log-groups/log-group/$252Faws$252Flambda$252F'+os.environ['AWS_LAMBDA_FUNCTION_NAME']\n\ndef get_waiter_cfg(operation,argument,error_codes):\n    acceptors = [{\"matcher\":\"path\",\"expected\":True,\"argument\":argument,\"state\":\"success\"}] + [{\"matcher\":\"error\",\"expected\":error_code,\"state\":\"retry\",\"argument\":\"Code\"} for error_code in error_codes]\n    cfg={\"version\":2,\"waiters\":{\"CustomWaiter\":{\"delay\":3,\"operation\":operation,\"maxAttempts\":100,\"acceptors\": acceptors}}}\n    return cfg\n\ndef get_resources(stack,response):\n    cfn=boto3.client('cloudformation')\n    res={}\n    waiter_cfg=get_waiter_cfg(\"DescribeStackResource\",\"StackResourceDetail.ResourceStatus==`CREATE_IN_PROGRESS` || StackResourceDetail.ResourceStatus==`CREATE_COMPLETE`\",[\"ValidationError\"])\n    waiter=create_waiter('CustomWaiter', Waiter(waiter_cfg), cfn)\n    for id in [INSTANCE_ID, PROFILE_ID]:\n        try:\n            waiter.wait(StackName=stack,LogicalResourceId=id)\n            resource=cfn.describe_stack_resource(StackName=stack,LogicalResourceId=id)\n            res[id]=resource['StackResourceDetail']['PhysicalResourceId']\n        except Exception as E:\n            print(E)\n            response['Reason']='Failed to get information on EC2 instance or instance profile. Check the log stream under the CloudWatch log group: '+LOG_GROUP\n    return res\n\ndef send_response(request,response):\n    url=urlparse(request['ResponseURL'])\n    body=json.dumps(response)\n    https=http.client.HTTPSConnection(url.netloc)\n    https.request('PUT', url.path+'?'+url.query,body)\n    return response\n \ndef lambda_handler(event,context): \n    response={'StackId':event['StackId'],'RequestId':event['RequestId'],'LogicalResourceId':event['LogicalResourceId'],'Status':'SUCCESS'}\n    stack=str(event['StackId']).split('/')[1]\n    if 'PhysicalResourceId' in event:\n        response['PhysicalResourceId']=event['PhysicalResourceId']\n    else:\n        response['PhysicalResourceId']=str(uuid.uuid4())\n    if event['RequestType'] == 'Delete':\n        return send_response(event,response)\n    try:\n        ec2=boto3.client('ec2')\n        resources=get_resources(stack,response)\n        waiter_cfg=get_waiter_cfg(\"AssociateIamInstanceProfile\",\"IamInstanceProfileAssociation.State==`associated` || IamInstanceProfileAssociation.State==`associating`\",[\"InvalidParameterValue\",\"IncorrectInstanceState\"])\n        waiter=create_waiter('CustomWaiter', Waiter(waiter_cfg), ec2)\n        waiter.wait(IamInstanceProfile={'Name':resources[PROFILE_ID]},InstanceId=resources[INSTANCE_ID])\n        response['Reason']='Attached instance profile successfully'\n        print(response['Reason'])\n    except Exception as E:\n        print(E)\n        response['Status']='FAILED'\n        if 'Reason' not in response:\n           response['Reason']='Failed to attach instance profile to the EC2 instance. Check the log stream under the CloudWatch log group: '+LOG_GROUP\n    return send_response(event,response)"
         },
         "Environment": {
           "Variables": {
@@ -420,39 +349,28 @@
         ]
       }
     },
-    "MATLABSecurityGroup": {
-      "Type": "AWS::EC2::SecurityGroup",
+    "MWSecurityGroup": {
+      "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "VpcId": {
-          "Ref": "VPC"
-        },
-        "GroupDescription": "Enable SSH and RDP Access",
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "22",
-            "ToPort": "22",
-            "CidrIp": {
-              "Ref": "ClientIPAddress"
-            }
+        "TemplateURL": "https://mathworks-reference-architectures-templates.s3.amazonaws.com/security-group/v1/0/0/security-group.yml",
+        "Parameters": {
+          "VpcId": {
+            "Ref": "VPC"
           },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "3389",
-            "ToPort": "3389",
-            "CidrIp": {
-              "Ref": "ClientIPAddress"
-            }
+          "CidrIp": {
+            "Ref": "ClientIPAddress"
           },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "8443",
-            "ToPort": "8443",
-            "CidrIp": {
-              "Ref": "ClientIPAddress"
-            }
-          }
-        ]
+          "SSHAccess": "Yes",
+          "RDPAccess": "Yes",
+          "NICEDCVAccess": "Yes"
+        }
+      }
+    },
+    "MWLogLocation": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Condition": "UseCloudWatch",
+      "Properties": {
+        "TemplateURL": "https://mathworks-reference-architectures-templates.s3.amazonaws.com/log-location/v1/0/0/log-location.yml"
       }
     },
     "MATLABEC2Instance": {
@@ -480,7 +398,10 @@
         },
         "SecurityGroupIds": [
           {
-            "Ref": "MATLABSecurityGroup"
+            "Fn::GetAtt": [
+              "MWSecurityGroup",
+              "Outputs.SecurityGroupId"
+            ]
           },
           {
             "Fn::If": [
@@ -560,26 +481,9 @@
                         "Fn::If": [
                           "UseCloudWatch",
                           {
-                            "Fn::Join": [
-                              "-",
-                              [
-                                {
-                                  "Ref": "AWS::StackName"
-                                },
-                                {
-                                  "Fn::Select": [
-                                    "2",
-                                    {
-                                      "Fn::Split": [
-                                        "/",
-                                        {
-                                          "Ref": "AWS::StackId"
-                                        }
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ]
+                            "Fn::GetAtt": [
+                              "MWLogLocation",
+                              "Outputs.LogGroupName"
                             ]
                           },
                           ""
@@ -614,35 +518,6 @@
         }
       }
     },
-    "MATLABLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "Condition": "UseCloudWatch",
-      "Properties": {
-        "LogGroupName": {
-          "Fn::Join": [
-            "-",
-            [
-              {
-                "Ref": "AWS::StackName"
-              },
-              {
-                "Fn::Select": [
-                  "2",
-                  {
-                    "Fn::Split": [
-                      "/",
-                      {
-                        "Ref": "AWS::StackId"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          ]
-        }
-      }
-    },
     "ElasticIP": {
       "Type": "AWS::EC2::EIP",
       "Condition": "UseElasticIPAddress",
@@ -657,14 +532,15 @@
       "Type": "AWS::SSM::Document",
       "Condition": "UsePredefinedRole",
       "Properties": {
+        "DocumentType": "Command",
         "Content": {
           "schemaVersion": "2.2",
           "description": "Run a script on Linux instances.",
           "parameters": {
             "commands": {
               "type": "String",
-              "description": "Run script to switch between xrdp and nice dcv.",
-              "default": "/usr/local/bin/swap-desktop-solution.sh"
+              "description": "Command to run on EC2 instance",
+              "default": "echo 'Hello World'"
             }
           },
           "mainSteps": [
@@ -677,20 +553,6 @@
                   "{{ commands }}"
                 ]
               }
-            }
-          ]
-        },
-        "DocumentType": "Command",
-        "Name": {
-          "Fn::Select": [
-            "2",
-            {
-              "Fn::Split": [
-                "/",
-                {
-                  "Ref": "AWS::StackId"
-                }
-              ]
             }
           ]
         }
@@ -759,29 +621,12 @@
                   "Effect": "Allow",
                   "Action": "ec2:Stopinstances",
                   "Resource": {
-                    "Fn::Sub": [
-                      "arn:aws:ec2:${region}:${accountId}:instance/*",
-                      {
-                        "region": {
-                          "Ref": "AWS::Region"
-                        },
-                        "accountId": {
-                          "Ref": "AWS::AccountId"
-                        }
-                      }
-                    ]
+                    "Fn::Sub": "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/*"
                   },
                   "Condition": {
                     "StringEquals": {
                       "aws:ResourceTag/aws:cloudformation:stack-name": {
-                        "Fn::Sub": [
-                          "${STACK_NAME}",
-                          {
-                            "STACK_NAME": {
-                              "Ref": "AWS::StackName"
-                            }
-                          }
-                        ]
+                        "Ref": "AWS::StackName"
                       },
                       "aws:ResourceTag/aws:cloudformation:logical-id": "MATLABEC2Instance"
                     }
@@ -805,22 +650,7 @@
                     "logs:PutLogEvents"
                   ],
                   "Resource": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "arn:aws:logs:",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        ":",
-                        {
-                          "Ref": "AWS::AccountId"
-                        },
-                        ":",
-                        "log-group:",
-                        "/aws/lambda/*"
-                      ]
-                    ]
+                    "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
                   }
                 }
               ]
@@ -958,10 +788,10 @@
     },
     "Password": {
       "NoEcho": "true",
-      "Description": "Password for the \"ubuntu\" user",
+      "Description": "Password for the \"ubuntu\" user. You also need to enter this as an authentication token to access MATLAB on your cloud instance within a browser.",
       "Type": "String",
-      "ConstraintDescription": "",
-      "Default": ""
+      "ConstraintDescription": "Must have a minimum of 14 characters, 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character",
+      "AllowedPattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{14,}$"
     },
     "ConfirmPassword": {
       "NoEcho": "true",
@@ -1246,26 +1076,9 @@
             },
             "#logsV2:log-groups/log-group/",
             {
-              "Fn::Join": [
-                "-",
-                [
-                  {
-                    "Ref": "AWS::StackName"
-                  },
-                  {
-                    "Fn::Select": [
-                      "2",
-                      {
-                        "Fn::Split": [
-                          "/",
-                          {
-                            "Ref": "AWS::StackId"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
+              "Fn::GetAtt": [
+                "MWLogLocation",
+                "Outputs.LogGroupName"
               ]
             }
           ]
