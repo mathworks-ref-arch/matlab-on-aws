@@ -3,58 +3,58 @@
   "Mappings": {
     "RegionMap": {
       "us-east-1": {
-        "AMI": "ami-0a5f9df1194d7ce98"
+        "AMI": "ami-055f4216807f79fa0"
       },
       "us-east-2": {
-        "AMI": "ami-08e4f06e047a88d63"
+        "AMI": "ami-0dc557951c35e6273"
       },
       "us-west-1": {
-        "AMI": "ami-040bd8feb03d03149"
+        "AMI": "ami-0f8d3df09f11680ea"
       },
       "us-west-2": {
-        "AMI": "ami-08491aba6a07b2389"
+        "AMI": "ami-0cd8ea7af30e4228b"
       },
       "ca-central-1": {
-        "AMI": "ami-032a4b6e306c22ab3"
+        "AMI": "ami-0b2fba21738cf46d0"
       },
       "eu-central-1": {
-        "AMI": "ami-057bd72376e58589a"
+        "AMI": "ami-0efd1330e4f363466"
       },
       "eu-west-1": {
-        "AMI": "ami-0d71daadf246d9946"
+        "AMI": "ami-04612a7761cc200d7"
       },
       "eu-west-2": {
-        "AMI": "ami-0ec83090498151aad"
+        "AMI": "ami-086b6f2d5ffa94f9e"
       },
       "eu-west-3": {
-        "AMI": "ami-0059f3ee7b5fffacf"
+        "AMI": "ami-0062a4767b04f13b1"
       },
       "eu-north-1": {
-        "AMI": "ami-0023c4408df87ae5d"
+        "AMI": "ami-0470de0c750122170"
       },
       "sa-east-1": {
-        "AMI": "ami-05e8e7adaad8e2ef0"
+        "AMI": "ami-0d51e0be29feceb62"
       },
       "me-south-1": {
-        "AMI": "ami-01fdf4c18de6312b6"
+        "AMI": "ami-0f69404cf0b70a6f3"
       },
       "ap-east-1": {
-        "AMI": "ami-0e94747aa812e6b39"
+        "AMI": "ami-04511b032b9b2162d"
       },
       "ap-south-1": {
-        "AMI": "ami-05aa43436a6d2a888"
+        "AMI": "ami-022e7e88d0deddd86"
       },
       "ap-northeast-1": {
-        "AMI": "ami-01d8fd830eb6b74d7"
+        "AMI": "ami-0443687da9c6597bf"
       },
       "ap-northeast-2": {
-        "AMI": "ami-0818de540793bad22"
+        "AMI": "ami-0702965933dbf3279"
       },
       "ap-southeast-1": {
-        "AMI": "ami-0536eede1aeb76c29"
+        "AMI": "ami-086551006169e015f"
       },
       "ap-southeast-2": {
-        "AMI": "ami-03b62546299d474e7"
+        "AMI": "ami-00391616c7298debe"
       }
     }
   },
@@ -352,7 +352,7 @@
     "MWSecurityGroup": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://mathworks-reference-architectures-templates.s3.amazonaws.com/security-group/v1/0/0/security-group.yml",
+        "TemplateURL": "https://mathworks-reference-architectures-templates.s3.amazonaws.com/security-group/v1/1/0/security-group.yml",
         "Parameters": {
           "VpcId": {
             "Ref": "VPC"
@@ -532,14 +532,15 @@
       "Type": "AWS::SSM::Document",
       "Condition": "UsePredefinedRole",
       "Properties": {
+        "DocumentType": "Command",
         "Content": {
           "schemaVersion": "2.2",
           "description": "Run a script on Linux instances.",
           "parameters": {
             "commands": {
               "type": "String",
-              "description": "Run script to switch between xrdp and nice dcv.",
-              "default": "/usr/local/bin/swap-desktop-solution.sh"
+              "description": "Command to run on EC2 instance",
+              "default": "echo 'Hello World'"
             }
           },
           "mainSteps": [
@@ -552,20 +553,6 @@
                   "{{ commands }}"
                 ]
               }
-            }
-          ]
-        },
-        "DocumentType": "Command",
-        "Name": {
-          "Fn::Select": [
-            "2",
-            {
-              "Fn::Split": [
-                "/",
-                {
-                  "Ref": "AWS::StackId"
-                }
-              ]
             }
           ]
         }
@@ -801,17 +788,15 @@
     },
     "Password": {
       "NoEcho": "true",
-      "Description": "Password for the \"ubuntu\" user",
+      "Description": "Password for the \"ubuntu\" user.",
       "Type": "String",
-      "ConstraintDescription": "",
-      "Default": ""
+      "ConstraintDescription": "Must have a minimum of 14 characters, 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character",
+      "AllowedPattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{14,}$"
     },
     "ConfirmPassword": {
       "NoEcho": "true",
       "Description": "Confirm Password",
-      "Type": "String",
-      "ConstraintDescription": "",
-      "Default": ""
+      "Type": "String"
     },
     "LicenseManager": {
       "Description": "Optional License Manager for MATLAB, specified as a string in the form <port>@<hostname>. If not specified, use online licensing. If specified, the network license manager (NLM) must be accessible from the specified VPC and subnets. To use the private hostname of the NLM hub instead of the public hostname, specify the security group ID of the NLM hub in the AdditionalSecurityGroup parameter. For more information, see https://github.com/mathworks-ref-arch/license-manager-for-matlab-on-aws.",
