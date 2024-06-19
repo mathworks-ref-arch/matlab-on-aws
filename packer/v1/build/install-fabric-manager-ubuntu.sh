@@ -15,4 +15,6 @@ cd /tmp/ \
   && sudo apt-get -qq install datacenter-gpu-manager
 sudo systemctl --now enable nvidia-dcgm
 
-sudo apt-get -qq install "nvidia-fabricmanager-${NVIDIA_DRIVER_VERSION}"
+if [[ -n "${NVIDIA_DRIVER_VERSION}" ]]; then
+  sudo apt-get -qq install "nvidia-fabricmanager-${NVIDIA_DRIVER_VERSION}"
+fi

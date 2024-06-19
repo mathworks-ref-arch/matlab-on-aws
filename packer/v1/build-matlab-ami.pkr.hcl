@@ -31,7 +31,7 @@ variable "RELEASE" {
 
 variable "BASE_AMI" {
   type        = string
-  default     = "ami-06a1f46caddb5669e"
+  default     = "ami-07543813a68cc4fe9"
   description = "Default AMI ID refers to the Ubuntu Server 22.04 image provided by Canonical."
 
   validation {
@@ -48,7 +48,7 @@ variable "BUILD_SCRIPTS" {
 
 variable "STARTUP_SCRIPTS" {
   type        = list(string)
-  default     = [".env", "00_check-profile.sh", "10_setup-disks.sh", "20_setup-machine.sh", "30_setup-logging.sh", "40_setup-rdp.sh", "50_setup-nicedcv.sh", "60_setup-matlab-proxy.sh", "70_setup-matlab.sh", "80_warmup-matlab.sh", "99_run-optional-user-command.sh"]
+  default     = [".env", "10_setup-disks.sh", "20_setup-machine.sh", "30_setup-logging.sh", "40_setup-rdp.sh", "50_setup-nicedcv.sh", "60_setup-matlab-proxy.sh", "70_setup-matlab.sh", "80_warmup-matlab.sh", "85_warmup-mathworks-service-host.sh", "99_run-optional-user-command.sh"]
   description = "The list of startup scripts Packer will copy to the remote machine image builder, which can be used during the CloudFormation Stack creation."
 }
 

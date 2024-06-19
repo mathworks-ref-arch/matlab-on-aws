@@ -147,7 +147,9 @@ echo "/usr/sbin/lightdm" > /etc/X11/default-display-manager
 sudo dpkg-reconfigure lightdm
 
 # Installing NVDIA driver
-sudo apt-get -qq install --no-install-recommends "nvidia-driver-${NVIDIA_DRIVER_VERSION}"
+if [[ -n "${NVIDIA_DRIVER_VERSION}" ]]; then
+  sudo apt-get -qq install --no-install-recommends "nvidia-driver-${NVIDIA_DRIVER_VERSION}"
+fi
 
 sudo cp /var/tmp/config/nvidia/xorg.conf /etc/X11/xorg.conf
 

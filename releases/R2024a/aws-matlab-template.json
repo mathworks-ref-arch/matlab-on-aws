@@ -3,58 +3,58 @@
   "Mappings": {
     "RegionMap": {
       "us-east-1": {
-        "AMI": "ami-0274295d337204613"
+        "AMI": "ami-0cd3bf5604b575676"
       },
       "us-east-2": {
-        "AMI": "ami-0925d0acafe05f3bb"
+        "AMI": "ami-0c730aae0ce8264ef"
       },
       "us-west-1": {
-        "AMI": "ami-0048ca02c1747a650"
+        "AMI": "ami-0db06b2c63538e76d"
       },
       "us-west-2": {
-        "AMI": "ami-080fce32dc8c15ced"
+        "AMI": "ami-006e8300ec8eab721"
       },
       "ca-central-1": {
-        "AMI": "ami-0c8d096bae84d4b6f"
+        "AMI": "ami-0ba53f5662fbde783"
       },
       "eu-central-1": {
-        "AMI": "ami-00c0cd06be4393a43"
+        "AMI": "ami-006c1590b606682e6"
       },
       "eu-west-1": {
-        "AMI": "ami-0573601b97e7b7b7b"
+        "AMI": "ami-09d7351ed7ea8bd8b"
       },
       "eu-west-2": {
-        "AMI": "ami-0c4f197e181a8bd6d"
+        "AMI": "ami-0524515195a64dbce"
       },
       "eu-west-3": {
-        "AMI": "ami-049981341c8ea2cf3"
+        "AMI": "ami-08496a610c3565805"
       },
       "eu-north-1": {
-        "AMI": "ami-099f241bf8c476710"
+        "AMI": "ami-02950c56298f7c75d"
       },
       "sa-east-1": {
-        "AMI": "ami-067f6a30e1e9a152d"
+        "AMI": "ami-0d0ca79afd21a9325"
       },
       "me-south-1": {
-        "AMI": "ami-04c6afbb866dffa54"
+        "AMI": "ami-03fbf02f6bc274f74"
       },
       "ap-east-1": {
-        "AMI": "ami-03c2aea45c110d1c9"
+        "AMI": "ami-09d4dc01ae537e12f"
       },
       "ap-south-1": {
-        "AMI": "ami-0c2148936088210c9"
+        "AMI": "ami-0a4f0e60e5ede70dd"
       },
       "ap-northeast-1": {
-        "AMI": "ami-0ef8d814f2b10c8a1"
+        "AMI": "ami-0587a0bcbf21325b7"
       },
       "ap-northeast-2": {
-        "AMI": "ami-00281d53738ea5649"
+        "AMI": "ami-054640fbcce5d3597"
       },
       "ap-southeast-1": {
-        "AMI": "ami-071cd2a08c1fdc7b0"
+        "AMI": "ami-01166c870bb6d7524"
       },
       "ap-southeast-2": {
-        "AMI": "ami-0d35deda7f8d156cf"
+        "AMI": "ami-03b4c0bdd736f4ea2"
       }
     }
   },
@@ -212,124 +212,6 @@
         ]
       }
     },
-    "AttachInstanceProfileLambdaRole": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Version": "2012-10-17",
-          "Statement": [
-            {
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              },
-              "Action": "sts:AssumeRole"
-            }
-          ]
-        },
-        "Path": "/",
-        "Policies": [
-          {
-            "PolicyName": "attachprofile-policy",
-            "PolicyDocument": {
-              "Version": "2012-10-17",
-              "Statement": [
-                {
-                  "Effect": "Allow",
-                  "Action": "cloudformation:DescribeStackResource",
-                  "Resource": {
-                    "Fn::Sub": "arn:aws:cloudformation:${AWS::Region}:${AWS::AccountId}:stack/*"
-                  }
-                },
-                {
-                  "Effect": "Allow",
-                  "Action": "iam:PassRole",
-                  "Resource": {
-                    "Fn::Sub": [
-                      "arn:aws:iam::${AWS::AccountId}:role/${role}",
-                      {
-                        "role": {
-                          "Fn::If": [
-                            "UsePredefinedRole",
-                            {
-                              "Ref": "PredefinedRole"
-                            },
-                            {
-                              "Ref": "CustomIamRole"
-                            }
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                },
-                {
-                  "Effect": "Allow",
-                  "Action": "ec2:AssociateIamInstanceProfile",
-                  "Resource": {
-                    "Fn::Sub": "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/*"
-                  },
-                  "Condition": {
-                    "StringEquals": {
-                      "aws:ResourceTag/aws:cloudformation:stack-name": {
-                        "Ref": "AWS::StackName"
-                      },
-                      "aws:ResourceTag/aws:cloudformation:logical-id": "MATLABEC2Instance"
-                    }
-                  }
-                },
-                {
-                  "Effect": "Allow",
-                  "Action": [
-                    "logs:CreateLogGroup",
-                    "logs:CreateLogStream",
-                    "logs:PutLogEvents"
-                  ],
-                  "Resource": {
-                    "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    },
-    "AttachInstanceProfileLambda": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Role": {
-          "Fn::GetAtt": [
-            "AttachInstanceProfileLambdaRole",
-            "Arn"
-          ]
-        },
-        "Runtime": "python3.8",
-        "Handler": "index.lambda_handler",
-        "Timeout": "600",
-        "Code": {
-          "ZipFile": "# Copyright 2023 The MathWorks Inc.\nimport http, json, os, uuid, boto3\nfrom urllib.parse import urlparse\nfrom botocore.waiter import WaiterModel as Waiter, create_waiter_with_client as create_waiter\n\nINSTANCE_ID=os.environ['EC2_INSTANCE_ID']\nPROFILE_ID=os.environ['INSTANCE_PROFILE_ID']\nREGION=os.environ['AWS_REGION']\nLOG_GROUP='https://'+REGION+'.console.aws.amazon.com/cloudwatch/home?region='+REGION+'#logsV2:log-groups/log-group/$252Faws$252Flambda$252F'+os.environ['AWS_LAMBDA_FUNCTION_NAME']\n\ndef get_waiter_cfg(operation,argument,error_codes):\n    acceptors = [{\"matcher\":\"path\",\"expected\":True,\"argument\":argument,\"state\":\"success\"}] + [{\"matcher\":\"error\",\"expected\":error_code,\"state\":\"retry\",\"argument\":\"Code\"} for error_code in error_codes]\n    cfg={\"version\":2,\"waiters\":{\"CustomWaiter\":{\"delay\":3,\"operation\":operation,\"maxAttempts\":100,\"acceptors\": acceptors}}}\n    return cfg\n\ndef get_resources(stack,response):\n    cfn=boto3.client('cloudformation')\n    res={}\n    waiter_cfg=get_waiter_cfg(\"DescribeStackResource\",\"StackResourceDetail.ResourceStatus==`CREATE_IN_PROGRESS` || StackResourceDetail.ResourceStatus==`CREATE_COMPLETE`\",[\"ValidationError\"])\n    waiter=create_waiter('CustomWaiter', Waiter(waiter_cfg), cfn)\n    for id in [INSTANCE_ID, PROFILE_ID]:\n        try:\n            waiter.wait(StackName=stack,LogicalResourceId=id)\n            resource=cfn.describe_stack_resource(StackName=stack,LogicalResourceId=id)\n            res[id]=resource['StackResourceDetail']['PhysicalResourceId']\n        except Exception as E:\n            print(E)\n            response['Reason']='Failed to get information on EC2 instance or instance profile. Check the log stream under the CloudWatch log group: '+LOG_GROUP\n    return res\n\ndef send_response(request,response):\n    url=urlparse(request['ResponseURL'])\n    body=json.dumps(response)\n    https=http.client.HTTPSConnection(url.netloc)\n    https.request('PUT', url.path+'?'+url.query,body)\n    return response\n \ndef lambda_handler(event,context): \n    response={'StackId':event['StackId'],'RequestId':event['RequestId'],'LogicalResourceId':event['LogicalResourceId'],'Status':'SUCCESS'}\n    stack=str(event['StackId']).split('/')[1]\n    if 'PhysicalResourceId' in event:\n        response['PhysicalResourceId']=event['PhysicalResourceId']\n    else:\n        response['PhysicalResourceId']=str(uuid.uuid4())\n    if event['RequestType'] == 'Delete':\n        return send_response(event,response)\n    try:\n        ec2=boto3.client('ec2')\n        resources=get_resources(stack,response)\n        waiter_cfg=get_waiter_cfg(\"AssociateIamInstanceProfile\",\"IamInstanceProfileAssociation.State==`associated` || IamInstanceProfileAssociation.State==`associating`\",[\"InvalidParameterValue\",\"IncorrectInstanceState\"])\n        waiter=create_waiter('CustomWaiter', Waiter(waiter_cfg), ec2)\n        waiter.wait(IamInstanceProfile={'Name':resources[PROFILE_ID]},InstanceId=resources[INSTANCE_ID])\n        response['Reason']='Attached instance profile successfully'\n        print(response['Reason'])\n    except Exception as E:\n        print(E)\n        response['Status']='FAILED'\n        if 'Reason' not in response:\n           response['Reason']='Failed to attach instance profile to the EC2 instance. Check the log stream under the CloudWatch log group: '+LOG_GROUP\n    return send_response(event,response)"
-        },
-        "Environment": {
-          "Variables": {
-            "EC2_INSTANCE_ID": "MATLABEC2Instance",
-            "INSTANCE_PROFILE_ID": "MATLABInstanceProfile"
-          }
-        }
-      }
-    },
-    "AttachInstanceProfileToEC2": {
-      "Type": "AWS::CloudFormation::CustomResource",
-      "Version": "1.0",
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "AttachInstanceProfileLambda",
-            "Arn"
-          ]
-        }
-      }
-    },
     "MATLABInstanceProfile": {
       "Type": "AWS::IAM::InstanceProfile",
       "Properties": {
@@ -421,6 +303,9 @@
         },
         "InstanceType": {
           "Ref": "InstanceType"
+        },
+        "IamInstanceProfile": {
+          "Ref": "MATLABInstanceProfile"
         },
         "EbsOptimized": "true",
         "BlockDeviceMappings": [
@@ -579,7 +464,7 @@
           }
         },
         "Handler": "index.lambda_handler",
-        "Runtime": "python3.8",
+        "Runtime": "python3.12",
         "Timeout": "60",
         "Role": {
           "Fn::GetAtt": [
