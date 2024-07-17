@@ -1,4 +1,4 @@
-# Copyright 2024 The MathWorks Inc.
+# Copyright 2024 The MathWorks, Inc.
 
 import os
 from cryptography import x509

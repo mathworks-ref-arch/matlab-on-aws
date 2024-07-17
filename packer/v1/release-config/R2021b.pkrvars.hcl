@@ -1,9 +1,9 @@
-# Copyright 2023-2024 The MathWorks Inc.
+# Copyright 2023-2024 The MathWorks, Inc.
 
 // Use this Packer configuration file to build AMI with R2021b MATLAB installed.
 // For more information on these variables, see /packer/v1/build-matlab-ami.pkr.hcl.
 RELEASE             = "R2021b"
-BASE_AMI            = "ami-0778521d914d23bc1"
+BASE_AMI_NAME		= "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"
 STARTUP_SCRIPTS     = [".env", "10_setup-disks.sh", "20_setup-machine.sh", "30_setup-logging.sh", "40_setup-rdp.sh", "50_setup-nicedcv.sh", "70_setup-matlab.sh", "80_warmup-matlab-pre-R2022a.sh", "99_run-optional-user-command.sh"]
 RUNTIME_SCRIPTS     = ["swap-desktop-solution.sh"]
 BUILD_SCRIPTS       = ["install-startup-scripts.sh", "install-swap-desktop-solution.sh", "install-dependencies.sh", "install-matlab-dependencies-ubuntu.sh", "install-ubuntu-desktop.sh", "install-mate.sh", "install-matlab.sh", "install-support-packages.sh", "setup-startup-accelerator.sh", "install-glibc-ubuntu2004.sh", "install-fabric-manager-ubuntu.sh", "generate-toolbox-cache.sh", "cleanup.sh"]

@@ -1,9 +1,9 @@
-# Copyright 2023-2024 The MathWorks Inc.
+# Copyright 2023-2024 The MathWorks, Inc.
 
 // Use this Packer configuration file to build AMI with R2023b MATLAB installed.
 // For more information on these variables, see /packer/v1/build-matlab-ami.pkr.hcl.
 RELEASE             = "R2023b"
-BASE_AMI            = "ami-06a1f46caddb5669e"
+BASE_AMI_NAME		= "ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"
 STARTUP_SCRIPTS     = [".env", "10_setup-disks.sh", "20_setup-machine.sh", "30_setup-logging.sh", "40_setup-rdp.sh", "50_setup-nicedcv.sh", "60_setup-matlab-proxy.sh", "70_setup-matlab.sh", "80_warmup-matlab.sh", "85_warmup-mathworks-service-host.sh", "99_run-optional-user-command.sh"]
 RUNTIME_SCRIPTS     = ["swap-desktop-solution.sh", "launch-matlab-proxy.sh", "generate-certificate.py"]
 BUILD_SCRIPTS       = ["install-startup-scripts.sh", "install-swap-desktop-solution.sh", "install-dependencies.sh", "install-matlab-proxy.sh", "install-matlab-dependencies-ubuntu.sh", "install-ubuntu-desktop.sh", "install-mate.sh", "install-matlab.sh", "install-support-packages.sh", "setup-startup-accelerator.sh", "install-fabric-manager-ubuntu.sh", "generate-toolbox-cache.sh", "cleanup.sh"]

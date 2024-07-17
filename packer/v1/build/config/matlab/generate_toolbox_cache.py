@@ -1,4 +1,4 @@
-# Copyright 2023 The MathWorks Inc.
+# Copyright 2023-2024 The MathWorks, Inc.
 """! @brief Python program to generate the toolbox-cache xml for MATLAB
 
  generate_toolbox_cache.py file takes matlabroot and toolbox-cache xml destination folder as inputs,

@@ -1,4 +1,4 @@
-# Copyright 2023-2024 The MathWorks Inc.
+# Copyright 2023-2024 The MathWorks, Inc.
 
 # The following variables may have different value across releases and 
 # it is recommended to modify them via the release-specific configuration file.
@@ -29,15 +29,10 @@ variable "RELEASE" {
   }
 }
 
-variable "BASE_AMI" {
+variable "BASE_AMI_NAME" {
   type        = string
-  default     = "ami-07543813a68cc4fe9"
-  description = "Default AMI ID refers to the Ubuntu Server 22.04 image provided by Canonical."
-
-  validation {
-    condition     = substr(var.BASE_AMI, 0, 4) == "ami-"
-    error_message = "The BASE_AMI must start with \"ami-\"."
-  }
+  default     = "ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"
+  description = "Default AMI name refers to the Ubuntu Server 22.04 image provided by Canonical."
 }
 
 variable "BUILD_SCRIPTS" {
@@ -136,6 +131,8 @@ variable "AMI_TAGS" {
     Name  = "Packer Build"
     Build = "MATLAB"
     Type  = "matlab-on-aws"
+    Base_AMI_ID = "{{ .SourceAMI }}"
+    Base_AMI_Name = "{{ .SourceAMIName }}"
   }
   description = "The tags Packer adds to the resultant machine image."
 }
@@ -169,7 +166,15 @@ source "amazon-ebs" "AMI_Builder" {
     volume_type           = "gp2"
   }
   region       = "us-east-1"
-  source_ami   = "${var.BASE_AMI}"
+  source_ami_filter {
+    filters = {
+      "virtualization-type" = "hvm"
+      "name" = "${var.BASE_AMI_NAME}"
+      "root-device-type" = "ebs"
+    } 
+    owners = ["099720109477"] # Canonical's owner ID https://documentation.ubuntu.com/aws/en/latest/aws-how-to/instances/find-ubuntu-images/
+    most_recent = true
+  }
   ssh_username = "ubuntu"
   run_tags     = "${var.INSTANCE_TAGS}"
   tags         = "${var.AMI_TAGS}"
@@ -235,6 +240,8 @@ build {
       specified_products = "${var.PRODUCTS}"
       specified_spkgs    = "${var.SPKGS}"
       build_scripts      = join(", ", "${var.BUILD_SCRIPTS}")
+      base_ami_id        = "{{ .SourceAMI }}"
+      base_ami_name      = "{{ .SourceAMIName }}"
     }
   }
 }

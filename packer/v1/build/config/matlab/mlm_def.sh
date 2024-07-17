@@ -4,7 +4,7 @@
 # The file is read when starting a shell session.
 ####################
 
-# Copyright 2024 The MathWorks Inc.
+# Copyright 2024 The MathWorks, Inc.
 
 # MLM_LICENSE_FILE: License MATLAB using a license file.
 # Change this line to license MATLAB with:

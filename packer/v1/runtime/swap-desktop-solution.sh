@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2023 The MathWorks Inc.
+# Copyright 2023-2024 The MathWorks, Inc.
 
 # Set up log file
 swap_desktop_log="/var/log/mathworks/swap_desktop_solution.log"

@@ -1,4 +1,4 @@
-# Copyright 2023 The MathWorks Inc.
+# Copyright 2023-2024 The MathWorks, Inc.
 
 # The following environment variable allows MathWorks to understand how this MathWorks 
 # product (MATLAB on AWS) is being used. This information helps us make MATLAB even better. 
