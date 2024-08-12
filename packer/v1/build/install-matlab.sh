@@ -55,8 +55,9 @@ sudo ./mpm install \
   ${source_arguments} \
   --destination="${MATLAB_ROOT}" \
   --products ${PRODUCTS} \
-  || (echo "MPM Installation Failure. See below for more information:" && cat /tmp/mathworks_root.log && false) \
-  && sudo rm -f mpm /tmp/mathworks_root.log
+  || (echo "MPM Installation Failure. See below for more information:" && cat /tmp/mathworks_root.log && false)
+
+sudo rm -f mpm /tmp/mathworks_root.log
 
 # If a source URL was provided, delete the unzipped archive.
 if [ -n "${MATLAB_SOURCE_URL}" ]; then

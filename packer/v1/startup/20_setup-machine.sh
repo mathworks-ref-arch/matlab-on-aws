@@ -22,7 +22,8 @@ fi
 echo "yes" >> /home/${USERNAME}/.config/gnome-initial-setup-done
 
 # Start the fabric manager server for p4d instances
-INSTANCE_TYPE=$(curl -s 169.254.169.254/latest/meta-data/instance-type)
+TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 120")
+INSTANCE_TYPE=$(curl -s -H "X-aws-ec2-metadata-token: ${TOKEN}" 169.254.169.254/latest/meta-data/instance-type)
 if [[ ${INSTANCE_TYPE} == p4d* ]] ; then
     systemctl enable nvidia-fabricmanager
     systemctl start nvidia-fabricmanager

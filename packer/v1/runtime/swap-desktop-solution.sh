@@ -29,7 +29,8 @@ function init_dcv_desktop {
 }
 
 function init_dcv {
-  instance_type=$(curl -s 169.254.169.254/latest/meta-data/instance-type)
+  token=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 120")
+  instance_type=$(curl -s -H "X-aws-ec2-metadata-token: ${token}" 169.254.169.254/latest/meta-data/instance-type)
   # Check if gpu doesn't exist
   nvidia-smi > /dev/null 2>&1
   gpu_exists=$?
