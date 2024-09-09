@@ -1,6 +1,6 @@
 # Copyright 2023-2024 The MathWorks, Inc.
 
-// Use this Packer configuration file to build AMI with R2023b MATLAB installed.
+// Use this Packer configuration file to build AMI with R2024a MATLAB installed.
 // For more information on these variables, see /packer/v1/build-matlab-ami.pkr.hcl.
 RELEASE             = "R2024a"
 BASE_AMI_NAME		= "ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"

@@ -35,12 +35,13 @@ fi
 # If a source URL is provided, then use it to install MATLAB and toolboxes.
 release_arguments=""
 source_arguments=""
-if [ -n "${MATLAB_SOURCE_URL}" ]; then
-    curl "${MATLAB_SOURCE_URL}" -o matlab.zip
-    unzip -q matlab.zip -d /tmp/matlab_source
-    rm matlab.zip
-    chmod -R 755 /tmp/matlab_source
-    source_arguments="--source=/tmp/matlab_source/dvd/archives"
+if [[ -n "${MATLAB_SOURCE_URL}" ]]; then
+    aws s3 cp "${MATLAB_SOURCE_URL}" /tmp/matlab.zip
+    matlab_src_dir="/tmp/matlab_source"
+    unzip -q /tmp/matlab.zip -d ${matlab_src_dir}
+    sudo rm -f /tmp/matlab.zip
+    sudo chmod -R 755 ${matlab_src_dir}
+    source_arguments="--source=${matlab_src_dir}/dvd/archives"
 else
     release_arguments="--release=${RELEASE}"
 fi
@@ -60,8 +61,8 @@ sudo ./mpm install \
 sudo rm -f mpm /tmp/mathworks_root.log
 
 # If a source URL was provided, delete the unzipped archive.
-if [ -n "${MATLAB_SOURCE_URL}" ]; then
-    rm -r /tmp/matlab_source
+if [[ -n "${MATLAB_SOURCE_URL}" ]]; then
+    sudo rm -rf ${matlab_src_dir}
 fi
 
 # Add symlink to MATLAB

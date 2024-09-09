@@ -7,7 +7,7 @@ set -euo pipefail
 
 # install matlab-proxy python package
 python3 -m pip install matlab-proxy==$MATLAB_PROXY_VERSION
-echo "installed matlab-proxy"
+echo "Installed matlab-proxy"
 
 # move the SSL certificate generator and launcher script to the right directory
 RUNTIME_SOURCE=/tmp
