@@ -5,6 +5,12 @@
 # Exit on any failure, treat unset substitution variables as errors
 set -euo pipefail
 
+# Check if there are any support packages to install.
+if [ -z "$SPKGS" ]; then
+  echo "No support packages to install. Exiting script."
+  exit 0
+fi
+
 cd /tmp/
 
 # Install and setup mpm.
@@ -30,8 +36,9 @@ sudo HOME=${HOME} ./mpm install \
   --release=${RELEASE} \
   --destination="${MATLAB_ROOT}" \
   --products ${SPKGS} \
-  || (echo "MPM Installation Failure. See below for more information:" && cat /tmp/mathworks_root.log  && false) \
-  && sudo rm -f mpm /tmp/mathworks_root.log
+  || (echo "MPM Installation Failure. See below for more information:" && cat /tmp/mathworks_root.log  && false)
+
+sudo rm -f mpm /tmp/mathworks_root.log
 
 # Make local user the owner of MATLAB_ROOT and the support packages root folders to enable support packages installation without root permissions.
 # See: https://in.mathworks.com/help/matlab/ref/matlabshared.supportpkg.setsupportpackageroot.html#description

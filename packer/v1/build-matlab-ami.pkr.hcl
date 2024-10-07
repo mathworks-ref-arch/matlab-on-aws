@@ -1,5 +1,14 @@
 # Copyright 2023-2024 The MathWorks, Inc.
 
+packer {
+  required_plugins {
+    amazon = {
+      version = ">= 1.3.2"
+      source  = "github.com/hashicorp/amazon"
+    }
+  }
+}
+
 # The following variables may have different value across releases and 
 # it is recommended to modify them via the release-specific configuration file.
 # To learn the release-specific values, visit the configuration file

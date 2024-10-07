@@ -27,6 +27,13 @@ git clone https://github.com/mathworks-ref-arch/matlab-on-aws.git
 cd matlab-on-aws/packer/v1
 ```
 
+Initialize Packer to install the required plugins.
+You only need to do this once.
+For more information, see [init command reference (Packer)](https://developer.hashicorp.com/packer/docs/commands/init).
+```bash
+packer init build-matlab-ami.pkr.hcl
+```
+
 Launch the Packer build with the default settings.
 ```bash
 packer build build-matlab-ami.pkr.hcl
@@ -174,3 +181,9 @@ To learn more, see the documentation: [Help Make MATLAB Even Better - Frequently
 
 ## Technical Support
 If you require assistance or have a request for additional features or capabilities, please contact [MathWorks Technical Support](https://www.mathworks.com/support/contact_us.html).
+
+----
+
+Copyright 2023-2024 The MathWorks, Inc.
+
+----

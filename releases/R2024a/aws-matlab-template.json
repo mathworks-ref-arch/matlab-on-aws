@@ -3,58 +3,58 @@
   "Mappings": {
     "RegionMap": {
       "us-east-1": {
-        "AMI": "ami-00e61e1709179eeb2"
+        "AMI": "ami-058c73f2ebdca9595"
       },
       "us-east-2": {
-        "AMI": "ami-01fd7f70147a715f7"
+        "AMI": "ami-018bc3f9e471cc049"
       },
       "us-west-1": {
-        "AMI": "ami-0a3476f142dbd0d9f"
+        "AMI": "ami-00bf0d3468b0b62ef"
       },
       "us-west-2": {
-        "AMI": "ami-042763da34ffaf420"
+        "AMI": "ami-05865edb0dba554ff"
       },
       "ca-central-1": {
-        "AMI": "ami-0963640ef03e5284c"
+        "AMI": "ami-0c762755d060ad482"
       },
       "eu-central-1": {
-        "AMI": "ami-0dd3acdd0b103acbb"
+        "AMI": "ami-08e3dce4d7c9a9a53"
       },
       "eu-west-1": {
-        "AMI": "ami-0444d202e41a3f963"
+        "AMI": "ami-063c20de5b06ac3cc"
       },
       "eu-west-2": {
-        "AMI": "ami-0e194ad589b918c4d"
+        "AMI": "ami-08d04c47c7fbcd767"
       },
       "eu-west-3": {
-        "AMI": "ami-0b803d6057964b75f"
+        "AMI": "ami-0ba152aee9f5216f0"
       },
       "eu-north-1": {
-        "AMI": "ami-0afc129e08c601aa4"
+        "AMI": "ami-0dd7934baf74da2d8"
       },
       "sa-east-1": {
-        "AMI": "ami-002a4dfbd565d4386"
+        "AMI": "ami-0d22ad5c22eac9460"
       },
       "me-south-1": {
-        "AMI": "ami-04693ba18c6f5b35b"
+        "AMI": "ami-0d1629cb86ed6f4cd"
       },
       "ap-east-1": {
-        "AMI": "ami-0ff63d441662e9228"
+        "AMI": "ami-060dc678a157db562"
       },
       "ap-south-1": {
-        "AMI": "ami-0e244f423e027c051"
+        "AMI": "ami-084f413c4ccefe72a"
       },
       "ap-northeast-1": {
-        "AMI": "ami-078328ab695e79cbe"
+        "AMI": "ami-03581be82811ef248"
       },
       "ap-northeast-2": {
-        "AMI": "ami-0ef4348722606db78"
+        "AMI": "ami-0c5ab8e9f92d86733"
       },
       "ap-southeast-1": {
-        "AMI": "ami-0bff876d74d7e72fd"
+        "AMI": "ami-00fdf8a591847dd1c"
       },
       "ap-southeast-2": {
-        "AMI": "ami-05018b16f361a5fc3"
+        "AMI": "ami-07bf260a137f52790"
       }
     }
   },
@@ -110,7 +110,7 @@
                       ],
                       "Resource": {
                         "Fn::Sub": [
-                          "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${name}:*",
+                          "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:${name}:*",
                           {
                             "name": {
                               "Fn::GetAtt": [
@@ -139,7 +139,7 @@
                   "Effect": "Allow",
                   "Action": "s3:GetObject",
                   "Resource": {
-                    "Fn::Sub": "arn:aws:s3:::dcv-license.${AWS::Region}/*"
+                    "Fn::Sub": "arn:${AWS::Partition}:s3:::dcv-license.${AWS::Region}/*"
                   }
                 }
               ]
@@ -510,7 +510,7 @@
                   "Effect": "Allow",
                   "Action": "ec2:Stopinstances",
                   "Resource": {
-                    "Fn::Sub": "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/*"
+                    "Fn::Sub": "arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:instance/*"
                   },
                   "Condition": {
                     "StringEquals": {
@@ -539,7 +539,7 @@
                     "logs:PutLogEvents"
                   ],
                   "Resource": {
-                    "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
+                    "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*"
                   }
                 }
               ]
@@ -875,18 +875,6 @@
           "Ref": "CustomIamRole"
         },
         ""
-      ]
-    },
-    "UseCustomIamRole": {
-      "Fn::Not": [
-        {
-          "Fn::Equals": [
-            {
-              "Ref": "CustomIamRole"
-            },
-            ""
-          ]
-        }
       ]
     },
     "UseAdditionalPolicies": {
