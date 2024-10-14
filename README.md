@@ -53,6 +53,10 @@ see [Build Your Own Machine Image](./packer/v1).
 You can use these scripts to build a custom Linux machine image for running MATLAB on Amazon Web Services.
 You can then deploy this custom image with the MathWorks infrastructure as code (IaC) templates.
 
+Platform engineering teams can use these scripts to take advantage of optimizations MathWorks has developed
+for running MathWorks products in the cloud.
+For more details, see [What are the advantages of building images with MathWorks scripts?](#what-are-the-advantages-of-building-images-with-mathworks-scripts)
+
 ## Learn about Architecture
 
 ![MATLAB on AWS Reference Architecture](img/aws-matlab-diagram.png)
@@ -127,6 +131,16 @@ You can also create a custom image by building your own using the Packer scripts
 
 ### How do I use a different license manager?
 The AMI uses MathWorks Hosted License Manager by default. For information on how to use other license managers, see [MATLAB Licensing in the Cloud](https://www.mathworks.com/help/licensingoncloud/matlab-on-the-cloud.html).
+
+### What are the advantages of building images with MathWorks scripts?
+Images built with MathWorks scripts are optimized and tested for MathWorks workflows.
+The images are deployed by MathWorks CloudFormation templates following AWS best practices.
+
+The warmup scripts found in [startup](./packer/v1/startup) allow you to start MATLAB faster. The CloudFormation template uses these scripts to automatically initialize MathWorks files on the instance. This allows MATLAB to be responsive in as little as a minute after you start it. These scripts are automatically included in both the prebuilt images and the images that you build using the instructions in [Deployment Steps](#deployment-steps).
+
+Without the optimization scripts, starting a large software application, such as MATLAB, for the first time can potentially take tens of minutes. Subsequent starts of the large software application will be faster. This is because AWS initializes the storage for the EC2 instance, as described in [Initialize Amazon EBS volumes](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-initialize.html).
+
+Other scripts in this repo also enable options for connecting to the instance, ensure that all the necessary MATLAB dependencies are installed, and make it easy to build an image with an older MATLAB release.
 
 # Technical Support
 To request assistance or additional features, contact [MathWorks Technical Support](https://www.mathworks.com/support/contact_us.html).
