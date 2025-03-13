@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright 2023-2024 The MathWorks, Inc.
+# Copyright 2023-2025 The MathWorks, Inc.
 
 # Exit on any failure, treat unset substitution variables as errors
 set -euo pipefail
@@ -36,12 +36,19 @@ fi
 release_arguments=""
 source_arguments=""
 if [[ -n "${MATLAB_SOURCE_URL}" ]]; then
-    aws s3 cp "${MATLAB_SOURCE_URL}" /tmp/matlab.zip
-    matlab_src_dir="/tmp/matlab_source"
-    unzip -q /tmp/matlab.zip -d ${matlab_src_dir}
-    sudo rm -f /tmp/matlab.zip
-    sudo chmod -R 755 ${matlab_src_dir}
-    source_arguments="--source=${matlab_src_dir}/dvd/archives"
+    source /var/tmp/config/matlab/mount-data-drive-utils.sh
+
+    source_dir="/mnt/matlab_source"
+    mount_device_name="/dev/sdf"
+    # This creates and mounts additional vol to the instance
+    mount_data_drive "${source_dir}" "${mount_device_name}"
+
+    # This downloads the source artifacts to the mounted vol
+    retrieve_artifacts "${MATLAB_SOURCE_URL}" "${source_dir}"
+    # Source directory must contain an archives folder that mpm uses for installing products
+    archives_path=$(find "${source_dir}" -type d -name "archives" -print -quit)
+    
+    source_arguments="--source=${archives_path}"
 else
     release_arguments="--release=${RELEASE}"
 fi
@@ -60,9 +67,9 @@ sudo ./mpm install \
 
 sudo rm -f mpm /tmp/mathworks_root.log
 
-# If a source URL was provided, delete the unzipped archive.
+# If a source URL was provided, delete the source archive.
 if [[ -n "${MATLAB_SOURCE_URL}" ]]; then
-    sudo rm -rf ${matlab_src_dir}
+    remove_data_drive "${source_dir}" "${mount_device_name}"
 fi
 
 # Add symlink to MATLAB

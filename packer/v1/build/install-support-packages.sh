@@ -11,6 +11,12 @@ if [ -z "$SPKGS" ]; then
   exit 0
 fi
 
+# Check if matlab source URL is set.
+if [[ -n "${MATLAB_SOURCE_URL}" ]]; then
+  echo "Skipping install for support packages as MATLAB_SOURCE_URL is set."
+  exit 0
+fi
+
 cd /tmp/
 
 # Install and setup mpm.

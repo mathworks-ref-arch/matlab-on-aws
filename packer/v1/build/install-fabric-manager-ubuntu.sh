@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright 2023-2024 The MathWorks, Inc.
+# Copyright 2023-2025 The MathWorks, Inc.
 
 # Exit on any failure, treat unset substitution variables as errors
 set -euo pipefail
@@ -10,7 +10,7 @@ set -euo pipefail
 
 cd /tmp/ \
   && sudo wget --no-verbose ${NVIDIA_CUDA_KEYRING_URL} \
-  && sudo dpkg -i cuda-keyring_1.0-1_all.deb \
+  && sudo dpkg -i $(basename ${NVIDIA_CUDA_KEYRING_URL}) \
   && sudo apt-get -qq update \
   && sudo apt-get -qq install datacenter-gpu-manager
 sudo systemctl --now enable nvidia-dcgm
