@@ -74,8 +74,7 @@ packer build -var="PRODUCTS=MATLAB Deep_Learning_Toolbox" build-matlab-ami.pkr.h
 ```
 
 #### **Customize MATLAB Release to Install**
-To use an earlier MATLAB release, you must use one of the variable definition files in the [release-config](https://github.com/mathworks-ref-arch/matlab-on-aws/tree/master/packer/v1/release-config) folder.
-These are available for MATLAB R2020a and later.
+To use an earlier MATLAB release, you must use one of the variable definition files in the [release-config](https://github.com/mathworks-ref-arch/matlab-on-aws/tree/master/packer/v1/release-config) folder. Note that although the files are available for MATLAB R2020a and later, MathWorks recommends using MATLAB R2023a or later. This is because the Packer builds for earlier releases use Ubuntu 20.04, which is no longer receiving security updates. 
 
 For example, install MATLAB R2020a and all available toolboxes.
 ```bash
@@ -184,6 +183,6 @@ If you require assistance or have a request for additional features or capabilit
 
 ----
 
-Copyright 2023-2024 The MathWorks, Inc.
+Copyright 2023-2025 The MathWorks, Inc.
 
 ----

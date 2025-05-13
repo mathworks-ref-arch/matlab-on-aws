@@ -1,0 +1,1025 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Mappings": {
+    "RegionMap": {
+      "us-east-1": {
+        "AMI": "ami-06554a9c16731eeb8"
+      },
+      "us-east-2": {
+        "AMI": "ami-040d3396a95f96a53"
+      },
+      "us-west-1": {
+        "AMI": "ami-008fa692586b3a464"
+      },
+      "us-west-2": {
+        "AMI": "ami-0d36511676e466738"
+      },
+      "ca-central-1": {
+        "AMI": "ami-076bccca90d726a8a"
+      },
+      "eu-central-1": {
+        "AMI": "ami-0a0d9afe6067c43a7"
+      },
+      "eu-west-1": {
+        "AMI": "ami-0f67bd11ca9761a60"
+      },
+      "eu-west-2": {
+        "AMI": "ami-0b06db3d5a4316ec1"
+      },
+      "eu-west-3": {
+        "AMI": "ami-0926d9cdd6dfae3d5"
+      },
+      "eu-north-1": {
+        "AMI": "ami-0f28478b04fdc4018"
+      },
+      "sa-east-1": {
+        "AMI": "ami-08a999de3522e24db"
+      },
+      "me-south-1": {
+        "AMI": "ami-0858e50e785ef6f2f"
+      },
+      "ap-east-1": {
+        "AMI": "ami-06e8e5a7300b3aab4"
+      },
+      "ap-south-1": {
+        "AMI": "ami-008ce8a1c0d6e4482"
+      },
+      "ap-northeast-1": {
+        "AMI": "ami-0afb5eb6c649b1a34"
+      },
+      "ap-northeast-2": {
+        "AMI": "ami-015a345dd9eb5f0c5"
+      },
+      "ap-southeast-1": {
+        "AMI": "ami-065781ef522f1ec89"
+      },
+      "ap-southeast-2": {
+        "AMI": "ami-0bbbc1a62bf9f4480"
+      }
+    }
+  },
+  "Resources": {
+    "PredefinedRole": {
+      "Type": "AWS::IAM::Role",
+      "Condition": "UsePredefinedRole",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ec2.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          ]
+        },
+        "Path": "/MW/",
+        "ManagedPolicyArns": {
+          "Fn::If": [
+            "UseAdditionalPolicies",
+            {
+              "Fn::Split": [
+                ";",
+                {
+                  "Ref": "AdditionalIamPolicies"
+                }
+              ]
+            },
+            {
+              "Ref": "AWS::NoValue"
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "Fn::If": [
+              "UseCloudWatch",
+              {
+                "PolicyName": "cloudwatch-access-policy",
+                "PolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "logs:CreateLogStream",
+                        "logs:DescribeLogStreams",
+                        "logs:PutLogEvents"
+                      ],
+                      "Resource": {
+                        "Fn::Sub": [
+                          "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:${LogGroupName}:*",
+                          {
+                            "LogGroupName": {
+                              "Ref": "MWLogLocation"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "Ref": "AWS::NoValue"
+              }
+            ]
+          },
+          {
+            "PolicyName": "dcv-access-policy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "s3:GetObject",
+                  "Resource": {
+                    "Fn::Sub": "arn:${AWS::Partition}:s3:::dcv-license.${AWS::Region}/*"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "ssm-access-policy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ssm:DescribeAssociation",
+                    "ssm:GetDeployablePatchSnapshotForInstance",
+                    "ssm:GetDocument",
+                    "ssm:DescribeDocument",
+                    "ssm:GetManifest",
+                    "ssm:GetParameter",
+                    "ssm:GetParameters",
+                    "ssm:ListAssociations",
+                    "ssm:ListInstanceAssociations",
+                    "ssm:PutInventory",
+                    "ssm:PutComplianceItems",
+                    "ssm:PutConfigurePackageResult",
+                    "ssm:UpdateAssociationStatus",
+                    "ssm:UpdateInstanceAssociationStatus",
+                    "ssm:UpdateInstanceInformation"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ssmmessages:CreateControlChannel",
+                    "ssmmessages:CreateDataChannel",
+                    "ssmmessages:OpenControlChannel",
+                    "ssmmessages:OpenDataChannel"
+                  ],
+                  "Resource": "*"
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "ec2messages:AcknowledgeMessage",
+                    "ec2messages:DeleteMessage",
+                    "ec2messages:FailMessage",
+                    "ec2messages:GetEndpoint",
+                    "ec2messages:GetMessages",
+                    "ec2messages:SendReply"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          },
+          {
+            "PolicyName": "describe-tags-policy",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": "ec2:DescribeTags",
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "MATLABInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/MW/",
+        "Roles": [
+          {
+            "Fn::If": [
+              "UsePredefinedRole",
+              {
+                "Ref": "PredefinedRole"
+              },
+              {
+                "Ref": "CustomIamRole"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "EC2AutoShutdown": {
+      "Type": "AWS::CloudFormation::Stack",
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete",
+      "Properties": {
+        "TemplateURL": "https://mathworks-reference-architectures-templates.s3.amazonaws.com/ec2-shutdown-lambda/v1/0/1/ec2-shutdown-lambda.yml",
+        "Parameters": {
+          "EC2InstanceId": {
+            "Ref": "MATLABEC2Instance"
+          },
+          "MathWorksProductId": "MathWorks-MATLAB-Linux",
+          "ShutdownBehaviour": {
+            "Ref": "AutoShutdown"
+          },
+          "TagToMonitor": "mw-autoshutdown",
+          "AutoShutdownLambdaLogRetentionInDays": 1
+        }
+      }
+    },
+    "MWSecurityGroup": {
+      "Type": "AWS::CloudFormation::Stack",
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete",
+      "Properties": {
+        "TemplateURL": "https://mathworks-reference-architectures-templates.s3.amazonaws.com/security-group/v2/0/0/security-group.yml",
+        "Parameters": {
+          "VpcId": {
+            "Ref": "VPC"
+          },
+          "CidrRanges": {
+            "Ref": "ClientIPAddress"
+          },
+          "SSHAccess": "Yes",
+          "RDPAccess": "Yes",
+          "NICEDCVAccess": "Yes",
+          "MATLABProxyAccess": "Yes"
+        }
+      }
+    },
+    "MWLogLocation": {
+      "Type": "AWS::Logs::LogGroup",
+      "Condition": "UseCloudWatch"
+    },
+    "MATLABEC2Instance": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "ImageId": {
+          "Fn::If": [
+            "UseCustomAMI",
+            {
+              "Ref": "CustomAmiId"
+            },
+            {
+              "Fn::FindInMap": [
+                "RegionMap",
+                {
+                  "Ref": "AWS::Region"
+                },
+                "AMI"
+              ]
+            }
+          ]
+        },
+        "KeyName": {
+          "Ref": "SSHKeyName"
+        },
+        "SecurityGroupIds": [
+          {
+            "Fn::GetAtt": [
+              "MWSecurityGroup",
+              "Outputs.SecurityGroupId"
+            ]
+          },
+          {
+            "Fn::If": [
+              "AddSG",
+              {
+                "Ref": "AdditionalSecurityGroup"
+              },
+              {
+                "Ref": "AWS::NoValue"
+              }
+            ]
+          }
+        ],
+        "SubnetId": {
+          "Ref": "Subnet"
+        },
+        "InstanceType": {
+          "Ref": "InstanceType"
+        },
+        "IamInstanceProfile": {
+          "Ref": "MATLABInstanceProfile"
+        },
+        "EbsOptimized": "true",
+        "BlockDeviceMappings": [
+          {
+            "DeviceName": "/dev/sda1",
+            "Ebs": {
+              "VolumeSize": {
+                "Ref": "RootVolumeSize"
+              }
+            }
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Ref": "InstanceName"
+            }
+          },
+          {
+            "Key": "mw-ProductID",
+            "Value": "MathWorks-MATLAB-Linux"
+          },
+          {
+            "Key": "mw-StackName",
+            "Value": {
+              "Ref": "AWS::StackName"
+            }
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "\n",
+              [
+                "#!/bin/bash",
+                "",
+                "# Copyright 2022 The MathWorks, Inc.",
+                "",
+                "STARTUP_FOLDER=/opt/mathworks/startup",
+                "# Load startup variables",
+                "if [[ -r ${STARTUP_FOLDER}/.env ]]; then",
+                "    set -o allexport",
+                "    source ${STARTUP_FOLDER}/.env",
+                "    set +o allexport",
+                "fi",
+                "",
+                "# Define startup parameters",
+                {
+                  "Fn::Sub": [
+                    "export PASSWORD=${PasswordBase64}",
+                    {
+                      "PasswordBase64": {
+                        "Fn::Base64": {
+                          "Ref": "Password"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": "export MLM_LICENSE_FILE=${LicenseManager}"
+                },
+                {
+                  "Fn::Sub": [
+                    "export CLOUD_LOG_NAME=${LogGroupName}",
+                    {
+                      "LogGroupName": {
+                        "Fn::If": [
+                          "UseCloudWatch",
+                          {
+                            "Ref": "MWLogLocation"
+                          },
+                          ""
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "Fn::Sub": "export ACCESS_PROTOCOL='${AccessProtocol}'"
+                },
+                {
+                  "Fn::Sub": "export ENABLE_MATLAB_PROXY='${EnableMATLABProxy}'"
+                },
+                {
+                  "Fn::Sub": "export OPTIONAL_USER_COMMAND='${OptionalUserCommand}'"
+                },
+                "",
+                "# Run startup scripts",
+                "mkdir -p /var/log/mathworks",
+                "run-parts --exit-on-error --verbose --regex '^[0-9]+_.+$' ${STARTUP_FOLDER} >> /var/log/mathworks/startup.log 2>&1",
+                "",
+                "# Signal the status from cfn-init",
+                {
+                  "Fn::Sub": "/opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --region ${AWS::Region} --resource MATLABEC2Instance"
+                }
+              ]
+            ]
+          }
+        }
+      },
+      "CreationPolicy": {
+        "ResourceSignal": {
+          "Timeout": "PT15M"
+        }
+      }
+    },
+    "ElasticIP": {
+      "Type": "AWS::EC2::EIP",
+      "Condition": "UseElasticIPAddress",
+      "Properties": {
+        "InstanceId": {
+          "Ref": "MATLABEC2Instance"
+        },
+        "Domain": "vpc"
+      }
+    },
+    "document": {
+      "Type": "AWS::SSM::Document",
+      "Condition": "UsePredefinedRole",
+      "Properties": {
+        "DocumentType": "Command",
+        "Content": {
+          "schemaVersion": "2.2",
+          "description": "Run a script on Linux instances.",
+          "parameters": {
+            "commands": {
+              "type": "String",
+              "description": "Command to run on EC2 instance",
+              "default": "echo 'Hello World'"
+            }
+          },
+          "mainSteps": [
+            {
+              "action": "aws:runShellScript",
+              "name": "runCommands",
+              "inputs": {
+                "timeoutSeconds": "60",
+                "runCommand": [
+                  "{{ commands }}"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "Parameters": {
+    "InstanceType": {
+      "Description": "AWS instance type to use for MATLAB. See https://aws.amazon.com/ec2/instance-types for a list of instance types.",
+      "Default": "m5.xlarge",
+      "Type": "String"
+    },
+    "InstanceName": {
+      "Description": "Name for the MATLAB virtual machine",
+      "Default": "MATLAB Desktop",
+      "Type": "String"
+    },
+    "AccessProtocol": {
+      "Description": "Access protocol to connect to this instance",
+      "Default": "RDP",
+      "Type": "String",
+      "AllowedValues": [
+        "NICE DCV",
+        "RDP"
+      ]
+    },
+    "EnableMATLABProxy": {
+      "Description": "Option that enables access to MATLAB on your cloud instance within a browser. Opening MATLAB in a browser opens a separate MATLAB session to your Remote Desktop Protocol (RDP) session or NICE DCV session.",
+      "Default": "Yes",
+      "Type": "String",
+      "AllowedValues": [
+        "Yes",
+        "No"
+      ]
+    },
+    "UseElasticIpAddress": {
+      "Description": "Flag indicating whether you want to keep the same public IP address for the instance",
+      "Default": "No",
+      "Type": "String",
+      "AllowedValues": [
+        "Yes",
+        "No"
+      ]
+    },
+    "RootVolumeSize": {
+      "Description": "Size in GB of the root volume",
+      "Default": "128",
+      "Type": "Number",
+      "MinValue": "128",
+      "MaxValue": "1024",
+      "ConstraintDescription": "Size must be between 128 and 1024GB"
+    },
+    "CustomIamRole": {
+      "Description": "Name of a custom IAM Role to associate with this instance. If not specified, a predefined role is used. If specified, features requiring special permissions will be unavailable (NICE DCV, CloudWatch, IAM Policies).",
+      "Default": "",
+      "Type": "String"
+    },
+    "AdditionalIamPolicies": {
+      "Description": "Semicolon-delimited list of IAM Policy ARNs to add to the predefined role. This option cannot be used with a custom IAM Role.",
+      "Default": "",
+      "Type": "String",
+      "AllowedPattern": "^(arn:[^:;]+:iam::[^:;]+:policy/[^:;]+(;arn:[^:;]+:iam::[^:;]+:policy/[^:;]+)*)?$",
+      "ConstraintDescription": "If specified, must be a semicolon (;) delimited list of ARNs (arn:<partition>:iam::<account-id>:policy/<resource-id>)."
+    },
+    "VPC": {
+      "Description": "ID of an existing VPC in which to deploy this stack",
+      "Type": "AWS::EC2::VPC::Id",
+      "ConstraintDescription": "Must be the ID of an existing VPC.",
+      "AllowedPattern": ".+"
+    },
+    "Subnet": {
+      "Description": "ID of an existing subnet. To access the instance from anywhere, ensure that your subnet auto-assigns public IP addresses and is connected to the internet.",
+      "Type": "AWS::EC2::Subnet::Id",
+      "ConstraintDescription": "Must be the ID of an existing Subnet within the chosen VPC.",
+      "AllowedPattern": ".+"
+    },
+    "SSHKeyName": {
+      "Description": "Name of an existing EC2 KeyPair to allow SSH access to all the instances. See https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html for details on creating these.",
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "ConstraintDescription": "Must be the name of an existing EC2 KeyPair.",
+      "AllowedPattern": ".+"
+    },
+    "ClientIPAddress": {
+      "Description": "Comma-separated list of IP address ranges that will be allowed to connect to this instance. Each IP CIDR should be formatted as <ip_address>/<mask>. The mask determines the number of IP addresses to include. A mask of 32 is a single IP address. Example of allowed values: 10.0.0.1/32 or 10.0.0.0/16,192.34.56.78/32. This calculator can be used to build a specific range: https://www.ipaddressguide.com/cidr. You may need to contact your IT administrator to determine which address is appropriate.",
+      "Type": "String",
+      "MinLength": "9",
+      "MaxLength": "189",
+      "AllowedPattern": "^((\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2}))(,((\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2}))){0,9}$",
+      "ConstraintDescription": "Must be a comma-separated list of valid IP CIDR ranges of the form x.x.x.x/x. A maximum of 10 such IP CIDRs are allowed in the list."
+    },
+    "Password": {
+      "NoEcho": "true",
+      "Description": "Password for the \"ubuntu\" user. You also need to enter this as an authentication token to access MATLAB on your cloud instance within a browser.",
+      "Type": "String",
+      "ConstraintDescription": "Must have a minimum of 14 characters, 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character",
+      "AllowedPattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).{14,}$"
+    },
+    "ConfirmPassword": {
+      "NoEcho": "true",
+      "Description": "Confirm Password",
+      "Type": "String"
+    },
+    "LicenseManager": {
+      "Description": "Optional License Manager for MATLAB, specified as a string in the form <port>@<hostname>. If not specified, use online licensing. If specified, the network license manager (NLM) must be accessible from the specified VPC and subnets. To use the private hostname of the NLM hub instead of the public hostname, specify the security group ID of the NLM hub in the AdditionalSecurityGroup parameter. For more information, see https://github.com/mathworks-ref-arch/license-manager-for-matlab-on-aws.",
+      "Type": "String",
+      "Default": "",
+      "AllowedPattern": "([0-9]+@[a-zA-Z0-9.\\-]+)?",
+      "ConstraintDescription": "If specified, must be in the form <port>@<hostname>"
+    },
+    "EnableCloudWatch": {
+      "Description": "Flag indicating whether cloudwatch logging for the MATLAB instance is enabled.",
+      "Type": "String",
+      "AllowedValues": [
+        "Yes",
+        "No"
+      ],
+      "Default": "No"
+    },
+    "AutoShutdown": {
+      "Description": "Choose whether you want to enable autoshutdown for your instance after a certain number of hours",
+      "Type": "String",
+      "AllowedValues": [
+        "Never",
+        "After 1 hour",
+        "After 2 hours",
+        "After 3 hours",
+        "After 4 hours",
+        "After 5 hours",
+        "After 6 hours",
+        "After 7 hours",
+        "After 8 hours",
+        "After 9 hours",
+        "After 10 hours",
+        "After 11 hours",
+        "After 12 hours",
+        "After 13 hours",
+        "After 14 hours",
+        "After 15 hours",
+        "After 16 hours",
+        "After 17 hours",
+        "After 18 hours",
+        "After 19 hours",
+        "After 20 hours",
+        "After 21 hours",
+        "After 22 hours",
+        "After 23 hours",
+        "After 24 hours"
+      ],
+      "Default": "Never"
+    },
+    "AdditionalSecurityGroup": {
+      "Description": "ID of an additional (optional) Security Group for the instances to be placed in. Often the License Manager for MATLAB's Security Group.",
+      "Type": "String",
+      "Default": ""
+    },
+    "CustomAmiId": {
+      "Default": "",
+      "Description": "ID of a custom Amazon Machine Image (AMI) in the target region (optional). If the build has been customized then the resulting machine image may no longer be compatible with the provided CloudFormation template. Compatability can in some cases be restored by making corresponding modifications to the CloudFormation template. The ID should start with 'ami-'.",
+      "Type": "String"
+    },
+    "OptionalUserCommand": {
+      "Description": "Provide an optional inline shell command to run on machine launch. For example, to set an environment variable CLOUD=AWS, use this command excluding the angle brackets: <echo -e \"export CLOUD=AWS\" | tee -a /etc/profile.d/setenvvar.sh && source /etc/profile>. To run an external script, use this command excluding the angle brackets: <wget -O /tmp/my-script.sh \"https://www.example.com/script.sh\" && bash /tmp/my-script.sh>. Find the logs at '/var/log/mathworks/startup.log'.",
+      "Type": "String",
+      "Default": ""
+    }
+  },
+  "Rules": {
+    "matchPasswords": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Equals": [
+              {
+                "Ref": "Password"
+              },
+              {
+                "Ref": "ConfirmPassword"
+              }
+            ]
+          },
+          "AssertDescription": "Passwords do not match"
+        }
+      ]
+    },
+    "SubnetInVPC": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::EachMemberEquals": [
+              {
+                "Fn::ValueOfAll": [
+                  "AWS::EC2::Subnet::Id",
+                  "VpcId"
+                ]
+              },
+              {
+                "Ref": "VPC"
+              }
+            ]
+          },
+          "AssertDescription": "Subnet must exist in the VPC you have selected"
+        }
+      ]
+    },
+    "NoAdditionalPoliciesOnCustomRole": {
+      "RuleCondition": {
+        "Fn::Not": [
+          {
+            "Fn::Equals": [
+              {
+                "Ref": "CustomIamRole"
+              },
+              ""
+            ]
+          }
+        ]
+      },
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Equals": [
+              {
+                "Ref": "AdditionalIamPolicies"
+              },
+              ""
+            ]
+          },
+          "AssertDescription": "You cannot add IAM Policies when using a custom IAM Role."
+        }
+      ]
+    },
+    "MultipleRolesMustNotExist": {
+      "RuleCondition": {
+        "Fn::Not": [
+          {
+            "Fn::Equals": [
+              {
+                "Ref": "CustomIamRole"
+              },
+              ""
+            ]
+          }
+        ]
+      },
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Equals": [
+              {
+                "Ref": "EnableCloudWatch"
+              },
+              "No"
+            ]
+          },
+          "AssertDescription": "You cannot use CloudWatch when using a custom IAM role. The deployment will create an IAM role which you can later modify with additional policies if needed."
+        },
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Equals": [
+                  {
+                    "Ref": "AccessProtocol"
+                  },
+                  "NICE DCV"
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "You cannot use NICE DCV when using a custom IAM role. The deployment will create an IAM role which you can later modify with additional policies if needed."
+        }
+      ]
+    }
+  },
+  "Conditions": {
+    "UsePredefinedRole": {
+      "Fn::Equals": [
+        {
+          "Ref": "CustomIamRole"
+        },
+        ""
+      ]
+    },
+    "UseAdditionalPolicies": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AdditionalIamPolicies"
+            },
+            ""
+          ]
+        }
+      ]
+    },
+    "UseCloudWatch": {
+      "Fn::Equals": [
+        {
+          "Ref": "EnableCloudWatch"
+        },
+        "Yes"
+      ]
+    },
+    "UseNICEDCV": {
+      "Fn::Equals": [
+        {
+          "Ref": "AccessProtocol"
+        },
+        "NICE DCV"
+      ]
+    },
+    "UseXRDP": {
+      "Fn::Equals": [
+        {
+          "Ref": "AccessProtocol"
+        },
+        "RDP"
+      ]
+    },
+    "UseMATLABProxy": {
+      "Fn::Equals": [
+        {
+          "Ref": "EnableMATLABProxy"
+        },
+        "Yes"
+      ]
+    },
+    "UseElasticIPAddress": {
+      "Fn::Equals": [
+        {
+          "Ref": "UseElasticIpAddress"
+        },
+        "Yes"
+      ]
+    },
+    "UseCustomAMI": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "CustomAmiId"
+            },
+            ""
+          ]
+        }
+      ]
+    },
+    "AddSG": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AdditionalSecurityGroup"
+            },
+            ""
+          ]
+        }
+      ]
+    }
+  },
+  "Outputs": {
+    "CloudWatchLogs": {
+      "Condition": "UseCloudWatch",
+      "Description": "The cloudwatch logs containing logging information about the MATLAB instance",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://console.aws.amazon.com/cloudwatch/home?region=",
+            {
+              "Ref": "AWS::Region"
+            },
+            "#logsV2:log-groups/log-group/",
+            {
+              "Ref": "MWLogLocation"
+            }
+          ]
+        ]
+      }
+    },
+    "NiceDCVConnection": {
+      "Condition": "UseNICEDCV",
+      "Description": "Public url of the newly created EC2 instance to connect to the session via NICE DCV",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Fn::GetAtt": [
+                "MATLABEC2Instance",
+                "PublicDnsName"
+              ]
+            },
+            ":8443/#console"
+          ]
+        ]
+      }
+    },
+    "RDPConnection": {
+      "Condition": "UseXRDP",
+      "Description": "Public DNSName of the newly created EC2 instance",
+      "Value": {
+        "Fn::GetAtt": [
+          "MATLABEC2Instance",
+          "PublicDnsName"
+        ]
+      }
+    },
+    "BrowserConnection": {
+      "Condition": "UseMATLABProxy",
+      "Description": "URL to connect to and open MATLAB in a browser.",
+      "Value": {
+        "Fn::Sub": "https://${MATLABEC2Instance.PublicDnsName}:8123"
+      }
+    }
+  },
+  "Metadata": {
+    "AWS::CloudFormation::Interface": {
+      "ParameterGroups": [
+        {
+          "Label": {
+            "default": "EC2 Instance"
+          },
+          "Parameters": [
+            "InstanceName",
+            "InstanceType",
+            "RootVolumeSize",
+            "CustomIamRole",
+            "AdditionalIamPolicies"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Remote Access"
+          },
+          "Parameters": [
+            "AccessProtocol",
+            "EnableMATLABProxy",
+            "UseElasticIpAddress",
+            "ClientIPAddress",
+            "SSHKeyName",
+            "Password",
+            "ConfirmPassword"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Network Configuration"
+          },
+          "Parameters": [
+            "VPC",
+            "Subnet",
+            "AdditionalSecurityGroup"
+          ]
+        },
+        {
+          "Label": {
+            "default": "License Configuration"
+          },
+          "Parameters": [
+            "LicenseManager"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Logging Configuration"
+          },
+          "Parameters": [
+            "EnableCloudWatch"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Autoshutdown Configuration"
+          },
+          "Parameters": [
+            "AutoShutdown"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Custom AMI"
+          },
+          "Parameters": [
+            "CustomAmiId"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Optional User Command"
+          },
+          "Parameters": [
+            "OptionalUserCommand"
+          ]
+        }
+      ],
+      "ParameterLabels": {
+        "ClientIPAddress": {
+          "default": "Allow connections from"
+        },
+        "UseElasticIpAddress": {
+          "default": "Keep public ip the same"
+        },
+        "InstanceType": {
+          "default": "AWS EC2 Instance type"
+        },
+        "InstanceName": {
+          "default": "Instance Name"
+        },
+        "RootVolumeSize": {
+          "default": "Storage Size (GiB)"
+        },
+        "CustomIamRole": {
+          "default": "Custom IAM Role (Optional)"
+        },
+        "AdditionalIamPolicies": {
+          "default": "Additional IAM Policies (Optional)"
+        },
+        "VPC": {
+          "default": "VPC to deploy this stack to"
+        },
+        "Subnet": {
+          "default": "Subnet"
+        },
+        "Password": {
+          "default": "Remote password"
+        },
+        "ConfirmPassword": {
+          "default": "Confirm remote password"
+        },
+        "SSHKeyName": {
+          "default": "SSH Key Pair"
+        },
+        "EnableMATLABProxy": {
+          "default": "Enable browser access for MATLAB"
+        },
+        "LicenseManager": {
+          "default": "License Manager for MATLAB connection string"
+        },
+        "AdditionalSecurityGroup": {
+          "default": "Additional security group to place instances in"
+        },
+        "EnableCloudWatch": {
+          "default": "Configure cloudwatch logging for the MATLAB instance"
+        },
+        "AccessProtocol": {
+          "default": "Remote access protocol"
+        },
+        "CustomAmiId": {
+          "default": "Custom AMI ID (Optional)"
+        },
+        "OptionalUserCommand": {
+          "default": "Optional user inline command"
+        }
+      }
+    }
+  }
+}
