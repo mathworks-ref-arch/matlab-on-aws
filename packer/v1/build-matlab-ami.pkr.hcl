@@ -1,4 +1,4 @@
-# Copyright 2023-2024 The MathWorks, Inc.
+# Copyright 2023-2025 The MathWorks, Inc.
 
 packer {
   required_plugins {
@@ -28,7 +28,7 @@ variable "SPKGS" {
 
 variable "RELEASE" {
   type        = string
-  default     = "R2024a"
+  default     = "R2025b"
   description = "Target MATLAB release to install in the machine image, must start with \"R\"."
 
   validation {
@@ -124,6 +124,12 @@ variable "SUBNET_ID" {
   }
 }
 
+variable "SECURITY_GROUP_ID" {
+  type        = string
+  default     = ""
+  description = "(Optional) The target security group to be used by Packer. If not specified, Packer will create a temporary security group."
+}
+
 variable "AWS_INSTANCE_PROFILE" {
   type        = string
   default     = ""
@@ -157,20 +163,78 @@ variable "MANIFEST_OUTPUT_FILE" {
   description = "The name of the resultant manifest file."
 }
 
+# Optional parameters to setup a SSH Bastion for Packer Build
+variable "SSH_BASTION_HOST" {
+  type        = string
+  default     = ""
+  description = "(Optional) A bastion host to use for the actual SSH connection."
+}
+
+variable "SSH_INTERFACE" {
+  type        = string
+  default     = "public_ip"
+  description = "Specifies the type of network interface address used by Packer for SSH connections. Acceptable values are 'public_ip', 'private_ip', 'public_dns', or 'private_dns'."
+}
+
+variable "SSH_BASTION_USERNAME" {
+  type        = string
+  default     = ""
+  description = "(Optional) The username to connect to the bastion host."
+}
+
+variable "SSH_BASTION_PRIVATE_KEY_FILE" {
+  type        = string
+  default     = ""
+  description = "(Optional) Path to a PEM encoded private key file to use to authenticate with the bastion host."
+}
+
 # Set up local variables used by provisioners.
 locals {
-  timestamp       = regex_replace(timestamp(), "[- TZ:]", "")
-  build_scripts   = [for s in var.BUILD_SCRIPTS : format("build/%s", s)]
-  startup_scripts = [for s in var.STARTUP_SCRIPTS : format("startup/%s", s)]
-  runtime_scripts = [for s in var.RUNTIME_SCRIPTS : format("runtime/%s", s)]
+  timestamp        = regex_replace(timestamp(), "[- TZ:]", "")
+  build_scripts    = [for s in var.BUILD_SCRIPTS : format("build/%s", s)]
+  startup_scripts  = [for s in var.STARTUP_SCRIPTS : format("startup/%s", s)]
+  runtime_scripts  = [for s in var.RUNTIME_SCRIPTS : format("runtime/%s", s)]
+  use_temp_sg_rule = var.SECURITY_GROUP_ID == "" ? true : false
 }
 
 # Configure the EC2 instance that is used to build the machine image.
 source "amazon-ebs" "AMI_Builder" {
-  ami_name                = "CustomPacker-${var.RELEASE}-${local.timestamp}"
-  region                  = "us-east-1"
-  iam_instance_profile    = "${var.AWS_INSTANCE_PROFILE}"
-  instance_type           = "g4dn.xlarge"
+  # Communicator setup
+  ssh_username  = "ubuntu"
+  ssh_interface = "${var.SSH_INTERFACE}"
+
+  # Optional bastion host configuration
+  ssh_bastion_host             = "${var.SSH_BASTION_HOST}"
+  ssh_bastion_username         = "${var.SSH_BASTION_USERNAME}"
+  ssh_bastion_private_key_file = "${var.SSH_BASTION_PRIVATE_KEY_FILE}"
+
+  # Networking configuration
+  vpc_id    = "${var.VPC_ID}"
+  subnet_id = "${var.SUBNET_ID}"
+
+  # If VPC/subnet not set, Packer will choose VPC and Subnet according to these filters
+  vpc_filter {
+    filters = {
+      isDefault = true
+    }
+  }
+  subnet_filter {
+    most_free = true
+    random    = false
+  }
+
+  # Optional: Provide ID of an existing security group
+  security_group_id = "${var.SECURITY_GROUP_ID}"
+
+  # If no security group provided, allow Packer to create a temporary security group
+  # that allows SSH access from the host's public IP
+  temporary_security_group_source_public_ip = "${local.use_temp_sg_rule}"
+
+  # Packer EC2 build instance setup
+  ami_name             = "CustomPacker-${var.RELEASE}-${local.timestamp}"
+  region               = "us-east-1"
+  iam_instance_profile = "${var.AWS_INSTANCE_PROFILE}"
+  instance_type        = "g4dn.xlarge"
   aws_polling {
     delay_seconds = 30
     max_attempts  = 300
@@ -190,26 +254,17 @@ source "amazon-ebs" "AMI_Builder" {
     owners      = ["099720109477"] # Canonical's owner ID https://documentation.ubuntu.com/aws/en/latest/aws-how-to/instances/find-ubuntu-images/
     most_recent = true
   }
-  ssh_username = "ubuntu"
-  run_tags     = "${var.INSTANCE_TAGS}"
-  tags         = "${var.AMI_TAGS}"
-  subnet_filter {
-    most_free = true
-    random    = false
-  }
-  subnet_id = "${var.SUBNET_ID}"
-  vpc_filter {
-    filters = {
-      isDefault = "true"
-    }
-  }
-  vpc_id                                    = "${var.VPC_ID}"
-  temporary_security_group_source_public_ip = "true"
+  run_tags = "${var.INSTANCE_TAGS}"
+  tags     = "${var.AMI_TAGS}"
 }
 
 # Build the machine image.
 build {
   sources = ["source.amazon-ebs.AMI_Builder"]
+
+  provisioner "shell" {
+    inline = ["/usr/bin/cloud-init status --wait"]
+  }
 
   provisioner "shell" {
     inline = ["mkdir /tmp/startup"]

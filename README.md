@@ -31,11 +31,11 @@ To view instructions for deploying the MATLAB reference architecture, select a M
 
 | Linux | Windows | Status |
 | ----- | ------- | ------- |
+| [R2025b](releases/R2025b/README.md) | [R2025b](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2025b/README.md) | ✅ Prebuilt available. |
 | [R2025a](releases/R2025a/README.md) | [R2025a](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2025a/README.md) | ✅ Prebuilt available. |
 | [R2024b](releases/R2024b/README.md) | [R2024b](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2024b/README.md) | ✅ Prebuilt available. |
-| [R2024a](releases/R2024a/README.md) | [R2024a](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2024a/README.md) | ✅ Prebuilt available. |
+| [R2024a](releases/R2024a/README.md) | [R2024a](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2024a/README.md) | ⚠️ Prebuilt will be removed in September 2026. |
 | [R2023b](releases/R2023b/README.md) | [R2023b](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2023b/README.md) | ⚠️ Prebuilt will be removed in March 2026. |
-| [R2023a](releases/R2023a/README.md) | [R2023a](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/releases/R2023a/README.md) | ⚠️ Prebuilt will be removed in September 2025. |
 | [Earlier/Custom](./packer/v1) | [Earlier/Custom](https://github.com/mathworks-ref-arch/matlab-on-aws-win/tree/master/packer/v1) | For earlier MATLAB releases, you must build your own machine image. |
 
 The above instructions allow you to launch instances based on the latest prebuilt MathWorks&reg; Amazon Machine Images (AMIs).
@@ -83,6 +83,18 @@ The following resources might be created, depending on your deployment configura
 4. A SSM document
 
 ## FAQ
+
+### What permissions are required by end users to deploy MATLAB in an AWS account?
+
+You do not need administrative-level access in AWS to deploy this reference architecture. If users already have the necessary permissions, no further action is required. If you are unsure whether you have sufficient permissions to deploy MATLAB on AWS, check with your AWS administrator and share the [permission document](./permission.md) with them. Using this document, administrators can assign the required permissions following the principle of least privilege. This document is kept current with the latest MATLAB release.
+
+AWS administrators can assign the necessary permissions to end users in two ways:
+
+* **Full Stack Creation Workflow**: MATLAB Users can create the entire stack. This approach is recommended for streamlined setups.
+
+* **Pass Role Workflow**: MATLAB Users can only create non-IAM resources in their stack. AWS admins must create necessary IAM roles that the user must pass to the stack. This approach is suitable for tighter control over IAM policies.
+
+For both options, the permission document provides a CloudFormation template to generate the necessary IAM roles and permissions. This template also supports granting additional permissions to EC2 instances depending on specific users' needs.
 
 ### When are the MathWorks Amazon Machine Images updated?
 The links in [Deployment Steps](#deployment-steps) launch instances based on the latest MathWorks
