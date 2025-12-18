@@ -32,7 +32,7 @@ variable "RELEASE" {
   description = "Target MATLAB release to install in the machine image, must start with \"R\"."
 
   validation {
-    condition     = can(regex("^R20[0-9][0-9](a|b)(U[0-9])?$", var.RELEASE))
+    condition     = can(regex("^R20[0-9][0-9](a|b)$", var.RELEASE))
     error_message = "The RELEASE value must be a valid MATLAB release, starting with \"R\"."
   }
 }
@@ -93,6 +93,12 @@ variable "MATLAB_PROXY_VERSION" {
     condition     = length(var.MATLAB_PROXY_VERSION) > 0
     error_message = "A valid version must be provided to install matlab-proxy."
   }
+}
+
+variable "MSA_URL" {
+  type        = string
+  description = "URL pointing to a valid MATLAB Startup Accelerator file. If left unset, a default URL will be constructed based on the RELEASE variable."
+  default     = null
 }
 
 variable "MATLAB_SOURCE_URL" {
@@ -195,6 +201,10 @@ locals {
   startup_scripts  = [for s in var.STARTUP_SCRIPTS : format("startup/%s", s)]
   runtime_scripts  = [for s in var.RUNTIME_SCRIPTS : format("runtime/%s", s)]
   use_temp_sg_rule = var.SECURITY_GROUP_ID == "" ? true : false
+  # This local variable decides which URL to use.
+  # If var.MSA_URL is not null (meaning the user provided an override), use that value.
+  # Otherwise, construct the URL using var.RELEASE.
+  effective_msa_url = var.MSA_URL != null ? var.MSA_URL : "https://raw.githubusercontent.com/mathworks-ref-arch/iac-building-blocks/refs/heads/main/common/artifacts/msa/${var.RELEASE}/Linux/msa.ini"
 }
 
 # Configure the EC2 instance that is used to build the machine image.
@@ -296,6 +306,7 @@ build {
       "NVIDIA_CUDA_TOOLKIT=${var.NVIDIA_CUDA_TOOLKIT}",
       "NVIDIA_CUDA_KEYRING_URL=${var.NVIDIA_CUDA_KEYRING_URL}",
       "MATLAB_SOURCE_URL=${var.MATLAB_SOURCE_URL}",
+      "MSA_URL=${local.effective_msa_url}",
       "MATLAB_ROOT=/usr/local/matlab"
     ]
     expect_disconnect = true
