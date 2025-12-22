@@ -20,29 +20,29 @@ Using the CloudFormation template below is recommended for most use cases, as it
 
     <details> <summary>CloudFormation template parameters</summary> <table><thead><tr><th>Parameter Label</th><th>Description</th></tr></thead><tbody>
 
-    <tr><td>Enable MATLAB deployment</td><td>(Required) Select yes to allow your users to deploy MATLAB. <br><br> <strong>Note: </strong>You might see other MathWorks' cloud products in the CloudFormation console, and if you want, you can enable those for your users as well.</td></tr>
+    <tr><td>Enable MATLAB deployment</td><td>Select yes to allow your users to deploy MATLAB. <br><br> <strong>Note: </strong>You might see other MathWorks' cloud products in the CloudFormation console, and if you want, you can enable those for your users as well.</td></tr>
 
-    <tr><td>User permission level</td><td>(Required) Choose between the 'Full Stack Creation' and 'Pass Role' workflows. 'Full Stack Creation' allows users to create the entire stack, including IAM roles, while following the principle of least privilege. Users can attach additional existing IAM policies to EC2 instances if these policies use the path '/MW/' and the policy name starts with the 'Resource naming prefix'. This approach is recommended for streamlined setups. 'Pass Role Workflow' limits users to resource creation only; IAM roles must be pre-created by the admin as part of this deployment. Users pass the provided execution IAM Role names to the CloudFormation template. This approach is suitable for tighter control over IAM roles and permissions.</td></tr>
+    <tr><td>User permission level</td><td>Choose 'Full Stack Creation' or 'Pass Role' workflows. 'Full Stack Creation' allows users to create the entire stack, including IAM roles, while following the principle of least privilege. Recommended for streamlined setups. 'Pass Role Workflow' limits users to resource creation only. Suitable for tighter control over IAM roles and permissions.</td></tr>
 
-    <tr><td>AWS Region restriction</td><td>(Required) Allowed AWS Region to deploy resources. Select '*' for all regions.</td></tr>
+    <tr><td>AWS Region restriction</td><td>Allowed AWS Region to deploy resources. Select '*' for all regions.</td></tr>
 
-    <tr><td>Resource naming prefix</td><td>(Required) A prefix you specify for your users, allowing them to create CloudFormation stacks or resources only with this prefix. The prefix must be a maximum of 10 characters and only include lowercase letters and hyphens. (Note: You can use this parameter to manage resources created by different teams separately. For instance, you can assign an 'engr' prefix for your engineering team and a 'mrkt' prefix for your marketing team. By using these prefixes, you can limit each team's access to only the resources they need.)</td></tr>
+    <tr><td>Resource naming prefix</td><td>Prefix to restrict users to create CloudFormation stacks or resources with names starting with this value. Use up to 10 lowercase letters or hyphens. Useful for isolating resources by team (for example, 'engr-', 'mrkt-').</td></tr>
 
-    <tr><td>Additional IAM policies for Common Execution Role</td><td>(Optional) Specify up to five valid IAM policy ARNs, which can be either AWS-managed or customer-managed. These policies will grant additional permissions to your users' EC2 instances. Note: This parameter is only applicable when the 'User Permission Level' is configured to 'Pass Role Workflow'. Users with 'Full Stack Creation' permissions can directly pass the ARN of an additional IAM policy during stack deployment. These policies must have a path equal to '/MW/' and have a name starting with the value admins specify as the 'Resource Naming Prefix'.</td></tr>
+    <tr><td>Additional IAM policies for Common Execution Role</td><td>(Optional) Specify up to five valid IAM policy ARNs (AWS-managed or customer-managed) to grant additional permissions to your users' EC2 instances. These policies must have a path equal to '/MW/' and a name starting with the value in 'Resource Naming Prefix'. Applicable only when you configure 'User Permission Level' to 'Pass Role Workflow'. Users with 'Full Stack Creation' permissions can directly pass IAM policy ARNs during stack deployment.</td></tr>
 
-    <tr><td>IAM role names</td><td>(Optional) Comma-separated list of existing IAM role names to extend permissions for. For example, if your users are currently assuming some specific IAM roles and you would like to extend their permissions to allow MathWorks® Reference Architecture deployments, specify the names of these roles here.</td></tr>
+    <tr><td>IAM role names</td><td>(Optional) Comma-separated list of existing IAM roles to extend permissions to. For example, specify existing IAM roles assumed by users to extend their permissions to allow users to deploy MathWorks' Reference Architecture.</td></tr>
 
-    <tr><td>IAM group names</td><td>(Optional) Comma-separated list of existing IAM group names to extend their permissions. Any user who is a member of these groups will have their permissions extended to allow MathWorks' Reference Architecture deployments based on your configuration in this template.</td></tr>
+    <tr><td>IAM group names</td><td>(Optional) Comma-separated list of existing IAM groups to extend permissions to. Applies to all members in these groups.</td></tr>
 
-    <tr><td>IAM user names</td><td>(Optional) Comma-separated list of existing IAM users to extend permissions for.</td></tr>
+    <tr><td>IAM user names</td><td>(Optional) Comma-separated list of existing IAM users to extend permissions to.</td></tr>
 
-    <tr><td>AWS principal ARN</td><td>(Optional) Provide an AWS principal ARN to assume the IAM role created by this stack. If you are using an AWS Principal that is not supported by this CloudFormation template, you can temporarily use '*' as your Principal, and then update the trust relationship of the new IAM Role to your custom AWS Principal in AWS IAM Console.</td></tr>
+    <tr><td>AWS principal ARN</td><td>(Optional) Specify an AWS principal ARN to assume the IAM role created by this stack. If your AWS Principal is not supported by this template, you can temporarily use '*'. In this case, after deployment, update the IAM role's trust relationship to your custom AWS Principal in the IAM Console.</td></tr>
 
-    <tr><td>AWS principal external ID</td><td>(Optional) Use this parameter to restrict access when assuming the provisioning role while establishing a trust relationship with another AWS account. If you specify an external ID, you must also provide the 'AWS Principal ARN' from the external AWS account.</td></tr>
+    <tr><td>AWS principal external ID</td><td>(Optional) A unique identifier to allow third-party access to your AWS resources. This ensures that only trusted parties can assume roles in your account. For more information, see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html.</td></tr>
 
-    <tr><td>SAML federated identity provider ARN</td><td>(Optional) Specify the SAML Federated Identity Provider ARN to assume the provisioning role. If you provide this, you must also include the SAMLAudienceUrl. Leave this field blank if you are not using SAML federation for user authentication.</td></tr>
+    <tr><td>SAML federated identity provider ARN</td><td>(Optional) Specify the SAML Federated Identity Provider ARN to assume the provisioning role. If specified, you must also provide the 'SAML audience URL' parameter. Leave blank if you are not using SAML federation for user authentication.</td></tr>
 
-    <tr><td>SAML audience URL</td><td>(Optional) Enter the SAML Audience URL. If you provide this, you must also include the SAMLFederatedIdentityProvider. Leave this field blank if you are not using SAML federation for user authentication.</td></tr>
+    <tr><td>SAML audience URL</td><td>(Optional) If specified, you must also provide the 'SAMLFederatedIdentityProvider'. Leave blank if you are not using SAML federation for user authentication.</td></tr>
 
     </tbody></table> </details><br>
 
