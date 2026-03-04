@@ -3,58 +3,58 @@
   "Mappings": {
     "RegionMap": {
       "us-east-1": {
-        "AMI": "ami-06ac5c4a61d329209"
+        "AMI": "ami-02e0a9bea000f34c7"
       },
       "us-east-2": {
-        "AMI": "ami-03096d513bf003169"
+        "AMI": "ami-09b3476e77d35cf6b"
       },
       "us-west-1": {
-        "AMI": "ami-0d4728002b715320d"
+        "AMI": "ami-0515d7d9b1a6b478d"
       },
       "us-west-2": {
-        "AMI": "ami-0e55377c87dde3c26"
+        "AMI": "ami-099e0b71dcafbbdaa"
       },
       "ca-central-1": {
-        "AMI": "ami-0b0110cfb9d4f7ce3"
+        "AMI": "ami-06e2b68f53bb30e74"
       },
       "eu-central-1": {
-        "AMI": "ami-0fdb2be6b2e1d3688"
+        "AMI": "ami-06a8b4d11bfdbe24a"
       },
       "eu-west-1": {
-        "AMI": "ami-083d615869e4318b8"
+        "AMI": "ami-0a3339d16d27f8997"
       },
       "eu-west-2": {
-        "AMI": "ami-018942b8a1cfe2dd2"
+        "AMI": "ami-0f240b071c977c88e"
       },
       "eu-west-3": {
-        "AMI": "ami-0b32bff9b28b28f72"
+        "AMI": "ami-02eebcda70f8541a0"
       },
       "eu-north-1": {
-        "AMI": "ami-08f4a48c5146fa951"
+        "AMI": "ami-00e10650f887b9f5e"
       },
       "sa-east-1": {
-        "AMI": "ami-0145ab575cca94707"
+        "AMI": "ami-08a903e9c91f73c1d"
       },
       "me-south-1": {
-        "AMI": "ami-0013ab63ddf406c1c"
+        "AMI": "ami-0ffffbfcece8bea93"
       },
       "ap-east-1": {
-        "AMI": "ami-0eed6abb18a37e922"
+        "AMI": "ami-0bc55027ae3221a26"
       },
       "ap-south-1": {
-        "AMI": "ami-09c94215ab599fd43"
+        "AMI": "ami-0592db0122b7cd0d1"
       },
       "ap-northeast-1": {
-        "AMI": "ami-09b7c7a9a78366ea9"
+        "AMI": "ami-0e684519c6cfb66a4"
       },
       "ap-northeast-2": {
-        "AMI": "ami-0ad40ffe3e7d7c7e0"
+        "AMI": "ami-0086850070131427c"
       },
       "ap-southeast-1": {
-        "AMI": "ami-0ea1ec457b419cb2c"
+        "AMI": "ami-030cf0eae979a1f34"
       },
       "ap-southeast-2": {
-        "AMI": "ami-0262146abea84b764"
+        "AMI": "ami-0ce4ea22c0d396080"
       }
     }
   },
@@ -579,7 +579,7 @@
       "AllowedPattern": ".+"
     },
     "ClientIPAddress": {
-      "Description": "Comma-separated list of IP address ranges that will be allowed to connect to this instance. Each IP CIDR must have the format <ip_address>/<mask>. The mask determines the number of IP addresses to include. A mask of 32 specifies a single IP address. Examples of allowed values: 10.0.0.1/32 or 10.0.0.0/16,192.34.56.78/32. To build a specific range, you can use this tool: https://www.ipaddressguide.com/cidr. To determine which address is appropriate, contact your IT administrator.",
+      "Description": "Comma-separated list of IP address ranges that will be allowed to connect to this instance. Each IP CIDR must have the format <ip_address>/<mask>. The mask determines the number of IP addresses to include. A mask of 32 specifies a single IP address. Examples of allowed values: 10.0.0.1/32, 10.0.0.0/16,192.34.56.78/32. To identify the public IP address of your machine, you can use https://checkip.amazonaws.com. To build a specific range, you can use https://www.ipaddressguide.com/cidr. To determine which address is appropriate, contact your IT administrator.",
       "Type": "String",
       "MinLength": "9",
       "MaxLength": "189",

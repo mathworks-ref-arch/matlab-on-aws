@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright 2023-2025 The MathWorks, Inc.
+# Copyright 2023-2026 The MathWorks, Inc.
 
 # Exit on any failure, treat unset substitution variables as errors
 set -euo pipefail
@@ -14,6 +14,10 @@ sudo mkdir -p /usr/local/etc/msa
 #755 - owner can read/write/execute, group/others can read/execute.
 sudo chmod 755 /usr/local/etc/msa
 sudo mv '/tmp/msa.ini' /usr/local/etc/msa/msa.ini
+
+sudo apt-get install -y dos2unix
+# Ensure that the msa.ini file has UNIX line endings
+sudo dos2unix /usr/local/etc/msa/msa.ini
 
 #664 - owner can read/write, group/others can read only. Execute permissions not needed for msa.ini.
 sudo chmod 664 /usr/local/etc/msa/msa.ini
