@@ -12,7 +12,7 @@ For more information about templates, see [Packer Templates](https://www.packer.
 
 ## **Requirements**
 Before starting, you will need:
-* A valid Packer installation later than 1.7.0. For more information, see [Install Packer](https://www.packer.io/downloads).
+* A valid Packer installation of version 1.15.0 or later. For more information, see [Install Packer](https://www.packer.io/downloads).
 * AWS credentials with sufficient permission. For more information, see [Packer Authentication](https://www.packer.io/plugins/builders/amazon#authentication).
 
 ## **Costs**
