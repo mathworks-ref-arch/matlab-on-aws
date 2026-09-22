@@ -1,4 +1,4 @@
-# Copyright 2023-2024 The MathWorks, Inc.
+# Copyright 2023-2026 The MathWorks, Inc.
 
 // Use this Packer configuration file to build AMI with R2023b MATLAB installed.
 // For more information on these variables, see /packer/v1/build-matlab-ami.pkr.hcl.
@@ -19,8 +19,7 @@ STARTUP_SCRIPTS = [
 ]
 RUNTIME_SCRIPTS = [
   "swap-desktop-solution.sh",
-  "launch-matlab-proxy.sh",
-  "generate-certificate.py"
+  "launch-matlab-proxy.sh"
 ]
 BUILD_SCRIPTS = [
   "install-startup-scripts.sh",
@@ -43,3 +42,4 @@ NVIDIA_CUDA_TOOLKIT     = "https://developer.download.nvidia.com/compute/cuda/12
 NVIDIA_DRIVER_VERSION   = "535"
 NVIDIA_CUDA_KEYRING_URL = "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb"
 DCV_INSTALLER_URL       = "https://d1uj6qtbmh3dt5.cloudfront.net/2023.0/Servers/nice-dcv-2023.0-15065-ubuntu2204-x86_64.tgz"
+MATLAB_PROXY_VERSION    = "latest"

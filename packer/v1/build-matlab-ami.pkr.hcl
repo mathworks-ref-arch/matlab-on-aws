@@ -16,7 +16,7 @@ packer {
 
 variable "PRODUCTS" {
   type        = string
-  default     = "5G_Toolbox AUTOSAR_Blockset Aerospace_Blockset Aerospace_Toolbox Antenna_Toolbox Audio_Toolbox Automated_Driving_Toolbox Bioinformatics_Toolbox Bluetooth_Toolbox C2000_Microcontroller_Blockset Communications_Toolbox Computer_Vision_Toolbox Control_System_Toolbox Curve_Fitting_Toolbox DDS_Blockset DSP_HDL_Toolbox DSP_System_Toolbox Database_Toolbox Datafeed_Toolbox Deep_Learning_HDL_Toolbox Deep_Learning_Toolbox Econometrics_Toolbox Embedded_Coder Financial_Instruments_Toolbox Financial_Toolbox Fixed-Point_Designer Fuzzy_Logic_Toolbox GPU_Coder Global_Optimization_Toolbox HDL_Coder HDL_Verifier Image_Acquisition_Toolbox Image_Processing_Toolbox Industrial_Communication_Toolbox Instrument_Control_Toolbox LTE_Toolbox Lidar_Toolbox MATLAB MATLAB_Coder MATLAB_Compiler MATLAB_Compiler_SDK MATLAB_Report_Generator MATLAB_Test Mapping_Toolbox Medical_Imaging_Toolbox Mixed-Signal_Blockset Model_Predictive_Control_Toolbox Motor_Control_Blockset Navigation_Toolbox Optimization_Toolbox Parallel_Computing_Toolbox Partial_Differential_Equation_Toolbox Phased_Array_System_Toolbox Powertrain_Blockset Predictive_Maintenance_Toolbox RF_Blockset RF_PCB_Toolbox RF_Toolbox ROS_Toolbox Radar_Toolbox Raspberry_Pi_Blockset Reinforcement_Learning_Toolbox Requirements_Toolbox Risk_Management_Toolbox Robotics_System_Toolbox Robust_Control_Toolbox STM32_Microcontroller_Blockset Satellite_Communications_Toolbox Sensor_Fusion_and_Tracking_Toolbox SerDes_Toolbox Signal_Integrity_Toolbox Signal_Processing_Toolbox SimBiology SimEvents Simscape Simscape_Battery Simscape_Driveline Simscape_Electrical Simscape_Fluids Simscape_Multibody Simulink Simulink_3D_Animation Simulink_Check Simulink_Coder Simulink_Compiler Simulink_Control_Design Simulink_Coverage Simulink_Design_Optimization Simulink_Design_Verifier Simulink_Desktop_Real-Time Simulink_FMU_Builder Simulink_Fault_Analyzer Simulink_PLC_Coder Simulink_Real-Time Simulink_Report_Generator Simulink_Test SoC_Blockset Stateflow Statistics_and_Machine_Learning_Toolbox Symbolic_Math_Toolbox System_Composer System_Identification_Toolbox Text_Analytics_Toolbox UAV_Toolbox Vehicle_Dynamics_Blockset Vehicle_Network_Toolbox Vision_HDL_Toolbox WLAN_Toolbox Wavelet_Toolbox Wireless_HDL_Toolbox Wireless_Network_Toolbox Wireless_Testbench"
+  default     = "5G_Toolbox AUTOSAR_Blockset Aerospace_Blockset Aerospace_Toolbox Antenna_Toolbox Audio_Toolbox Automated_Driving_Toolbox Bioinformatics_Toolbox Bluetooth_Toolbox C2000_Microcontroller_Blockset Communications_Toolbox Computer_Vision_Toolbox Control_System_Toolbox Curve_Fitting_Toolbox DDS_Blockset DO_Qualification_Kit DSP_HDL_Toolbox DSP_System_Toolbox Database_Toolbox Datafeed_Toolbox Deep_Learning_HDL_Toolbox Deep_Learning_Toolbox Econometrics_Toolbox Embedded_Coder Financial_Instruments_Toolbox Financial_Toolbox Fixed-Point_Designer Fuzzy_Logic_Toolbox GPU_Coder Global_Optimization_Toolbox HDL_Coder HDL_Verifier IEC_Certification_Kit Image_Acquisition_Toolbox Image_Processing_Toolbox Industrial_Communication_Toolbox Instrument_Control_Toolbox LTE_Toolbox MATLAB MATLAB_Coder MATLAB_Compiler MATLAB_Compiler_SDK MATLAB_Copilot MATLAB_Parallel_Server MATLAB_Production_Server MATLAB_Report_Generator MATLAB_Test MATLAB_Web_App_Server Mapping_Toolbox Medical_Imaging_Toolbox Mixed-Signal_Blockset Model_Predictive_Control_Toolbox Motor_Control_Blockset Navigation_Toolbox Optimization_Toolbox Parallel_Computing_Toolbox Partial_Differential_Equation_Toolbox Phased_Array_System_Toolbox Point_Cloud_Toolbox Polyspace_Bug_Finder Polyspace_Bug_Finder_Server Polyspace_Code_Prover Polyspace_Code_Prover_Server Polyspace_Test Polyspace_Test_Server Polyspace_as_You_Code Powertrain_Blockset Predictive_Maintenance_Toolbox RF_Blockset RF_PCB_Toolbox RF_Toolbox ROS_Toolbox Radar_Toolbox Raspberry_Pi_Blockset Reinforcement_Learning_Toolbox Requirements_Toolbox Risk_Management_Toolbox Robotics_System_Toolbox Robust_Control_Toolbox STM32_Microcontroller_Blockset Satellite_Communications_Toolbox Sensor_Fusion_and_Tracking_Toolbox SerDes_Toolbox Signal_Integrity_Toolbox Signal_Processing_Toolbox SimBiology SimEvents Simscape Simscape_Battery Simscape_Driveline Simscape_Electrical Simscape_Fluids Simscape_Multibody Simulink Simulink_3D_Animation Simulink_Check Simulink_Code_Inspector Simulink_Coder Simulink_Compiler Simulink_Control_Design Simulink_Copilot Simulink_Coverage Simulink_Design_Optimization Simulink_Design_Verifier Simulink_Desktop_Real-Time Simulink_FMU_Builder Simulink_Fault_Analyzer Simulink_PLC_Coder Simulink_Real-Time Simulink_Report_Generator Simulink_Test Simulink_Variant_Manager SoC_Blockset Stateflow Statistics_and_Machine_Learning_Toolbox Symbolic_Math_Toolbox System_Composer System_Identification_Toolbox Text_Analytics_Toolbox UAV_Toolbox Vehicle_Dynamics_Blockset Vehicle_Network_Toolbox Vision_HDL_Toolbox Visual_Inspection_Toolbox WLAN_Toolbox Wavelet_Toolbox Wireless_HDL_Toolbox Wireless_Network_Toolbox Wireless_Testbench"
   description = "Target products to install in the machine image, e.g. MATLAB SIMULINK."
 }
 
@@ -28,7 +28,7 @@ variable "SPKGS" {
 
 variable "RELEASE" {
   type        = string
-  default     = "R2026a"
+  default     = "R2026b"
   description = "Target MATLAB release to install in the machine image, must start with \"R\"."
 
   validation {
@@ -39,8 +39,8 @@ variable "RELEASE" {
 
 variable "BASE_AMI_NAME" {
   type        = string
-  default     = "ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"
-  description = "Default AMI name refers to the Ubuntu Server 22.04 image provided by Canonical."
+  default     = "ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"
+  description = "Default AMI name refers to the Ubuntu Server 24.04 image provided by Canonical."
 }
 
 variable "BUILD_SCRIPTS" {
@@ -57,7 +57,7 @@ variable "STARTUP_SCRIPTS" {
 
 variable "RUNTIME_SCRIPTS" {
   type        = list(string)
-  default     = ["swap-desktop-solution.sh", "launch-matlab-proxy.sh", "generate-certificate.py"]
+  default     = ["swap-desktop-solution.sh", "launch-matlab-proxy.sh"]
   description = "The list of runtime scripts Packer will copy to the remote machine image builder, which can be used after the CloudFormation Stack creation."
 }
 
@@ -87,11 +87,11 @@ variable "NVIDIA_CUDA_KEYRING_URL" {
 
 variable "MATLAB_PROXY_VERSION" {
   type        = string
-  description = "Version of matlab-proxy to pull from PyPI."
-  default     = "0.10.0"
+  description = "Version of matlab-proxy to pull from PyPI. Use 'latest' to install the newest available version."
+  default     = "latest"
   validation {
     condition     = length(var.MATLAB_PROXY_VERSION) > 0
-    error_message = "A valid version must be provided to install matlab-proxy."
+    error_message = "MATLAB_PROXY_VERSION must not be empty. Use a version string or 'latest'."
   }
 }
 
@@ -253,7 +253,7 @@ source "amazon-ebs" "AMI_Builder" {
     delete_on_termination = true
     device_name           = "/dev/sda1"
     volume_size           = 128
-    volume_type           = "gp2"
+    volume_type           = "gp3"
   }
   source_ami_filter {
     filters = {
@@ -276,13 +276,36 @@ build {
     inline = ["/usr/bin/cloud-init status --wait"]
   }
 
-  provisioner "shell" {
-    inline = ["mkdir /tmp/startup"]
-  }
-
+  # Upload the build config (which includes the disk-mount helpers) first, so the
+  # mount step below can source them.
   provisioner "file" {
     destination = "/var/tmp/"
     source      = "build/config"
+  }
+
+  # Mount the ephemeral instance-store disk over /tmp so that temporary
+  # build artifacts stay off the root EBS volume (smaller AMI). 
+  # Fail-safe: a no-op if the instance has no extra disk.
+  provisioner "shell" {
+    inline_shebang  = "/bin/bash -e"
+    expect_disconnect = true
+
+    inline = [
+      "echo \"Mounting instance-store disk to /tmp for temporary storage...\"",
+      "source /var/tmp/config/matlab/mount-data-drive-utils.sh",
+      "sudo mkdir -p /tmp",
+      "mount_nvme_disk /tmp",
+      "sudo chmod 1777 /tmp",
+      # Add entry in fstab for this tmp mount to persist accross reboots
+      "persist_mount_in_fstab /tmp",
+      # Reboot the Packer builder so that the freshly mounted tmp folder
+      # is reinitialized by the OS
+      "sudo reboot"
+    ]
+  }
+
+  provisioner "shell" {
+    inline = ["mkdir /tmp/startup"]
   }
 
   provisioner "file" {

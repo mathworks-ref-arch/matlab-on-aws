@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright 2023-2025 The MathWorks, Inc.
+# Copyright 2023-2026 The MathWorks, Inc.
 
 # Exit on any failure, treat unset substitution variables as errors
 set -euo pipefail
@@ -73,7 +73,9 @@ sudo apt-get -qq -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--forc
 
 sudo apt-get -qq install --reinstall xserver-xorg-video-intel xserver-xorg-core
 
-BASE_DIR=$(pwd)
+# Download all intermediate artifacts to /tmp
+BASE_DIR=/tmp
+
 mkdir -p "${BASE_DIR}"/git/neutrinolabs
 cd "${BASE_DIR}"/git/neutrinolabs
 wget --no-verbose https://github.com/neutrinolabs/xrdp/releases/download/v0.9.9/xrdp-0.9.9.tar.gz
@@ -129,7 +131,22 @@ sudo cp /var/tmp/config/xrdp/sesman.ini /etc/xrdp/sesman.ini
 export DEBCONF_NONINTERACTIVE_SEEN=true
 sudo apt-get -qq update
 sudo apt-get -qq upgrade
-sudo apt-get -qq -o=Dpkg::Use-Pty=0 install ubuntu-mate-desktop
+# Redirect stdout to a log file: ubuntu-mate-desktop pulls hundreds of
+# packages and the streamed dpkg/maintainer-script output has been
+# overwhelming the GitHub Actions runner mid-install. Stderr stays on
+# the console so real errors surface; on failure we dump the log tail.
+MATE_LOG=/tmp/install-ubuntu-mate-desktop.log
+echo "Installing ubuntu-mate-desktop (stdout -> ${MATE_LOG}, stderr stays visible)..."
+EXIT_CODE=0
+sudo apt-get -qq -o=Dpkg::Use-Pty=0 install ubuntu-mate-desktop >"${MATE_LOG}" || EXIT_CODE=$?
+if [ "${EXIT_CODE}" -ne 0 ]; then
+    echo "ubuntu-mate-desktop install failed (rc=${EXIT_CODE}); last 200 lines of ${MATE_LOG}:" >&2
+    tail -n 200 "${MATE_LOG}" >&2 || true
+    exit "${EXIT_CODE}"
+fi
+echo "ubuntu-mate-desktop installed"
+sudo rm -rf $MATE_LOG
+
 sudo apt-get -qq install \
     xserver-xorg-video-dummy \
     xfonts-cyrillic \
@@ -166,7 +183,6 @@ fi
 sudo systemctl set-default multi-user.target
 
 # Clean up
-cd /home/ubuntu
 sudo rm -r nice-dcv-*-ubuntu*-x86_64
 sudo rm nice-dcv-*.tgz
 

@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 #
-# Copyright 2023-2025 The MathWorks, Inc.
+# Copyright 2023-2026 The MathWorks, Inc.
 
 # Exit on any failure, treat unset substitution variables as errors
 set -euo pipefail
 
 LOCAL_USER=ubuntu
 
+cd /tmp
 # Create MATLAB Home directory in ~/Documents,
 # which was created in during the MATE setup.
 mkdir -p /home/${LOCAL_USER}/Documents/MATLAB/

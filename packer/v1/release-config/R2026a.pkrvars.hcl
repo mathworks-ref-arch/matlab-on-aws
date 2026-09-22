@@ -21,8 +21,7 @@ STARTUP_SCRIPTS = [
 ]
 RUNTIME_SCRIPTS = [
   "swap-desktop-solution.sh",
-  "launch-matlab-proxy.sh",
-  "generate-certificate.py"
+  "launch-matlab-proxy.sh"
 ]
 BUILD_SCRIPTS = [
   "install-startup-scripts.sh",
@@ -49,3 +48,4 @@ NVIDIA_CUDA_TOOLKIT     = "https://developer.download.nvidia.com/compute/cuda/12
 NVIDIA_CUDA_KEYRING_URL = "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.0-1_all.deb"
 NVIDIA_DRIVER_VERSION   = "590"
 DCV_INSTALLER_URL       = "https://d1uj6qtbmh3dt5.cloudfront.net/2024.0/Servers/nice-dcv-2024.0-19030-ubuntu2204-x86_64.tgz"
+MATLAB_PROXY_VERSION    = "latest"
