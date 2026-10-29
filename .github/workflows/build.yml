@@ -1,0 +1,63 @@
+# Copyright 2026 The MathWorks, Inc.
+
+name: 'Multi-version Build Pipeline'
+
+# Generated file. Edits are overwritten when this repository is next published.
+# Repository variables this pipeline reads: .github/workflows/README.md
+
+on:
+  workflow_dispatch:
+    inputs:
+      matlab_versions:
+        description: "Comma-separated list (e.g. R2025a,R2024b). Leave empty to build latest five MATLAB versions."
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  id-token: write          # Required for AWS OIDC (Packer, Publish)
+  contents: write          # Required for Creating Releases (gh-release)
+  attestations: write      # Required for SLSA Attestations
+  actions: read            # Required to name the release after the month the run started
+
+jobs:
+  prepare-versions:
+    uses: mathworks-ref-arch/iac-building-blocks/.github/workflows/module-gh-get-versions.yml@main
+    with:
+      input_versions: ${{ inputs.matlab_versions }}
+      search_dir: './releases'
+
+  create-artifacts:
+    needs: prepare-versions
+    if: ${{ needs.prepare-versions.outputs.matrix != '[]' }}
+    strategy:
+        fail-fast: false
+        max-parallel: 5
+        matrix:
+          version: ${{ fromJson(needs.prepare-versions.outputs.matrix) }}
+    uses: mathworks-ref-arch/iac-building-blocks/.github/workflows/orchestrator-aws-single.yml@main
+    with:
+      matlab_version: ${{ matrix.version }}
+      refarch_type: ${{ vars.REFARCH_TYPE || 'matlab-linux' }}
+      packer_dir: ${{ vars.PACKER_DIR || './packer/v1' }}
+      metatemplate_file_path: ${{ vars.METATEMPLATE_FILE_PATH || 'src/aws-matlab-template.json' }}
+      is_supplementary_build: ${{ vars.IS_SUPPLEMENTARY_BUILD != 'false' }}
+      skip_build: ${{ vars.SKIP_BUILD == 'true' }}
+      skip_test: ${{ vars.SKIP_TEST == 'true' }}
+    secrets: inherit
+
+  release-artifacts:
+    name: Create Aggregate GH Release
+    needs: [prepare-versions, create-artifacts]
+    uses: mathworks-ref-arch/iac-building-blocks/.github/workflows/orchestrator-gh-release.yml@main
+    with:
+      target_versions: ${{ needs.prepare-versions.outputs.matrix }}
+      s3_bucket_url: ${{ vars.S3_BUCKET_URL || 'https://matlab-on-aws.s3.amazonaws.com' }}
+      dual_repo_url: ${{ vars.DUAL_REPO_URL || 'https://github.com/mathworks-ref-arch/matlab-on-aws-win' }}
+      release_tag: ${{ vars.RELEASE_TAG }}
+      release_name: ${{ vars.RELEASE_NAME || 'MATLAB on AWS' }}
+      # Release only the JSON artifacts (build manifest and test template).
+      release_files_pattern: "*.json"
+      is_supplementary_build: ${{ vars.IS_SUPPLEMENTARY_BUILD != 'false' }}
+      generate_attestations: ${{ vars.GENERATE_ATTESTATIONS != 'false' }}
+    secrets: inherit
